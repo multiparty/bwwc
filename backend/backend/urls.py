@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.http import HttpRequest, HttpResponse
+from pymongo import MongoClient
 
+mgo_client= MongoClient('localhost', port=27017)
+database = mgo_client.db
 
 def init(req: HttpRequest) -> HttpResponse:
     pass
