@@ -15,12 +15,14 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.11",
+    "@mui/lab": "^5.0.0-alpha.122",
     "@mui/material": "^5.11.12",
     "formik": "^2.2.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^12.1.0",
     "react-router-dom": "^6.8.2",
+    "xlsx": "^0.18.5",
     "yup": "^1.0.2"
   },
   "devDependencies": {

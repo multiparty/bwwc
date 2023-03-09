@@ -27,7 +27,9 @@
       "@modules/*": ["modules/*"],
       "@pages/*": ["pages/*"],
       "@styles/*": ["styles/*"],
-      "@theme/*": ["theme/*"]
+      "@theme/*": ["theme/*"],
+      "@types/*": ["types/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["src"],
