@@ -7,6 +7,7 @@ import { AutoCompleteInput } from '@components/forms/auto-complete-input';
 import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
+import { FileUpload } from '@components/file-upload/file-upload';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
@@ -47,6 +48,9 @@ export const CompanyInputForm: FC = () => {
                   </Stack>
                 </Form>
               </Formik>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FileUpload multiple={false} onChange={console.log} title="Drag and drop your completed template file here" />
             </Grid>
           </Grid>
         </Stack>

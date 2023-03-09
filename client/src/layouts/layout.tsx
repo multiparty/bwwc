@@ -11,7 +11,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
     <Box sx={{ display: 'flex' }}>
       <Header />
       <Box sx={{ flexGrow: 1 }}>
-        <Container sx={{ mt: 20 }}>{children}</Container>
+        <Container maxWidth="xl" sx={{ mt: 20 }}>
+          {children}
+        </Container>
       </Box>
     </Box>
   );
