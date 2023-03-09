@@ -1,0 +1,29 @@
+# Python files
+__pycache__/
+*.py[cod]
+
+# Local development settings
+*.sqlite3
+*.env
+
+# Static files
+/staticfiles/
+/media/
+
+# Dependency directories
+venv/
+venv2/
+env/
+ENV/
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Other
+.DS_Store
+.idea/
+*.log
+
+# Configuration files
+./backend/config/prod.ini
