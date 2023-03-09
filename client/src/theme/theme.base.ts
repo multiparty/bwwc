@@ -1,4 +1,4 @@
-import {createTheme, ThemeOptions} from '@mui/material';
+import { createTheme, ThemeOptions } from '@mui/material';
 
 export const themeBase = createTheme({
   palette: {
@@ -15,7 +15,7 @@ export const themeBase = createTheme({
       textTransform: 'none'
     },
     h5: {
-        fontWeight: 'bold'
+      fontWeight: 'bold'
     }
   }
 });

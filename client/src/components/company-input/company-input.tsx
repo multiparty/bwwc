@@ -7,7 +7,7 @@ import { AutoCompleteInput } from '@components/forms/auto-complete-input';
 import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
-import { FileUpload } from '@components/file-upload/file-upload';
+import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
@@ -16,7 +16,11 @@ const validationSchema = Yup.object().shape({
   size: Yup.string().required('Required')
 });
 
-export const CompanyInputForm: FC = () => {
+export interface CompanyInputFormProps {
+  onFileUpload: (file: CustomFile) => void;
+}
+
+export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const [initialValues, setInitialValues] = useState({
     submissionId: '',
     participationCode: '',
@@ -50,7 +54,7 @@ export const CompanyInputForm: FC = () => {
               </Formik>
             </Grid>
             <Grid item xs={12} md={6}>
-              <FileUpload multiple={false} onChange={console.log} title="Drag and drop your completed template file here" />
+              <FileUpload multiple={false} onChange={(file) => props.onFileUpload(file[0])} title="Drag and drop your completed template file here" />
             </Grid>
           </Grid>
         </Stack>

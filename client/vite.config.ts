@@ -18,7 +18,6 @@ export default defineConfig({
       '@pages': path.join(__dirname, 'src/pages'),
       '@styles': path.join(__dirname, 'src/styles'),
       '@theme': path.join(__dirname, 'src/theme'),
-      '@types': path.join(__dirname, 'src/types'),
       '@utils': path.join(__dirname, 'src/utils')
     }
   },
