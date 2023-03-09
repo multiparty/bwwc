@@ -15,7 +15,34 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpRequest, HttpResponse
+
+
+def init(req: HttpRequest) -> HttpResponse:
+    pass
+
+def start_session(req: HttpRequest) -> HttpResponse:
+    pass
+
+def end_session(req: HttpRequest) -> HttpResponse:
+    pass
+
+def generate_urls(req: HttpRequest) -> HttpResponse:
+    pass
+
+def reveal(req: HttpRequest) -> HttpResponse:
+    pass
+
+def submit_data(req: HttpRequest) -> HttpResponse:
+    pass
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('init/', init),
+    path('start_session/', start_session),
+    path('end_session/', end_session),
+    path('generate_urls', generate_urls),
+    path('reveal/', reveal),
+    path('submit_data/', submit_data)
 ]
