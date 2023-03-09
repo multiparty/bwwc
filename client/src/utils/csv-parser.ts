@@ -1,6 +1,6 @@
 import { CustomFile } from '@components/file-upload/file-upload';
 import { FileUtils } from './file.utils';
-import { DataFormat, TableData } from './data-format';
+import { DataFormat, TableData, TotalEmployees } from './data-format';
 import { WorkSheet } from 'xlsx';
 import { Positions } from './positions';
 import { Ethnicity } from './ethnicity';
@@ -11,17 +11,24 @@ export const readCsv = async (file: CustomFile): Promise<DataFormat> => {
     numberOfEmployees: {} as TableData,
     wages: {} as TableData,
     performance: {} as TableData,
-    lengthOfService: {} as TableData
+    lengthOfService: {} as TableData,
+    totalEmployees: {} as TotalEmployees
   };
   const workbook = await FileUtils.readCSV(file);
   const EmployeeSheetName = workbook.SheetNames[1];
   const WagesSheetName = workbook.SheetNames[2];
   const PerformanceSheetName = workbook.SheetNames[3];
   const LengthSheetName = workbook.SheetNames[4];
+  const TotalSheetName = workbook.SheetNames[6];
   data.numberOfEmployees = extractData(workbook.Sheets[EmployeeSheetName]);
   data.wages = extractData(workbook.Sheets[WagesSheetName]);
   data.performance = extractData(workbook.Sheets[PerformanceSheetName]);
   data.lengthOfService = extractData(workbook.Sheets[LengthSheetName]);
+  data.totalEmployees = {
+    [Gender.Male]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'B6'),
+    [Gender.Female]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'C6'),
+    [Gender.NonBinary]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'D6')
+  };
   return data;
 };
 

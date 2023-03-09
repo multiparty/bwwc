@@ -10,9 +10,14 @@ export type TableData = {
   };
 };
 
+export type TotalEmployees = {
+  [key in Gender]: number;
+};
+
 export interface DataFormat {
   numberOfEmployees: TableData;
   wages: TableData;
   performance: TableData;
   lengthOfService: TableData;
+  totalEmployees: TotalEmployees;
 }
