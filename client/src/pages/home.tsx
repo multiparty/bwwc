@@ -1,9 +1,11 @@
 import { FC, useEffect, useState } from 'react';
-import { Stack } from '@mui/material';
+import { Card, Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
 import { CustomFile } from '@components/file-upload/file-upload';
 import { DataFormat } from '@utils/data-format';
 import { readCsv } from '@utils/csv-parser';
+import { ViewData } from '@components/view-data/view-data';
+import { VerifyData } from '@components/verify-data';
 
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
@@ -21,8 +23,10 @@ export const HomePage: FC = () => {
   console.log(data);
 
   return (
-    <Stack>
+    <Stack spacing={5}>
       <CompanyInputForm onFileUpload={setFile} />
+      <ViewData open={false} data={data} />
+      <VerifyData data={data} />
     </Stack>
   );
 };
