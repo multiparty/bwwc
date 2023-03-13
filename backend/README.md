@@ -4,7 +4,7 @@
 ## Setup
 ```
 cd backend
-pip install requirements.txt
+pip install --upgrade -r requirements.txt
 ```
 
 ### Development
