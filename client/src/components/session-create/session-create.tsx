@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -13,9 +14,15 @@ const validationSchema = Yup.object().shape({
 
 export const SessionCreateForm: FC = (props) => {
   const [initialValues, setInitialValues] = useState({
-    sessionTitle: '',
-    sessionDescription: ''
+    sessionTitle: null,
+    sessionDescription: null
   });
+
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate('/manage');
+  }
 
   return (
     <Card>
@@ -35,16 +42,19 @@ export const SessionCreateForm: FC = (props) => {
                   console.log(values);
                   setSubmitting(false);
                 }}
+                validateOnMount={true}
               >
-                {({ isSubmitting }) => (
+                {({ isSubmitting, isValid }) => (
                   <Form>
                     <Stack spacing={2}>
                       <TextInput fullWidth name="sessionTitle" label="Session title" />
                       <MultilineTextInput fullWidth name="sessionDescription" label="Session Description" />
                     </Stack>
-                    <LoadingButton type="submit" disabled={isSubmitting} sx={{ justifyContent: 'flex-end', width: '100%' }}>
-                      Submit
-                    </LoadingButton>
+                    {isValid && (
+                      <LoadingButton type="submit" disabled={isSubmitting} sx={{ justifyContent: 'center', width: '10%' }} onClick={handleClick}>
+                        Submit
+                      </LoadingButton>
+                    )}
                   </Form>
                 )}
               </Formik>
