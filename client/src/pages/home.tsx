@@ -20,8 +20,6 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
-  console.log(data);
-
   return (
     <Stack spacing={5}>
       <CompanyInputForm onFileUpload={setFile} />
