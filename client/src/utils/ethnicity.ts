@@ -1,12 +1,12 @@
 export enum Ethnicity {
-  Hispanic = 'Hispanic',
-  White = 'White',
-  Black = 'Black',
-  Hawaiian = 'Hawaiian',
-  Asian = 'Asian',
-  NativeAmerican = 'Native American',
-  TwoOrMore = 'Two or more',
-  Unreported = 'Unreported'
+  Hispanic = 'hispanic',
+  White = 'white',
+  Black = 'black',
+  Hawaiian = 'hawaiian',
+  Asian = 'asian',
+  NativeAmerican = 'nativeAmerican',
+  TwoOrMore = 'twoOrMore',
+  Unreported = 'unreported'
 }
 
 export const EthnicityDisplayNames: Record<Ethnicity, string> = {

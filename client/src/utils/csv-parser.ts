@@ -33,16 +33,16 @@ export const readCsv = async (file: CustomFile): Promise<DataFormat> => {
 };
 
 const positionRowMap: Record<Positions, number> = {
-  [Positions.Executive]: 6,
-  [Positions.Manager]: 7,
-  [Positions.Professional]: 8,
-  [Positions.Technician]: 9,
-  [Positions.Sales]: 10,
-  [Positions.Administrative]: 11,
-  [Positions.Craft]: 12,
-  [Positions.Operative]: 13,
-  [Positions.Laborer]: 14,
-  [Positions.Service]: 15
+  [Positions.Executive]: 7,
+  [Positions.Manager]: 8,
+  [Positions.Professional]: 9,
+  [Positions.Technician]: 10,
+  [Positions.Sales]: 11,
+  [Positions.Administrative]: 12,
+  [Positions.Craft]: 13,
+  [Positions.Operative]: 14,
+  [Positions.Laborer]: 15,
+  [Positions.Service]: 16
 };
 
 const columnRowMap: Record<Ethnicity, Record<Gender, string>> = {

@@ -1,7 +1,7 @@
 export enum Gender {
-  Male = 'Male',
-  Female = 'Female',
-  NonBinary = 'Non-binary'
+  Male = 'M',
+  Female = 'F',
+  NonBinary = 'NB'
 }
 
 export const GenderDisplayNames: Record<Gender, string> = {
