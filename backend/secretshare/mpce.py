@@ -7,9 +7,10 @@ import json
 import configparser
 import redis
 import pymongo
+from collections import defaultdict
 
 from utils.primality import is_prime_miller_rabin
-from mpc.secretshare import SecretShare
+from mpc.shamir import SecretShare
 
 class MPCEngine(object):
     def __init__(self, protocol: str = 'shamirs', prime: int = 180252380737439):
@@ -54,29 +55,41 @@ class MPCEngine(object):
 
     def add_participant(self, session_id: str, participant: str) -> None:
         session_data = self.get_session(session_id)
+        
         if not session_data:
             raise ValueError("Invalid session ID")
 
         session_data['participants'].append(participant)
         self.save_session(session_id, session_data)
+        
+        
+    """
+    Recursively updates the nested dictionary d1 with the contents of the nested dictionary d2.
+    If a key exists in both dictionaries and the values are dictionaries, the function is called recursively.
+    If a key exists in both dictionaries and the values are lists, the lists in d1 are extended with the elements of the lists in d2.
+    Otherwise, the value in d1 is replaced with the value in d2.
+    """
+    def merge_nested_dict(self, d1: dict, d2: dict) -> dict:
+        for key, value in d2.items():
+            if key in d1 and isinstance(value, dict) and isinstance(d1[key], dict):
+                self.merge_nested_dict(d1[key], value)
+            elif key in d1 and isinstance(value, list) and isinstance(d1[key], list):
+                d1[key].extend(value)
+            else:
+                d1[key] = value
+        return d1
 
 
-    def update_session_data(self, session_id: str, participant: str, share: Tuple[int, int]) -> None:
+    def update_session_data(self, session_id: str, participant_data: dict, share: Tuple[int, int]) -> None:
         session_data = self.get_session(session_id)
+
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        if 'shares' not in session_data:
-            session_data['shares'] = {}
-
-        if participant not in session_data['shares']:
-            session_data['shares'][participant] = share
-        else:
-            existing_share = session_data['shares'][participant]
-            updated_share = self.secret_share.shamir_add([existing_share], [share])[0]
-            session_data['shares'][participant] = updated_share
+        session_data = self.merge_nested_dict(session_data, participant_data)
 
         self.save_session(session_id, session_data)
+
 
 
     def end_session(self, session_id: str) -> None:
