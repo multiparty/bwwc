@@ -1,4 +1,4 @@
-"""backend URL Configuration
+'''backend URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -12,7 +12,8 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+'''
+
 import sys
 sys.path.append('../secretshare')
 
@@ -31,78 +32,78 @@ engine = MPCEngine()
 
 @csrf_exempt
 def start_session(req: HttpRequest) -> HttpResponse:
-    if req.method == "POST":
+    if req.method == 'POST':
         session_id = engine.create_session()
-        return JsonResponse({"session_id": session_id})
+        return JsonResponse({'session_id': session_id})
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return HttpResponseBadRequest('Invalid request method')
 
 @csrf_exempt
 def end_session(req: HttpRequest) -> HttpResponse:
-    if req.method == "POST":
+    if req.method == 'POST':
         try:
             data = json.loads(req.body)
-            session_id = data["session_id"]
+            session_id = data['session_id']
         except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
+            return HttpResponseBadRequest('Invalid request body')
 
         engine.end_session(session_id)
-        return JsonResponse({"message": f"Session {session_id} ended"})
+        return JsonResponse({'message': f'Session {session_id} ended'})
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return HttpResponseBadRequest('Invalid request method')
 
 @csrf_exempt
 def generate_urls(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            session_id = data["session_id"]
-            participant_count = data["participant_count"]
+            session_id = data['session_id']
+            participant_count = data['participant_count']
         except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
+            return HttpResponseBadRequest('Invalid request body')
 
         participant_urls = engine.generate_participant_urls(session_id, participant_count)
 
         return JsonResponse(participant_urls)
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return HttpResponseBadRequest('Invalid request method')
 
 
 @csrf_exempt
 def reveal(req: HttpRequest) -> HttpResponse:
-    if req.method == "POST":
+    if req.method == 'POST':
         try:
             data = json.loads(req.body)
-            session_id = data["session_id"]
+            session_id = data['session_id']
         except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
+            return HttpResponseBadRequest('Invalid request body')
 
         result = engine.reveal(session_id)  # Implement your logic to reveal the result of the computation
-        return JsonResponse({"result": result})
+        return JsonResponse({'result': result})
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return HttpResponseBadRequest('Invalid request method')
 
 
 @csrf_exempt
 def submit_data(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            session_id = data["session_id"]
-            participant = data["participant"]
-            share = data["share"]
+            session_id = data['session_id']
+            participant = data['participant']
+            share = data['shares']
         except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
+            return HttpResponseBadRequest('Invalid request body')
 
         if not engine.session_exists(session_id):
-            return HttpResponseBadRequest("Invalid session ID")
+            return HttpResponseBadRequest('Invalid session ID')
 
         engine.add_participant(session_id, participant)
         engine.update_session_data(session_id, participant, share)
         
-        return JsonResponse({"message": f"Data submitted by {participant}"})
+        return JsonResponse({'message': f'Data submitted by {participant}'})
     else:
-        return HttpResponseBadRequest("Invalid request method")
+        return HttpResponseBadRequest('Invalid request method')
 
 urlpatterns = [
     path('admin/', admin.site.urls),\

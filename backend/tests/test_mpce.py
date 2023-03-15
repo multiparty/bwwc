@@ -2,8 +2,19 @@ import sys
 sys.path.append('../secretshare')
 
 import re
+import pytest
+import redis
 
 from mpce import MPCEngine
+
+
+@pytest.fixture(autouse=True)
+def clear_redis():
+    # Connect to your Redis server
+    r = redis.Redis(host='localhost', port=6379, db=0)
+
+    # Flush the currently selected Redis database (db=0 in this case)
+    r.flushdb()
 
     
 def test_create_session():
@@ -23,22 +34,27 @@ def test_add_participant():
 def test_update_session_data():
     engine = MPCEngine()
     session_id = engine.create_session()
-    participant_data = {
-        'participant': 'Alice',
+    participant = 'Alice'
+    shares = {
         'shares': {
-            'industry': {
-                'profession': {
-                    'ethnicity': {
-                        'gender': {
-                            456
-                        }
+            'industry1': {
+                'profession1': {
+                    'ethnicity1': {
+                        'gender1':  123
+                    }
+                }
+            },
+            'industry2': {
+                'profession2': {
+                    'ethnicity2': {
+                        'gender2':  456
                     }
                 }
             }
         }
     }
-    participant = participant_data['participant']
-    engine.update_session_data(session_id, participant_data)
+
+    engine.update_session_data(session_id, participant, shares)
     
     session_data = engine.get_session(session_id)
     assert session_data['shares'][participant] == share
@@ -47,8 +63,7 @@ def test_update_session_data():
 def test_end_session():
     engine = MPCEngine()
     session_id = engine.create_session()
-    engine.add_participant(session_id, 'Alice')
-    engine.update_session_data(session_id, {'result': 42})
+    engine.update_session_data(session_id, 'Alice', {'result': 42})
     engine.end_session(session_id)
     session_data = engine.get_session(session_id)
     assert session_data is None

@@ -7,7 +7,7 @@ import json
 import configparser
 import redis
 import pymongo
-import datetime
+from datetime import datetime
 from collections import defaultdict
 
 from utils.primality import is_prime_miller_rabin
