@@ -1,6 +1,6 @@
 import sys
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 sys.path.append('../cryptography')
 
 import json
@@ -9,6 +9,7 @@ import redis
 import pymongo
 
 from utils.primality import is_prime_miller_rabin
+from mpc.secretshare import SecretShare
 
 class MPCEngine(object):
     def __init__(self, protocol: str = 'shamirs', prime: int = 180252380737439):
@@ -16,7 +17,9 @@ class MPCEngine(object):
         parser.read('../config/dev.ini')
         
         self.base_url = parser.get('DEFAULT', 'BASE_URL')
+        self.threshold = parser.get('DEFAULT', 'THRESHOLD')
         self.protocol = protocol
+        self.secret_share = SecretShare(self.threshold, prime)
 
         self.prime = prime
         config_prime = parser.getint('DEFAULT', 'PRIME')
@@ -39,6 +42,7 @@ class MPCEngine(object):
         session_data = {
             'session_id': session_id,
             'participants': [],
+            'added_shares': None,
             'shares': {},
             'protocol': self.protocol,
             'prime': self.prime,
@@ -57,12 +61,21 @@ class MPCEngine(object):
         self.save_session(session_id, session_data)
 
 
-    def update_session_data(self, session_id: str, data: Dict[str, Any]) -> None:
+    def update_session_data(self, session_id: str, participant: str, share: Tuple[int, int]) -> None:
         session_data = self.get_session(session_id)
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        session_data['shares'].update(data)
+        if 'shares' not in session_data:
+            session_data['shares'] = {}
+
+        if participant not in session_data['shares']:
+            session_data['shares'][participant] = share
+        else:
+            existing_share = session_data['shares'][participant]
+            updated_share = self.secret_share.shamir_add([existing_share], [share])[0]
+            session_data['shares'][participant] = updated_share
+
         self.save_session(session_id, session_data)
 
 
