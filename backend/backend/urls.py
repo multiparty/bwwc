@@ -94,15 +94,12 @@ def submit_data(request: HttpRequest) -> HttpResponse:
         except (json.JSONDecodeError, KeyError):
             return HttpResponseBadRequest("Invalid request body")
 
-        session_data = engine.get_session(session_id)
-        if not session_data:
+        if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
 
-        if participant not in session_data['participants']:
-            engine.add_participant(session_id, participant)
-
-        session_data['shares'][participant] = share
-        engine.update_session_data(session_id, session_data)
+        engine.add_participant(session_id, participant)
+        engine.update_session_data(session_id, participant, share)
+        
         return JsonResponse({"message": f"Data submitted by {participant}"})
     else:
         return HttpResponseBadRequest("Invalid request method")

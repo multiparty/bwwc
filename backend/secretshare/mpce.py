@@ -7,6 +7,7 @@ import json
 import configparser
 import redis
 import pymongo
+import datetime
 from collections import defaultdict
 
 from utils.primality import is_prime_miller_rabin
@@ -51,6 +52,10 @@ class MPCEngine(object):
         
         self.save_session(session_id, session_data)
         return session_id
+    
+
+    def session_exists(self, key):
+        return self.redis_client.exists(key) == 1
 
 
     def add_participant(self, session_id: str, participant: str) -> None:
@@ -59,8 +64,13 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        session_data['participants'].append(participant)
-        self.save_session(session_id, session_data)
+        if participant not in session_data['participants']:
+            submission_time = {
+                'timestamp': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                'participant': participant
+            }
+            session_data['participants'].append(submission_time)
+            self.save_session(session_id, session_data)
         
         
     """
@@ -80,16 +90,15 @@ class MPCEngine(object):
         return d1
 
 
-    def update_session_data(self, session_id: str, participant_data: dict, share: Tuple[int, int]) -> None:
+    def update_session_data(self, session_id: str, participant_id: str, share: dict) -> None:
         session_data = self.get_session(session_id)
 
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        session_data = self.merge_nested_dict(session_data, participant_data)
+        session_data[participant_id] = share
 
         self.save_session(session_id, session_data)
-
 
 
     def end_session(self, session_id: str) -> None:
