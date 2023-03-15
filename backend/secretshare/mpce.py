@@ -14,7 +14,8 @@ class MPCEngine(object):
     def __init__(self, protocol: str = 'shamirs', prime: int = 180252380737439):
         parser = configparser.ConfigParser()
         parser.read('../config/dev.ini')
-
+        
+        self.base_url = parser.get('DEFAULT', 'BASE_URL')
         self.protocol = protocol
 
         self.prime = prime
@@ -85,3 +86,14 @@ class MPCEngine(object):
 
     def get_all_sessions(self) -> List[Dict[str, Any]]:
         return [self.get_session(id) for id in self.redis_client.keys()]
+    
+    
+    def generate_participant_urls(self, session_id: str, participant_count: int) -> Dict[str, str]:
+        participant_urls = {}
+
+        for i in range(participant_count):
+            participant_token = str(uuid.uuid4())
+            participant_url = f"{self.base_url}?session_id={session_id}&participant_token={participant_token}"
+            participant_urls[f"participant_{i + 1}"] = participant_url
+
+        return participant_urls

@@ -1,6 +1,8 @@
 import sys
 sys.path.append('../secretshare')
 
+import re
+
 from mpce import MPCEngine
 
     
@@ -49,3 +51,21 @@ def test_get_all_sessions():
     session_id2 = engine.create_session()
     sessions = engine.get_all_sessions()
     assert len(sessions) >= 2
+
+
+def test_generate_urls():
+    engine = MPCEngine()
+    base_url = engine.base_url
+    session_id = "example-session-id"
+    participant_count = 5
+
+    participant_urls = engine.generate_participant_urls(session_id, participant_count)
+
+    assert len(participant_urls) == participant_count
+
+    url_pattern = re.compile(rf"{re.escape(base_url)}\?session_id={re.escape(session_id)}&participant_token=[0-9a-f-]+")
+
+    for i in range(participant_count):
+        participant_key = f"participant_{i + 1}"
+        assert participant_key in participant_urls
+        assert url_pattern.match(participant_urls[participant_key])
