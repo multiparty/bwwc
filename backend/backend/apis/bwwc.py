@@ -1,14 +1,15 @@
 import os
 import sys
 
-sys.path.append('secretshare')
-
-from django.contrib import admin
-from django.urls import path
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+sys.path.append("secretshare")
 
 import json
+
+from django.contrib import admin
+from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
+                         JsonResponse)
+from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 
 from secretshare.mpce import MPCEngine
 
@@ -126,14 +127,15 @@ def bwwc_submit_data(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"message": f"Data submitted by {participant}"})
     else:
         return HttpResponseBadRequest("Invalid request method")
-    
+
+
 def get_urlpatterns():
-	return [
-		path("admin/", admin.site.urls),
-		path("start_session/", start_session),
-		path("end_session/", end_session),
-		path("generate_urls", generate_urls),
-		path("reveal/", reveal),
-		path("submit_data/", submit_data),
-		path("bwwc/submit_data/", bwwc_submit_data)
-	]
+    return [
+        path("admin/", admin.site.urls),
+        path("start_session/", start_session),
+        path("end_session/", end_session),
+        path("generate_urls", generate_urls),
+        path("reveal/", reveal),
+        path("submit_data/", submit_data),
+        path("bwwc/submit_data/", bwwc_submit_data),
+    ]

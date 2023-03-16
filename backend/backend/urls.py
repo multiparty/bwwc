@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 import sys
+
 sys.path.append("../secretshare")
 
 from backend.apis import bwwc
