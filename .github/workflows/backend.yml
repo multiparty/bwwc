@@ -25,7 +25,8 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install -r backend/requirements.txt
         pip install pytest isort black
     - name: Run pytest
       run: pytest
