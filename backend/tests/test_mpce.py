@@ -1,5 +1,6 @@
 import sys
-sys.path.append('../secretshare')
+
+sys.path.append("../secretshare")
 
 import re
 import pytest
@@ -11,12 +12,12 @@ from mpce import MPCEngine
 @pytest.fixture(autouse=True)
 def clear_redis():
     # Connect to your Redis server
-    r = redis.Redis(host='localhost', port=6379, db=0)
+    r = redis.Redis(host="localhost", port=6379, db=0)
 
     # Flush the currently selected Redis database (db=0 in this case)
     r.flushdb()
 
-    
+
 def test_create_session():
     engine = MPCEngine()
     session_id = engine.create_session()
@@ -26,44 +27,32 @@ def test_create_session():
 def test_add_participant():
     engine = MPCEngine()
     session_id = engine.create_session()
-    engine.add_participant(session_id, 'Alice')
+    engine.add_participant(session_id, "Alice")
     session_data = engine.get_session(session_id)
-    assert 'Alice' in session_data['participants']
+    assert "Alice" in session_data["participants"]
 
 
 def test_update_session_data():
     engine = MPCEngine()
     session_id = engine.create_session()
-    participant_id = 'Alice'
+    participant_id = "Alice"
     shares = {
-        'shares': {
-            'industry1': {
-                'profession1': {
-                    'ethnicity1': {
-                        'gender1':  123
-                    }
-                }
-            },
-            'industry2': {
-                'profession2': {
-                    'ethnicity2': {
-                        'gender2':  456
-                    }
-                }
-            }
+        "shares": {
+            "industry1": {"profession1": {"ethnicity1": {"gender1": 123}}},
+            "industry2": {"profession2": {"ethnicity2": {"gender2": 456}}},
         }
     }
 
     engine.update_session_data(session_id, participant_id, shares)
-    
+
     session_data = engine.get_session(session_id)
-    assert session_data['shares'][participant_id] == shares
+    assert session_data["shares"][participant_id] == shares
 
 
 def test_end_session():
     engine = MPCEngine()
     session_id = engine.create_session()
-    engine.update_session_data(session_id, 'Alice', {'result': 42})
+    engine.update_session_data(session_id, "Alice", {"result": 42})
     engine.end_session(session_id)
     session_data = engine.get_session(session_id)
     assert session_data is None
@@ -94,7 +83,9 @@ def test_generate_urls():
 
     assert len(participant_urls) == participant_count
 
-    url_pattern = re.compile(rf"{re.escape(base_url)}\?session_id={re.escape(session_id)}&participant_token=[0-9a-f-]+")
+    url_pattern = re.compile(
+        rf"{re.escape(base_url)}\?session_id={re.escape(session_id)}&participant_token=[0-9a-f-]+"
+    )
 
     for i in range(participant_count):
         participant_key = f"participant_{i + 1}"

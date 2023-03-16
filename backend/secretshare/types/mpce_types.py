@@ -1,9 +1,11 @@
 from typing import Dict, Tuple, TypedDict
 
+
 class GenderData(TypedDict):
     M: int
     F: int
     NB: int
+
 
 class EthnicityData(TypedDict):
     hispanic: GenderData
@@ -14,6 +16,7 @@ class EthnicityData(TypedDict):
     nativeAmerican: GenderData
     twoOrMore: GenderData
     unreported: GenderData
+
 
 ProfessionData = Dict[str, EthnicityData]
 IndustryData = Dict[str, ProfessionData]

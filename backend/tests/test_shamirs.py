@@ -1,5 +1,6 @@
 import sys
-sys.path.append('../cryptography/mpc')
+
+sys.path.append("../cryptography/mpc")
 
 import pytest
 from shamir import SecretShare
