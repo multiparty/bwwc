@@ -1,10 +1,10 @@
+import os
 import sys
 import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
 sys.path.append("../cryptography")
 
-import configparser
 import json
 from collections import defaultdict
 from datetime import datetime
@@ -13,20 +13,27 @@ import pymongo
 import redis
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
+from dotenv import load_dotenv
 
 
 class MPCEngine(object):
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
-        parser = configparser.ConfigParser()
-        parser.read("../config/dev.ini")
+        # Default to 'dev' if not specified
+        DJANGO_ENV = os.environ.get('DJANGO_ENV', 'dev')
 
-        self.base_url = parser.get("DEFAULT", "BASE_URL")
-        self.threshold = parser.get("DEFAULT", "THRESHOLD")
+        if DJANGO_ENV == 'prod':
+            load_dotenv('.env.prod')
+        else:
+            load_dotenv('.env.dev')
+
+
+        self.base_url = os.environ.get('BASE_URL')
+        self.threshold = os.environ.get('THRESHOLD')
         self.protocol = protocol
         self.secret_share = SecretShare(self.threshold, prime)
 
         self.prime = prime
-        config_prime = parser.getint("DEFAULT", "PRIME")
+        config_prime = int(os.environ.get('PRIME', prime))
         if config_prime and is_prime_miller_rabin(config_prime):
             self.prime = config_prime
 
