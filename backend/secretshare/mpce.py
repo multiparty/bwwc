@@ -43,7 +43,7 @@ class MPCEngine(object):
         session_id = str(uuid.uuid4())
         session_data = {
             'session_id': session_id,
-            'participants': [],
+            'participants': {},
             'added_shares': None,
             'shares': {},
             'protocol': self.protocol,
@@ -65,11 +65,10 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         if participant not in session_data['participants']:
-            submission_time = {
+            metadata = {
                 'timestamp': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                'participant': participant
             }
-            session_data['participants'].append(submission_time)
+            session_data['participants'][participant] = metadata
             self.save_session(session_id, session_data)
         
         
