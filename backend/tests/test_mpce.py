@@ -34,7 +34,7 @@ def test_add_participant():
 def test_update_session_data():
     engine = MPCEngine()
     session_id = engine.create_session()
-    participant = 'Alice'
+    participant_id = 'Alice'
     shares = {
         'shares': {
             'industry1': {
@@ -54,10 +54,10 @@ def test_update_session_data():
         }
     }
 
-    engine.update_session_data(session_id, participant, shares)
+    engine.update_session_data(session_id, participant_id, shares)
     
     session_data = engine.get_session(session_id)
-    assert session_data['shares'][participant] == share
+    assert session_data['shares'][participant_id] == shares
 
 
 def test_end_session():

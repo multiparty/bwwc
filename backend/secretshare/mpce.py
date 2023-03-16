@@ -95,7 +95,7 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        session_data[participant_id] = share
+        session_data['shares'][participant_id] = share
 
         self.save_session(session_id, session_data)
 
