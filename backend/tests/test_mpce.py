@@ -3,9 +3,9 @@ import sys
 sys.path.append("../secretshare")
 
 import re
+
 import pytest
 import redis
-
 from mpce import MPCEngine
 
 

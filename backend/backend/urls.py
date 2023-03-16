@@ -19,15 +19,17 @@ import sys
 sys.path.append("../secretshare")
 
 from django.contrib import admin
+from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
+                         JsonResponse)
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseBadRequest
 from pymongo import MongoClient
 
 mgo_client = MongoClient("localhost", port=27017)
 database = mgo_client.db
 
 import json
+
 from mpce import MPCEngine
 
 engine = MPCEngine()

@@ -1,6 +1,6 @@
 import random
-from math import ceil
 from decimal import Decimal
+from math import ceil
 from typing import List, Tuple
 
 
