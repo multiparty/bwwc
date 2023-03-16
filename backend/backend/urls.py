@@ -19,8 +19,7 @@ import sys
 sys.path.append("../secretshare")
 
 from django.contrib import admin
-from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
-                         JsonResponse)
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from pymongo import MongoClient
@@ -38,7 +37,16 @@ engine = MPCEngine()
 @csrf_exempt
 def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        session_id = engine.create_session()
+        # Extract public_key and auth_token from request data
+        public_key = req.POST.get("public_key")
+        auth_token = req.POST.get("auth_token")
+
+        if not public_key or not auth_token:
+            return HttpResponseBadRequest("Missing public_key or auth_token")
+
+        # Pass the public_key and auth_token to the engine.create_session() method
+        session_id = engine.create_session(public_key, auth_token)
+
         return JsonResponse({"session_id": session_id})
     else:
         return HttpResponseBadRequest("Invalid request method")
