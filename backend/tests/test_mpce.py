@@ -1,14 +1,10 @@
-import sys
-
-sys.path.append("../secretshare")
-
 import os
 import re
 
 import dotenv
 import pytest
 import redis
-from mpce import MPCEngine
+from secretshare.mpce import MPCEngine
 
 engine = MPCEngine()
 sample_public_key = "sample_public_key"
