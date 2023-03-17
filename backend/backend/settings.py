@@ -22,7 +22,7 @@ current_directory_path = os.path.dirname(os.path.abspath(__file__))
 if DJANGO_ENV == "prod":
     load_dotenv(os.path.join(current_directory_path, "../env/.env.prod"))
 else:
-     load_dotenv(os.path.join(current_directory_path, "../env/.env.dev"))
+    load_dotenv(os.path.join(current_directory_path, "../env/.env.dev"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

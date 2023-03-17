@@ -10,10 +10,9 @@ engine = MPCEngine()
 sample_public_key = "sample_public_key"
 sample_auth_token = "sample_auth_token"
 
-dotenv_path = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "env", ".env.dev"
-)
-dotenv.load_dotenv(dotenv_path)
+current_directory_path = os.path.dirname(os.path.abspath(__file__))
+
+dotenv.load_dotenv(os.path.join(current_directory_path, "../env/", ".env.dev"))
 print("BASE_URL:", os.environ.get("BASE_URL"))
 
 

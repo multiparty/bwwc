@@ -21,10 +21,12 @@ class MPCEngine(object):
         # Default to 'dev' if not specified
         DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
 
+        current_directory_path = os.path.dirname(os.path.abspath(__file__))
+
         if DJANGO_ENV == "prod":
-            load_dotenv(".env.prod")
+            load_dotenv(os.path.join(current_directory_path, "../env/.env.prod"))
         else:
-            load_dotenv(".env.dev")
+            load_dotenv(os.path.join(current_directory_path, "../env/.env.dev"))
 
         self.base_url = os.environ.get("BASE_URL")
         self.threshold = os.environ.get("THRESHOLD")
