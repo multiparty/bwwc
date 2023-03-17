@@ -23,7 +23,7 @@ def start_session(req: HttpRequest) -> HttpResponse:
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        session_id = engine.create_session(public_key, auth_token)
+        session_id = engine.create_session(auth_token, public_key)
 
         return JsonResponse({"session_id": session_id})
     else:
@@ -39,7 +39,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        engine.end_session(session_id, auth_token)
+        engine.end_session(session_id)
         return JsonResponse({"message": f"Session {session_id} ended"})
     else:
         return HttpResponseBadRequest("Invalid request method")
@@ -56,7 +56,7 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest("Invalid request body")
 
         participant_urls = engine.generate_participant_urls(
-            auth_token, session_id, participant_count
+            session_id, participant_count
         )
 
         return JsonResponse(participant_urls)
@@ -73,7 +73,7 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
         if not auth_token or not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
-        result = engine.get_encrypted_shares(auth_token, session_id)
+        result = engine.get_encrypted_shares(session_id)
         return JsonResponse({"result": result})
     else:
         return HttpResponseBadRequest("Invalid request method")
