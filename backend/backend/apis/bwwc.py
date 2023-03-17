@@ -5,7 +5,6 @@ sys.path.append("secretshare")
 
 import json
 
-from django.contrib import admin
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
@@ -21,6 +20,8 @@ def start_session(req: HttpRequest) -> HttpResponse:
         # Extract public_key and auth_token from request data
         public_key = req.POST.get("public_key")
         auth_token = req.POST.get("auth_token")
+
+        print(req.POST)
 
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Missing public_key or auth_token")
@@ -106,35 +107,12 @@ def submit_data(request: HttpRequest) -> HttpResponse:
         return HttpResponseBadRequest("Invalid request method")
 
 
-@csrf_exempt
-def bwwc_submit_data(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            session_id = data["session_id"]
-            participant = data["participant"]
-            share = data["shares"]
-        except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
-
-        if not engine.session_exists(session_id):
-            return HttpResponseBadRequest("Invalid session ID")
-
-        engine.add_participant(session_id, participant)
-        engine.update_session_data(session_id, participant, share)
-
-        return JsonResponse({"message": f"Data submitted by {participant}"})
-    else:
-        return HttpResponseBadRequest("Invalid request method")
-
-
 def get_urlpatterns():
     return [
-        path("admin/", admin.site.urls),
-        path("start_session/", start_session),
-        path("end_session/", end_session),
-        path("generate_urls", generate_urls),
-        path("reveal/", reveal),
-        path("submit_data/", submit_data),
-        path("bwwc/submit_data/", bwwc_submit_data),
+        path("api/bwwc/start_session/", start_session),
+        path("api/bwwc/end_session/", end_session),
+        path("api/bwwc/generate_urls", generate_urls),
+        path("api/bwwc/reveal/", reveal),
+        path("api/bwwc/submit_data/", submit_data),
+        path("api/bwwc/submit_data/", submit_data),
     ]
