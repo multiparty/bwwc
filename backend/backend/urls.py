@@ -14,11 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-import sys
-
-sys.path.append("../secretshare")
+from django.urls import path
+from django.contrib import admin
 
 from backend.apis import bwwc
 
-urlpatterns = []
+urlpatterns = [path("admin/", admin.site.urls)]
 urlpatterns.extend(bwwc.get_urlpatterns())
