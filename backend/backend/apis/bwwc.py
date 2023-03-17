@@ -6,8 +6,7 @@ sys.path.append("secretshare")
 import json
 
 from django.contrib import admin
-from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
-                         JsonResponse)
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
