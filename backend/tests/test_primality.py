@@ -1,8 +1,4 @@
-import sys
-
-sys.path.append("../cryptography/utils")
-
-from primality import is_prime_miller_rabin
+from cryptography.utils.primality import is_prime_miller_rabin
 
 
 def test_negative_numbers():

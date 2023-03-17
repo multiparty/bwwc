@@ -1,9 +1,5 @@
-import sys
-
-sys.path.append("../cryptography/mpc")
-
 import pytest
-from shamir import SecretShare
+from cryptography.mpc.shamir import SecretShare
 
 
 @pytest.fixture
