@@ -42,7 +42,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
           <Divider />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Formik validationSchema={validationSchema} initialValues={initialValues}>
+              <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
                 <Form>
                   <Stack spacing={2}>
                     <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" />
