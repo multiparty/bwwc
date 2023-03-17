@@ -21,8 +21,6 @@ def start_session(req: HttpRequest) -> HttpResponse:
         public_key = req.POST.get("public_key")
         auth_token = req.POST.get("auth_token")
 
-        print(req.POST)
-
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Missing public_key or auth_token")
 
@@ -50,10 +48,10 @@ def end_session(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def generate_urls(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+def generate_urls(req: HttpRequest) -> HttpResponse:
+    if req.method == "POST":
         try:
-            data = json.loads(request.body)
+            data = json.loads(req.body)
             session_id = data["session_id"]
             participant_count = data["participant_count"]
         except (json.JSONDecodeError, KeyError):
@@ -86,10 +84,10 @@ def reveal(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def submit_data(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+def submit_data(req: HttpRequest) -> HttpResponse:
+    if req.method == "POST":
         try:
-            data = json.loads(request.body)
+            data = json.loads(req.body)
             session_id = data["session_id"]
             participant = data["participant"]
             share = data["shares"]
@@ -113,6 +111,5 @@ def get_urlpatterns():
         path("api/bwwc/end_session/", end_session),
         path("api/bwwc/generate_urls", generate_urls),
         path("api/bwwc/reveal/", reveal),
-        path("api/bwwc/submit_data/", submit_data),
-        path("api/bwwc/submit_data/", submit_data),
+        path("api/bwwc/submit_data/", submit_data)
     ]
