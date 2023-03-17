@@ -30,11 +30,14 @@ jobs:
       run: ls -la
     - name: Install dependencies
       run: |
+        cd backend
         pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest isort black
     - name: Run pytest
-      run: pytest
+      run: |
+        cd backend
+        pytest
     - name: Check isort
       run: isort --check-only .
     - name: Check black
