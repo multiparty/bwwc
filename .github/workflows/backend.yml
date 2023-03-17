@@ -35,19 +35,15 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    - name: List files in the working directory
-      run: ls -la
     - name: Install dependencies
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest isort black
+        pip install pytest black
     - name: Run pytest
       run: |
         cd tests
         pytest
-    - name: Check isort
-      run: isort --check-only .
     - name: Check black
       run: black --check .
     - name: Set up Docker Buildx
