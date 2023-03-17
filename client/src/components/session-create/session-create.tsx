@@ -39,7 +39,6 @@ export const SessionCreateForm: FC = (props) => {
                 validationSchema={validationSchema}
                 initialValues={initialValues}
                 onSubmit={(values, { setSubmitting }) => {
-                  console.log(values);
                   setSubmitting(false);
                 }}
                 validateOnMount={true}

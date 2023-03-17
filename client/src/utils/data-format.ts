@@ -64,6 +64,5 @@ export function convertToRows(data?: TableData): TableRow[] {
     }
     rows.push(row);
   }
-  console.log(rows);
   return rows;
 }
