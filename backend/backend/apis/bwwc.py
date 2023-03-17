@@ -17,12 +17,11 @@ engine = MPCEngine()
 @csrf_exempt
 def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        # Extract public_key and auth_token from request data
         public_key = req.POST.get("public_key")
         auth_token = req.POST.get("auth_token")
 
         if not public_key or not auth_token:
-            return HttpResponseBadRequest("Missing public_key or auth_token")
+            return HttpResponseBadRequest("Invalid request body")
 
         # Pass the public_key and auth_token to the engine.create_session() method
         session_id = engine.create_session(public_key, auth_token)
@@ -35,13 +34,13 @@ def start_session(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def end_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-        except (json.JSONDecodeError, KeyError):
-            return HttpResponseBadRequest("Invalid request body")
+        session_id = req.POST.get("session_id")
+        auth_token = req.POST.get("auth_token")
 
-        engine.end_session(session_id)
+        if not auth_token:
+            return HttpResponseBadRequest("Invalid request body")
+        
+        engine.end_session(session_id, auth_token)
         return JsonResponse({"message": f"Session {session_id} ended"})
     else:
         return HttpResponseBadRequest("Invalid request method")
@@ -72,6 +71,7 @@ def reveal(req: HttpRequest) -> HttpResponse:
         try:
             data = json.loads(req.body)
             session_id = data["session_id"]
+            auth_token = data["auth_token"]
         except (json.JSONDecodeError, KeyError):
             return HttpResponseBadRequest("Invalid request body")
 
@@ -111,5 +111,5 @@ def get_urlpatterns():
         path("api/bwwc/end_session/", end_session),
         path("api/bwwc/generate_urls", generate_urls),
         path("api/bwwc/reveal/", reveal),
-        path("api/bwwc/submit_data/", submit_data)
+        path("api/bwwc/submit_data/", submit_data),
     ]

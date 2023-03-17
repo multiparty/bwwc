@@ -108,7 +108,7 @@ class MPCEngine(object):
 
         self.save_session(session_id, session_data)
 
-    def end_session(self, session_id: str) -> None:
+    def end_session(self, session_id: str, auth_token: str) -> None:
         session_data = self.get_session(session_id)
         if not session_data:
             raise ValueError("Invalid session ID")
