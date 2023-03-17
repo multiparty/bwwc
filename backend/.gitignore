@@ -4,9 +4,6 @@ __pycache__/
 
 # Local development settings
 *.sqlite3
-/env/*.*
-!/env/.env.dev
-!/env/.env.example
 
 # Static files
 /staticfiles/
@@ -15,8 +12,10 @@ __pycache__/
 # Dependency directories
 venv/
 venv2/
-env/
-ENV/
+ENV//*.*
+/env/*.*
+!/env/.env.dev
+!/env/.env.example
 
 # Compiled files
 *.pyc
