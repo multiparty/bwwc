@@ -50,7 +50,7 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         auth_token = req.POST.get("auth_token")
         session_id = req.POST.get("session_id")
-        participant_count = req.POST.get("participant_count")
+        participant_count = int(req.POST.get("participant_count"), 0)
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -105,7 +105,7 @@ def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
         path("api/bwwc/end_session/", end_session),
-        path("api/bwwc/get_submission_urls", get_submission_urls),
+        path("api/bwwc/get_submission_urls/", get_submission_urls),
         path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
         path("api/bwwc/submit_data/", submit_data),
     ]
