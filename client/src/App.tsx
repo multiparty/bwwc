@@ -12,9 +12,9 @@ function App() {
       <Layout>
         <Router>
           <Routes>
-            <Route path={Paths.HOME} element={<HomePage />} />
-            <Route path={Paths.CREATE} element={<CreatePage />} />
-            <Route path={Paths.MANAGE} element={<ManagePage />} />
+            <Route path='/' element={<HomePage />} />
+            <Route path='/create' element={<CreatePage />} />
+            <Route path='/manage' element={<ManagePage />} />
           </Routes>
         </Router>
       </Layout>
