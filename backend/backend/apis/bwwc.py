@@ -46,7 +46,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def generate_urls(req: HttpRequest) -> HttpResponse:
+def get_submission_urls(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         auth_token = req.POST.get("auth_token")
         session_id = req.POST.get("session_id")
@@ -82,12 +82,12 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def submit_data(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-            participant = data["participant"]
-            share = data["shares"]
-        except (json.JSONDecodeError, KeyError):
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+        participant = req.POST.get("participant")
+        share = req.POST.get("share")
+
+        if not auth_token or not session_id or not participant:
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
@@ -105,7 +105,7 @@ def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
         path("api/bwwc/end_session/", end_session),
-        path("api/bwwc/generate_urls", generate_urls),
+        path("api/bwwc/get_submission_urls", get_submission_urls),
         path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
         path("api/bwwc/submit_data/", submit_data),
     ]

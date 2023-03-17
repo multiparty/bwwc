@@ -139,10 +139,6 @@ class MPCEngine(object):
 
         return participant_urls
 
-    """
-    Retrieve encrypted shares from redis for the analyst given the session_id
-    """
-
     def get_encrypted_shares(self, auth_token: str, session_id: str) -> dict:
         session_data = self.get_session(session_id)
 
