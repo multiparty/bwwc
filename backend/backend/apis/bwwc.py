@@ -23,7 +23,6 @@ def start_session(req: HttpRequest) -> HttpResponse:
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        # Pass the public_key and auth_token to the engine.create_session() method
         session_id = engine.create_session(public_key, auth_token)
 
         return JsonResponse({"session_id": session_id})
@@ -37,9 +36,9 @@ def end_session(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         auth_token = req.POST.get("auth_token")
 
-        if not auth_token:
+        if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
-        
+
         engine.end_session(session_id, auth_token)
         return JsonResponse({"message": f"Session {session_id} ended"})
     else:
@@ -49,15 +48,15 @@ def end_session(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def generate_urls(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-            participant_count = data["participant_count"]
-        except (json.JSONDecodeError, KeyError):
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+        participant_count = req.POST.get("participant_count")
+
+        if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
 
         participant_urls = engine.generate_participant_urls(
-            session_id, participant_count
+            auth_token, session_id, participant_count
         )
 
         return JsonResponse(participant_urls)
@@ -66,18 +65,15 @@ def generate_urls(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def reveal(req: HttpRequest) -> HttpResponse:
+def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-            auth_token = data["auth_token"]
-        except (json.JSONDecodeError, KeyError):
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+
+        if not auth_token or not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
-        result = engine.reveal(
-            session_id
-        )  # Implement your logic to reveal the result of the computation
+        result = engine.get_encrypted_shares(auth_token, session_id)
         return JsonResponse({"result": result})
     else:
         return HttpResponseBadRequest("Invalid request method")
@@ -110,6 +106,6 @@ def get_urlpatterns():
         path("api/bwwc/start_session/", start_session),
         path("api/bwwc/end_session/", end_session),
         path("api/bwwc/generate_urls", generate_urls),
-        path("api/bwwc/reveal/", reveal),
+        path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
         path("api/bwwc/submit_data/", submit_data),
     ]

@@ -128,7 +128,7 @@ class MPCEngine(object):
         return [self.get_session(id) for id in self.redis_client.keys()]
 
     def generate_participant_urls(
-        self, session_id: str, participant_count: int
+        self, auth_token: str, session_id: str, participant_count: int
     ) -> Dict[str, str]:
         participant_urls = {}
 
@@ -138,3 +138,15 @@ class MPCEngine(object):
             participant_urls[f"participant_{i + 1}"] = participant_url
 
         return participant_urls
+
+    """
+    Retrieve encrypted shares from redis for the analyst given the session_id
+    """
+
+    def get_encrypted_shares(self, auth_token: str, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["shares"]
