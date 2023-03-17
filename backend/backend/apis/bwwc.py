@@ -17,17 +17,13 @@ engine = MPCEngine()
 @csrf_exempt
 def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        # Extract public_key and auth_token from request data
         public_key = req.POST.get("public_key")
         auth_token = req.POST.get("auth_token")
 
-        print(req.POST)
-
         if not public_key or not auth_token:
-            return HttpResponseBadRequest("Missing public_key or auth_token")
+            return HttpResponseBadRequest("Invalid request body")
 
-        # Pass the public_key and auth_token to the engine.create_session() method
-        session_id = engine.create_session(public_key, auth_token)
+        session_id = engine.create_session(auth_token, public_key)
 
         return JsonResponse({"session_id": session_id})
     else:
@@ -37,10 +33,10 @@ def start_session(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def end_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-        except (json.JSONDecodeError, KeyError):
+        session_id = req.POST.get("session_id")
+        auth_token = req.POST.get("auth_token")
+
+        if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
         engine.end_session(session_id)
@@ -50,13 +46,13 @@ def end_session(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def generate_urls(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            session_id = data["session_id"]
-            participant_count = data["participant_count"]
-        except (json.JSONDecodeError, KeyError):
+def get_submission_urls(req: HttpRequest) -> HttpResponse:
+    if req.method == "POST":
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+        participant_count = int(req.POST.get("participant_count"), 0)
+
+        if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
 
         participant_urls = engine.generate_participant_urls(
@@ -69,31 +65,29 @@ def generate_urls(request: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def reveal(req: HttpRequest) -> HttpResponse:
+def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        try:
-            data = json.loads(req.body)
-            session_id = data["session_id"]
-        except (json.JSONDecodeError, KeyError):
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+
+        if not auth_token or not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
-        result = engine.reveal(
-            session_id
-        )  # Implement your logic to reveal the result of the computation
+        result = engine.get_encrypted_shares(session_id)
         return JsonResponse({"result": result})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
 
 @csrf_exempt
-def submit_data(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            session_id = data["session_id"]
-            participant = data["participant"]
-            share = data["shares"]
-        except (json.JSONDecodeError, KeyError):
+def submit_data(req: HttpRequest) -> HttpResponse:
+    if req.method == "POST":
+        auth_token = req.POST.get("auth_token")
+        session_id = req.POST.get("session_id")
+        participant = req.POST.get("participant")
+        share = req.POST.get("share")
+
+        if not auth_token or not session_id or not participant:
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
@@ -111,8 +105,7 @@ def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
         path("api/bwwc/end_session/", end_session),
-        path("api/bwwc/generate_urls", generate_urls),
-        path("api/bwwc/reveal/", reveal),
-        path("api/bwwc/submit_data/", submit_data),
+        path("api/bwwc/get_submission_urls/", get_submission_urls),
+        path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
         path("api/bwwc/submit_data/", submit_data),
     ]

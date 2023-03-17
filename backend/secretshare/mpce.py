@@ -47,7 +47,7 @@ class MPCEngine(object):
     def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
         self.redis_client.set(session_id, json.dumps(session_data))
 
-    def create_session(self, public_key: str, auth_token: str) -> str:
+    def create_session(self, auth_token: str, public_key: str) -> str:
         session_id = str(uuid.uuid4())
         session_data = {
             "session_id": session_id,
@@ -138,3 +138,11 @@ class MPCEngine(object):
             participant_urls[f"participant_{i + 1}"] = participant_url
 
         return participant_urls
+
+    def get_encrypted_shares(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["shares"]
