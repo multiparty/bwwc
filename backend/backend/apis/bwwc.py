@@ -40,7 +40,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest("Invalid request body")
 
         engine.end_session(session_id)
-        return JsonResponse({"message": f"Session {session_id} ended"})
+        return JsonResponse({"status": 200})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -96,7 +96,7 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         engine.add_participant(session_id, participant)
         engine.update_session_data(session_id, participant, share)
 
-        return JsonResponse({"message": f"Data submitted by {participant}"})
+        return JsonResponse({"status": 200})
     else:
         return HttpResponseBadRequest("Invalid request method")
 

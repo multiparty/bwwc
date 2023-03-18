@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 import { TextInput } from '@components/forms/text-input';
 import { MultilineTextInput } from '@components/forms/multiline-text-input';
+import { startSession } from '@services/api';
 
 const validationSchema = Yup.object().shape({
   sessionTitle: Yup.string().required('Please input the title for the BWWC 2023 Submission.'),
@@ -22,6 +23,7 @@ export const SessionCreateForm: FC = (props) => {
 
   function handleClick() {
     navigate('/manage');
+    startSession('dummy_auth_token');
   }
 
   return (

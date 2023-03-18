@@ -44,7 +44,7 @@ export const LinkGenerator: FC<GeneratorProps> = ({ started, stopped }) => {
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <Button type="submit" variant="contained" disabled={isSubmitting} style={{ width: '100%' }}>
-                      Generate Link
+                      Generate Links
                     </Button>
                   </Grid>
                 </Grid>
