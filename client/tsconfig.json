@@ -26,6 +26,7 @@
       "@layouts/*": ["layouts/*"],
       "@modules/*": ["modules/*"],
       "@pages/*": ["pages/*"],
+      "@services/*": ["services/*"],
       "@styles/*": ["styles/*"],
       "@theme/*": ["theme/*"],
       "@utils/*": ["utils/*"]
