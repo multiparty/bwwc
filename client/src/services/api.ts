@@ -42,13 +42,10 @@ export async function startSession(auth_token: string): Promise<StartSessionResp
   const { keyPair, publicKey } = await generateKeyPair();
   const publicKeyPem = publicKey.toString().replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
-  const response: AxiosResponse<StartSessionResponse> = await axios.post(
-    `${API_BASE_URL}start_session/`,
-    {
-      auth_token,
-      public_key: keyPair.publicKey, // Replace this with the converted public key
-    }
-  );
+  const response: AxiosResponse<StartSessionResponse> = await axios.post(`${API_BASE_URL}start_session/`, {
+    auth_token,
+    public_key: keyPair.publicKey // Replace this with the converted public key
+  });
   return response.data;
 }
 
