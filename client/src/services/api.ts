@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { generateKeyPairSync } from 'crypto';
+import { generateKeyPair } from '@utils/keypair';
 
 const API_BASE_URL = 'https://localhost:8080/api/bwwc/';
 
@@ -38,21 +38,17 @@ interface SubmitDataResponse {
   };
 }
 
-export async function startSession(authToken: string): Promise<StartSessionResponse> {
-  const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-    modulusLength: 2048,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-  });
-
+export async function startSession(auth_token: string): Promise<StartSessionResponse> {
+  const { keyPair, publicKey } = await generateKeyPair();
   const publicKeyPem = publicKey.toString().replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
-  const requestData = {
-    auth_token: authToken,
-    public_key: publicKeyPem
-  };
-
-  const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`, requestData);
+  const response: AxiosResponse<StartSessionResponse> = await axios.post(
+    `${API_BASE_URL}start_session/`,
+    {
+      auth_token,
+      public_key: keyPair.publicKey, // Replace this with the converted public key
+    }
+  );
   return response.data;
 }
 
