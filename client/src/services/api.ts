@@ -45,11 +45,7 @@ export async function startSession(authToken: string): Promise<StartSessionRespo
     privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
   });
 
-  const publicKeyPem = publicKey
-    .toString()
-    .replace(/\n/g, '')
-    .replace('-----BEGIN PUBLIC KEY-----', '')
-    .replace('-----END PUBLIC KEY-----', '');
+  const publicKeyPem = publicKey.toString().replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
   const requestData = {
     auth_token: authToken,

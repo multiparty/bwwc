@@ -11,9 +11,9 @@ function App() {
       <Layout>
         <Router>
           <Routes>
-            <Route path='/' element={<HomePage />} />
-            <Route path='/create' element={<CreatePage />} />
-            <Route path='/manage' element={<ManagePage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/create" element={<CreatePage />} />
+            <Route path="/manage" element={<ManagePage />} />
           </Routes>
         </Router>
       </Layout>
