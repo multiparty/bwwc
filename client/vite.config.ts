@@ -16,6 +16,7 @@ export default defineConfig({
       '@layouts': path.join(__dirname, 'src/layouts'),
       '@modules': path.join(__dirname, 'src/modules'),
       '@pages': path.join(__dirname, 'src/pages'),
+      '@services': path.join(__dirname, 'src/services'),
       '@styles': path.join(__dirname, 'src/styles'),
       '@theme': path.join(__dirname, 'src/theme'),
       '@utils': path.join(__dirname, 'src/utils')
