@@ -5,6 +5,7 @@ import { CreatePage } from '@pages/create';
 import { ManagePage } from '@pages/manage';
 import { LoginPage } from '@pages/login';
 import { SessionProvider } from '@context/session.context';
+import { SessionGuard } from '@guards/session.guard';
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
+            <Route element={<SessionGuard />}>
+              <Route path="/manage" element={<ManagePage />} />
+            </Route>
             <Route path="/" element={<HomePage />} />
             <Route path="/create" element={<CreatePage />} />
-            <Route path="/manage" element={<ManagePage />} />
             <Route path="/login" element={<LoginPage />} />
           </Routes>
         </Router>

@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 import { TextInput } from '@components/forms/text-input';
 import { MultilineTextInput } from '@components/forms/multiline-text-input';
-import { startSession } from '@services/api';
+import {  } from '@services/api';
 
 const validationSchema = Yup.object().shape({
   sessionTitle: Yup.string().required('Please input the title for the BWWC 2023 Submission.'),
@@ -14,17 +14,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export const SessionCreateForm: FC = (props) => {
-  const [initialValues, setInitialValues] = useState({
-    sessionTitle: null,
-    sessionDescription: null
-  });
-
   const navigate = useNavigate();
-
-  function handleClick() {
-    navigate('/manage');
-    startSession('dummy_auth_token');
-  }
 
   return (
     <Card>
@@ -39,8 +29,12 @@ export const SessionCreateForm: FC = (props) => {
             <Grid item xs={12} md={6} sx={{ textAlign: 'center' }}>
               <Formik
                 validationSchema={validationSchema}
-                initialValues={initialValues}
+                initialValues={{
+                    sessionTitle: '',
+                    sessionDescription: ''
+                }}
                 onSubmit={(values, { setSubmitting }) => {
+
                   setSubmitting(false);
                 }}
                 validateOnMount={true}

@@ -2,13 +2,13 @@ import React, { createContext, FC, useEffect, useState } from 'react';
 
 export interface SessionContextProps {
   publicKey?: string;
-  setPublicKey: (publicKey: string) => void;
+  setPublicKey: (publicKey?: string) => void;
   sessionId?: string;
-  setSessionId: (sessionId: string) => void;
+  setSessionId: (sessionId?: string) => void;
   sessionPassword?: string;
-  setSessionPassword: (sessionPassword: string) => void;
+  setSessionPassword: (sessionPassword?: string) => void;
   participantCode?: string;
-  setParticipantCode: (participantCode: string) => void;
+  setParticipantCode: (participantCode?: string) => void;
 }
 
 export const SessionContext = createContext<SessionContextProps>({} as SessionContextProps);
