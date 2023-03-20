@@ -1,0 +1,39 @@
+# Deployment of the backend and frontend for the staging environment
+# Deployed on webmpc-production Server
+# Deployed at https://training.100talent.org
+version: '3.8'
+services:
+  bwwc-backend:
+    container_name: bwwc-backend-training
+    restart: always
+    image: multiparty/bwwc-backend:latest
+    ports:
+      - 8001:8000
+    depends_on:
+      - bwwc-mongo
+      - bwwc-redis
+    env_file:
+      - ../stack.env
+  bwwc-mongo:
+    container_name: bwwc-mongo-training
+    image: mongo:6.0
+    ports:
+      - 27018:27017
+    volumes:
+      - bwwc_data_training:/data/db
+  bwwc-redis:
+    image: redis:7.0-alpine
+    container_name: bwwc-redis-training
+    ports:
+      - 6380:6379
+  bwwc-frontend:
+    container_name: bwwc-frontend-training
+    restart: always
+    image: multiparty/bwwc-client:latest
+    ports:
+      - 81:80
+    env_file:
+      - ../stack.env
+
+volumes:
+  bwwc_data_training: ~
