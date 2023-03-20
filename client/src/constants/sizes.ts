@@ -2,15 +2,19 @@ import { AutoCompleteOption } from '@components/forms/auto-complete-input';
 
 export const Sizes: AutoCompleteOption[] = [
   {
-    label: 'Small Business (1-50 employees)',
+    label: 'Small (1-49 employees)',
     value: 'small'
   },
   {
-    label: 'Medium Business (51-500 employees)',
+    label: 'Medium (50-199 employees)',
     value: 'medium'
   },
   {
-    label: 'Large Business (501+ employees)',
+    label: 'Medium-Large (200-499 employees)',
+    value: 'mid-large'
+  },
+  {
+    label: 'Large (500+ employees)',
     value: 'large'
   }
 ];

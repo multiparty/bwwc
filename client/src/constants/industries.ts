@@ -2,20 +2,20 @@ import { AutoCompleteOption } from '@components/forms/auto-complete-input';
 
 export const Industries: AutoCompleteOption[] = [
   {
-    label: 'Administrative Services',
-    value: 'administrative'
-  },
-  {
     label: 'Architecture, Engineering, Real Estate',
     value: 'architecture'
+  },
+  {
+    label: 'Construction, Manufacturing, Utilities/Energy, Transportation',
+    value: 'construction'
   },
   {
     label: 'Biotech/Pharmaceuticals',
     value: 'biotech'
   },
   {
-    label: 'Construction, Manufacturing, Utilities/Energy, Transportation',
-    value: 'construction'
+    label: 'Information Technology',
+    value: 'it'
   },
   {
     label: 'Education',
@@ -26,20 +26,16 @@ export const Industries: AutoCompleteOption[] = [
     value: 'financial'
   },
   {
-    label: 'Healthcare',
-    value: 'healthcare'
+    label: 'Hospitality',
+    value: 'hospitality'
   },
   {
-    label: 'Information Technology',
-    value: 'it'
-  },
-  {
-    label: 'Legal Services',
-    value: 'legal'
-  },
-  {
-    label: 'Marketing/Media',
+    label: 'Marketing and Media',
     value: 'marketing'
+  },
+  {
+    label: 'Medical / Healthcare and Wellness',
+    value: 'healthcare'
   },
   {
     label: 'Nonprofit',
