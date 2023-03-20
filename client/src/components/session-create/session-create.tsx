@@ -75,7 +75,7 @@ export const SessionCreateForm: FC = (props) => {
                   label="I have saved the BWWC 2023 Submission ID, and private key in a secure location."
                 />
               </FormGroup>
-              <Button disabled={!checked && !privateKey && !sessionId} variant="contained">
+              <Button disabled={!checked || !privateKey || !sessionId} variant="contained" onClick={() => navigate('/manage')}>
                 Manage Session
               </Button>
             </Stack>

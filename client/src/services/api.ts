@@ -1,6 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { generateKeyPair } from '@utils/keypair';
 
+axios.defaults.headers.post['Content-Type'] = 'multipart/form-date';
+
 const API_BASE_URL = 'https://localhost:8080/api/bwwc/';
 
 // trailing slash is required by backend
@@ -46,11 +48,14 @@ export interface CreateSessionResponse {
 
 export async function startSession(auth_token: string): Promise<CreateSessionResponse> {
   const { publicKey, privateKey } = await generateKeyPair();
-
-  const response: AxiosResponse<StartSessionResponse> = await axios.post(`${API_BASE_URL}start_session/`, {
-    auth_token,
-    public_key: publicKey // Replace this with the converted public key
-  });
+  const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
+  const response: AxiosResponse<StartSessionResponse> = await axios.post(
+    `${API_BASE_URL}start_session/`,
+    convertToFormData({
+      auth_token,
+      public_key: publicKeyPem
+    })
+  );
   return {
     privateKey,
     publicKey,
@@ -77,3 +82,10 @@ export async function submitData(data: any): Promise<SubmitDataResponse> {
   const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`, data);
   return response.data;
 }
+
+const convertToFormData = (data: any): FormData => {
+  return Object.keys(data).reduce((formData, key) => {
+    formData.append(key, data[key]);
+    return formData;
+  }, new FormData());
+};
