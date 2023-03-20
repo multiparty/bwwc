@@ -5,7 +5,7 @@ import { Layout } from '@layouts/layout';
 export const CreatePage: FC = () => {
   return (
     <Layout title="Trusted Party" subtitle="Secure Session Creator">
-        <SessionCreateForm />
+      <SessionCreateForm />
     </Layout>
   );
 };

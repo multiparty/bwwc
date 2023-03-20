@@ -24,8 +24,8 @@ export async function generateKeyPair() {
 
   const publicKeySpki = await crypto.subtle.exportKey('spki', keyPair.publicKey);
   const publicKeyPem = arrayBufferToPem(publicKeySpki);
+  const privateKeyPkcs8 = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+  const privateKeyPem = arrayBufferToPem(privateKeyPkcs8);
 
-  console.log(publicKeyPem.toString());
-
-  return { keyPair, publicKey: publicKeyPem };
+  return { publicKey: publicKeyPem, privateKey: privateKeyPem };
 }
