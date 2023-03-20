@@ -3,16 +3,21 @@ import { AppBar, Box, Hidden, Stack, Toolbar, Typography } from '@mui/material';
 import bwwcLogo from '../assets/bwwc-logo.png';
 import buLogo from '../assets/bu-logo.png';
 
-export const Header: FC = () => {
+export interface HeaderProps {
+  title: string;
+  subtitle: string;
+}
+
+export const Header: FC<HeaderProps> = (props) => {
   return (
-    <AppBar position="fixed" sx={(theme) => ({ backgroundColor: theme.palette.background.paper })}>
+    <AppBar position="static" sx={(theme) => ({ backgroundColor: theme.palette.background.paper })}>
       <Toolbar>
         <Stack sx={{ flexGrow: 1, ml: 5, m: 3 }}>
           <Typography variant="h5" color="black">
-            Boston Women's Workforce Council
+            {props.title}
           </Typography>
           <Typography variant="subtitle1" color="gray">
-            100% Talent Data Submission
+            {props.subtitle}
           </Typography>
         </Stack>
         <Hidden mdDown>
