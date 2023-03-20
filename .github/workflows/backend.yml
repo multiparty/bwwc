@@ -71,3 +71,9 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+    - name: Update Staging Environment
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+      uses: fjogeleit/http-request-action@v1
+      with:
+        method: POST
+        url: ${{ secrets.PORTAINER_WEBHOOK_STAGING }}
