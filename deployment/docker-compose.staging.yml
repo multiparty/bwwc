@@ -10,8 +10,8 @@ services:
     ports:
       - 8000:8000
     depends_on:
-    - mongo
-    - redis
+    - bwwc-mongo
+    - bwwc-redis
     env_file:
     - ../stack.env
   bwwc-mongo:
