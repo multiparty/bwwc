@@ -1,4 +1,4 @@
-function arrayBufferToPem(buffer: ArrayBuffer): string {
+function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
   const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
   const matches = base64.match(/.{1,64}/g);
 
@@ -6,7 +6,7 @@ function arrayBufferToPem(buffer: ArrayBuffer): string {
     throw new Error('Invalid base64 string');
   }
 
-  const pem = `-----BEGIN PUBLIC KEY-----\n${matches.join('\n')}\n-----END PUBLIC KEY-----`;
+  const pem = `-----BEGIN ${publicKey ? 'PUBLIC' : 'PRIVATE'} KEY-----\n${matches.join('\n')}\n-----END ${publicKey ? 'PUBLIC' : 'PRIVATE'} KEY-----`;
   return pem;
 }
 
@@ -25,7 +25,7 @@ export async function generateKeyPair() {
   const publicKeySpki = await crypto.subtle.exportKey('spki', keyPair.publicKey);
   const publicKeyPem = arrayBufferToPem(publicKeySpki);
   const privateKeyPkcs8 = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
-  const privateKeyPem = arrayBufferToPem(privateKeyPkcs8);
+  const privateKeyPem = arrayBufferToPem(privateKeyPkcs8, false);
 
   return { publicKey: publicKeyPem, privateKey: privateKeyPem };
 }

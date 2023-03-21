@@ -5,14 +5,15 @@ import { Footer } from '@components/footer';
 
 export interface LayoutProps extends HeaderProps {
   children: React.ReactNode;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
 }
 
-export const Layout: FC<LayoutProps> = ({ children, ...headerProps }) => {
+export const Layout: FC<LayoutProps> = ({ children, maxWidth, ...headerProps }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Header {...headerProps} />
       <Box sx={{ flexGrow: 1, minHeight: '95vh' }}>
-        <Container maxWidth="xl" sx={{ mt: 5 }}>
+        <Container maxWidth={maxWidth || 'xl'} sx={{ mt: 5 }}>
           {children}
         </Container>
       </Box>

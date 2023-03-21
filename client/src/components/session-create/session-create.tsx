@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, CardContent, Checkbox, Divider, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material';
 import { startSession } from '@services/api';
@@ -12,8 +12,16 @@ export const SessionCreateForm: FC = (props) => {
   const navigate = useNavigate();
   const { sessionId, setSessionId } = useSession();
   const [privateKey, setPrivateKey] = useState<string>('');
+  const [fileUrl, setFileUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
+
+  useEffect(() => {
+    // create key file to download
+    const blob = new Blob([privateKey], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    setFileUrl(url);
+  }, [privateKey]);
 
   const handleClick = async () => {
     setLoading(true);
@@ -58,14 +66,7 @@ export const SessionCreateForm: FC = (props) => {
               </Typography>
               <TextInput disabled fullWidth multiline name="privateKey" label="Private Key" rows={4} />
               <Box>
-                <Button
-                  disabled={!privateKey}
-                  variant="contained"
-                  startIcon={<DownloadTwoTone />}
-                  component="a"
-                  href={`data:${privateKey}`}
-                  download={`${sessionId}-privateKey.pem`}
-                >
+                <Button disabled={!privateKey} variant="contained" startIcon={<DownloadTwoTone />} component="a" href={fileUrl} download={`privateKey-${sessionId}.pem`}>
                   Download Private Key
                 </Button>
               </Box>
