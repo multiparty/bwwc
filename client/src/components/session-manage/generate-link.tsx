@@ -2,6 +2,9 @@ import { FC, useState } from 'react';
 import { Formik, Form } from 'formik';
 import { Grid, Button, Box } from '@mui/material';
 import * as Yup from 'yup';
+import { useAuth } from '@context/auth.context';
+import { useSession } from '@context/session.context';
+import { getSubmissionUrls, GetSubmissionUrlsResponse } from '@services/api';
 import { TextInput } from '@components/forms/text-input';
 
 interface GeneratorProps {
@@ -15,17 +18,21 @@ export const LinkGenerator: FC<GeneratorProps> = ({ started, stopped }) => {
     SubmitterCount: 0
   });
 
+  const { sessionId, setSessionId } = useSession();
+  const { token, decodedToken, initialized } = useAuth();
+
   const validationSchema = Yup.object().shape({
     SubmitterCount: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
-  const handleSubmit = (values: { SubmitterCount: number }, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
+  const handleSubmit = async (values: { SubmitterCount: number }, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     const numSubmitters = values.SubmitterCount;
-    const numExistiing = generatedLinks.length;
     const newLink = [];
 
-    for (var i = 0; i < numSubmitters; i++) {
-      newLink.push(`http://127.0.0.1:5173/session ${i + numExistiing + 1}`);
+    const urls: GetSubmissionUrlsResponse = await getSubmissionUrls(token || '', sessionId || '70f3571f-6b12-42f0-b851-297840f0e183', numSubmitters);
+
+    for (let key in urls) {
+      newLink.push(urls[key]);
     }
     setGeneratedLinks([...generatedLinks, ...newLink]);
     setSubmitting(false);
