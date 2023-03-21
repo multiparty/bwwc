@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Box, Button, Container, Grow, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { ShieldTwoTone } from '@mui/icons-material';
 import { Paths } from '@constants/paths';
+import { useNavigate } from 'react-router-dom';
+import { QuestionMarkTwoTone } from '@mui/icons-material';
 
-export const PermissionRequiredPage: FC = () => {
+export const Page404: FC = () => {
   const navigate = useNavigate();
   return (
     <Grow in>
@@ -19,11 +19,13 @@ export const PermissionRequiredPage: FC = () => {
       >
         <Box sx={{ maxWidth: 480, margin: 'auto', textAlign: 'center' }}>
           <Typography variant="h3" paragraph>
-            Access Denied
+            Sorry, page not found
           </Typography>
-          <Typography sx={{ color: 'text.secondary' }}>The page you are trying to access has restricted access. Please refer to your system administrator.</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>
+            Sorry, we couldn't find the page you’re looking for. Perhaps you’ve mistyped the URL? Be sure to check your spelling.
+          </Typography>
           <Box sx={{ m: 10 }}>
-            <ShieldTwoTone sx={{ fontSize: 300 }} />
+            <QuestionMarkTwoTone sx={{ fontSize: 300 }} />
           </Box>
           <Button size="large" variant="contained" onClick={() => navigate(Paths.HOME, { replace: true })}>
             Go to Home
