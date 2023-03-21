@@ -134,7 +134,7 @@ class MPCEngine(object):
 
         for i in range(participant_count):
             participant_token = str(uuid.uuid4())
-            participant_url = f"{self.base_url}?session_id={session_id}&participant_token={participant_token}"
+            participant_url = f"{self.base_url}?session_id={session_id}&participant_code={participant_token}"
             participant_urls[f"participant_{i + 1}"] = participant_url
 
         return participant_urls
