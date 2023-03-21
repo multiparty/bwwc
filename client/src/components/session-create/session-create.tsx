@@ -25,8 +25,7 @@ export const SessionCreateForm: FC = (props) => {
 
   const handleClick = async () => {
     setLoading(true);
-    const { sessionId, privateKey } = await startSession('dummy_auth_token');
-    setPrivateKey(privateKey);
+    const { sessionId } = await startSession('dummy_auth_token');
     setSessionId(sessionId);
     setLoading(false);
   };
