@@ -3,26 +3,32 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { HomePage } from '@pages/home';
 import { CreatePage } from '@pages/create';
 import { ManagePage } from '@pages/manage';
-import { LoginPage } from '@pages/login';
 import { SessionProvider } from '@context/session.context';
-import { SessionGuard } from '@guards/session.guard';
+import { AdminGuard } from '@guards/admin.guard';
+import { Paths } from '@constants/paths';
+import { AuthProvider } from '@context/auth.context';
+import { AuthCallback } from '@pages/auth-callback';
+import { PermissionRequiredPage } from '@pages/permission-required';
 
 function App() {
   return (
-    <SessionProvider>
-      <ThemeProvider>
-        <Router>
-          <Routes>
-            <Route element={<SessionGuard />}>
-              <Route path="/manage" element={<ManagePage />} />
-            </Route>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/create" element={<CreatePage />} />
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </SessionProvider>
+    <AuthProvider>
+      <SessionProvider>
+        <ThemeProvider>
+          <Router>
+            <Routes>
+              <Route element={<AdminGuard />}>
+                <Route path={Paths.MANAGE} element={<ManagePage />} />
+                <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
+                <Route path={Paths.CREATE} element={<CreatePage />} />
+              </Route>
+              <Route path={Paths.HOME} element={<HomePage />} />
+              <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </SessionProvider>
+    </AuthProvider>
   );
 }
 
