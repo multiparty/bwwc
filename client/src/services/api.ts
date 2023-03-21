@@ -1,9 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { generateKeyPair } from '@utils/keypair';
 
-axios.defaults.headers.post['Content-Type'] = 'multipart/form-date';
-
-const API_BASE_URL = 'https://localhost:8080/api/bwwc/';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/';
 
 // trailing slash is required by backend
 const API_ENDPOINTS = {
