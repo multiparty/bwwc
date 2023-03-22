@@ -2,6 +2,9 @@ import { FC, useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
 import { Grid, Box, Typography, Stack } from '@mui/material';
 import * as Yup from 'yup';
+import { useAuth } from '@context/auth.context';
+import { useSession } from '@context/session.context';
+import { getSubmissionUrls, GetSubmissionUrlsResponse } from '@services/api';
 import { TextInput } from '@components/forms/text-input';
 import { SubmitButton } from '@components/forms/submit-button';
 import { getSubmissionUrls, createNewSubmissionUrls } from '@services/api';
@@ -16,6 +19,9 @@ export const LinkGenerator: FC = () => {
       setExistingLinks(Object.values(urls));
     });
   }, []);
+
+  const { sessionId, setSessionId } = useSession();
+  const { token, decodedToken, initialized } = useAuth();
 
   const validationSchema = Yup.object().shape({
     count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')

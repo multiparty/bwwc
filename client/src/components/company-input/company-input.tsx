@@ -21,9 +21,13 @@ export interface CompanyInputFormProps {
 }
 
 export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const session_id = urlParams.get('session_id') || '';
+  const participant_token = urlParams.get('participant_code') || '';
+
   const [initialValues, setInitialValues] = useState({
-    submissionId: '',
-    participationCode: '',
+    submissionId: session_id,
+    participationCode: participant_token,
     industry: undefined,
     size: undefined
   });

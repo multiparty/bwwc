@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { generateKeyPair } from '@utils/keypair';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/bwwc/';
 
 // trailing slash is required by backend
 const API_ENDPOINTS = {
@@ -48,7 +48,7 @@ export async function startSession(auth_token: string): Promise<CreateSessionRes
   const { publicKey, privateKey } = await generateKeyPair();
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
-    `${API_BASE_URL}start_session/`,
+    `${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`,
     convertToFormData({
       auth_token,
       public_key: publicKeyPem
@@ -83,8 +83,15 @@ export async function createNewSubmissionUrls(sessionId?: string, count: number)
   return response.data;
 }
 
-export async function getSubmissionUrls(): Promise<GetSubmissionUrlsResponse> {
-  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`);
+export async function getSubmissionUrls(auth_token: string, session_id: string, participant_count: number): Promise<GetSubmissionUrlsResponse> {
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`, 
+    convertToFormData({
+      auth_token: auth_token, 
+      session_id: session_id, 
+      participant_count: participant_count
+    })
+  );
   return response.data;
 }
 
