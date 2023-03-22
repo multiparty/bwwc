@@ -26,7 +26,7 @@ interface EndSessionResponse {
   };
 }
 
-interface GetSubmissionUrlsResponse {
+export interface GetSubmissionUrlsResponse {
   [participant: string]: string;
 }
 
@@ -61,8 +61,25 @@ export async function startSession(auth_token: string): Promise<CreateSessionRes
   };
 }
 
-export async function endSession(): Promise<EndSessionResponse> {
-  const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`);
+export async function endSession(sessionId?: string): Promise<EndSessionResponse> {
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`,
+    convertToFormData({
+      session_id: sessionId
+    })
+  );
+  return response.data;
+}
+
+export async function createNewSubmissionUrls(sessionId?: string, count: number): Promise<GetSubmissionUrlsResponse> {
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
+    convertToFormData({
+      session_id: sessionId,
+      participant_count: count,
+      auth_token: 'test'
+    })
+  );
   return response.data;
 }
 
