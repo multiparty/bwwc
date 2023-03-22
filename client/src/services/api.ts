@@ -85,10 +85,10 @@ export async function createNewSubmissionUrls(sessionId?: string, count: number)
 
 export async function getSubmissionUrls(auth_token: string, session_id: string, participant_count: number): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`, 
+    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
-      auth_token: auth_token, 
-      session_id: session_id, 
+      auth_token: auth_token,
+      session_id: session_id,
       participant_count: participant_count
     })
   );
