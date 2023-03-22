@@ -71,7 +71,7 @@ export async function endSession(sessionId?: string): Promise<EndSessionResponse
   return response.data;
 }
 
-export async function createNewSubmissionUrls(sessionId?: string, count: number): Promise<GetSubmissionUrlsResponse> {
+export async function createNewSubmissionUrls(count: number, sessionId?: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
@@ -83,7 +83,7 @@ export async function createNewSubmissionUrls(sessionId?: string, count: number)
   return response.data;
 }
 
-export async function getSubmissionUrls(auth_token: string, session_id: string, participant_count: number): Promise<GetSubmissionUrlsResponse> {
+export async function getSubmissionUrls(participant_count: number, session_id?: string, auth_token?: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({

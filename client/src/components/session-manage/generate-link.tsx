@@ -3,8 +3,6 @@ import { Formik, Form } from 'formik';
 import { Grid, Box, Typography, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { useAuth } from '@context/auth.context';
-import { useSession } from '@context/session.context';
-import { getSubmissionUrls, GetSubmissionUrlsResponse } from '@services/api';
 import { TextInput } from '@components/forms/text-input';
 import { SubmitButton } from '@components/forms/submit-button';
 import { getSubmissionUrls, createNewSubmissionUrls } from '@services/api';
@@ -12,16 +10,14 @@ import { useSession } from '@context/session.context';
 
 export const LinkGenerator: FC = () => {
   const { sessionId } = useSession();
+  const { token, decodedToken, initialized } = useAuth();
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
   useEffect(() => {
-    getSubmissionUrls().then((urls) => {
+    getSubmissionUrls(0, sessionId, token).then((urls) => {
       setExistingLinks(Object.values(urls));
     });
   }, []);
-
-  const { sessionId, setSessionId } = useSession();
-  const { token, decodedToken, initialized } = useAuth();
 
   const validationSchema = Yup.object().shape({
     count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
@@ -29,7 +25,7 @@ export const LinkGenerator: FC = () => {
 
   const handleSubmit = (values: { count: number }) => {
     const numSubmitters = values.count;
-    createNewSubmissionUrls(sessionId, numSubmitters).then((urls) => {
+    createNewSubmissionUrls(numSubmitters, sessionId).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
   };
