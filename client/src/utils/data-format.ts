@@ -10,9 +10,13 @@ export type TableData = {
   };
 };
 
+type AllEmployees = {
+  all: number;
+};
+
 export type TotalEmployees = {
   [key in Gender]: number;
-};
+} & AllEmployees;
 
 export interface DataFormat {
   numberOfEmployees: TableData;

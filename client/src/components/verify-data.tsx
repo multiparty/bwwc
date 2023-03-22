@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { DataFormat } from '@utils/data-format';
 import { Box, Card, CardContent, Checkbox, Divider, FormControlLabel, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { TotalEmployeeCheck } from '@components/total-employee-check';
 
 export interface VerifyDataProps {
   data: DataFormat;
@@ -20,6 +21,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
             <Divider />
           </Stack>
           <Typography variant="subtitle1">Totals Check</Typography>
+          <TotalEmployeeCheck data={data?.totalEmployees} />
           <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />} label="I verified all data is correct." />
           <LoadingButton variant="contained">Submit</LoadingButton>
         </Stack>
