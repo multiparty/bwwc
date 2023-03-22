@@ -1,75 +1,80 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
-import { Grid, Button, Box } from '@mui/material';
+import { Grid, Box, Typography, Stack } from '@mui/material';
 import * as Yup from 'yup';
 import { useAuth } from '@context/auth.context';
-import { useSession } from '@context/session.context';
-import { getSubmissionUrls, GetSubmissionUrlsResponse } from '@services/api';
 import { TextInput } from '@components/forms/text-input';
+import { SubmitButton } from '@components/forms/submit-button';
+import { getSubmissionUrls, createNewSubmissionUrls } from '@services/api';
+import { useSession } from '@context/session.context';
 
-interface GeneratorProps {
-  started: boolean;
-  stopped: boolean;
-}
-
-export const LinkGenerator: FC<GeneratorProps> = ({ started, stopped }) => {
-  const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
-  const [submitterCount, setSubmitterCount] = useState({
-    SubmitterCount: 0
-  });
-
-  const { sessionId, setSessionId } = useSession();
+export const LinkGenerator: FC = () => {
+  const { sessionId } = useSession();
   const { token, decodedToken, initialized } = useAuth();
+  const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
+  const [existingLinks, setExistingLinks] = useState<string[]>([]);
+  useEffect(() => {
+    getSubmissionUrls(0, sessionId, token).then((urls) => {
+      setExistingLinks(Object.values(urls));
+    });
+  }, []);
 
   const validationSchema = Yup.object().shape({
-    SubmitterCount: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
+    count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
-  const handleSubmit = async (values: { SubmitterCount: number }, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
-    const numSubmitters = values.SubmitterCount;
-    const newLink = [];
-
-    const urls: GetSubmissionUrlsResponse = await getSubmissionUrls(token || '', sessionId || '70f3571f-6b12-42f0-b851-297840f0e183', numSubmitters);
-
-    for (let key in urls) {
-      newLink.push(urls[key]);
-    }
-    setGeneratedLinks([...generatedLinks, ...newLink]);
-    setSubmitting(false);
+  const handleSubmit = (values: { count: number }) => {
+    const numSubmitters = values.count;
+    createNewSubmissionUrls(numSubmitters, sessionId).then((urls) => {
+      setGeneratedLinks(Object.values(urls));
+    });
   };
 
   return (
-    <Grid container spacing={6} direction="row">
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', textAlign: 'center' }}>
-        {started && !stopped && (
-          <Formik validationSchema={validationSchema} initialValues={submitterCount} onSubmit={handleSubmit}>
-            {({ isSubmitting }) => (
-              <Form>
-                <Grid container spacing={2} justifyContent="center" alignItems="center">
-                  <Grid item xs={12} md={8}>
-                    <TextInput fullWidth name="SubmitterCount" label="How many submitters?" />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <Button type="submit" variant="contained" disabled={isSubmitting} style={{ width: '100%' }}>
-                      Generate Links
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Form>
-            )}
-          </Formik>
-        )}
+    <Grid container>
+      <Grid item xs={12} md={4} sx={{ p: 1 }}>
+        <Formik validationSchema={validationSchema} initialValues={{ count: 0 }} onSubmit={handleSubmit}>
+          <Form>
+            <Stack spacing={2}>
+              <Typography variant="h5">Add Participants</Typography>
+              <Typography variant="subtitle1">Generate more URLs for new participants.</Typography>
+              <TextInput fullWidth name="count" label="New participants" type="number" />
+              <SubmitButton type="submit" variant="contained" fullWidth>
+                Submit
+              </SubmitButton>
+            </Stack>
+          </Form>
+        </Formik>
       </Grid>
-
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', textAlign: 'center' }}>
-        <Box sx={{ mt: 2 }}>
-          <h4>Generated Links:</h4>
-          <ul>
-            {generatedLinks.map((link, index) => (
-              <li key={index}>{link}</li>
-            ))}
-          </ul>
-        </Box>
+      <Grid item xs={12} md={4} sx={{ p: 1 }}>
+        <Stack spacing={2}>
+          <Typography variant="h5">Generated Links</Typography>
+          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+            <Stack spacing={2}>
+              {generatedLinks.map((link, index) => (
+                <Typography key={index} variant="subtitle1">
+                  {link}
+                </Typography>
+              ))}
+            </Stack>
+          </Box>
+        </Stack>
+      </Grid>
+      <Grid item xs={12} md={4} sx={{ p: 1 }}>
+        <Stack spacing={2}>
+          <Typography variant="h5">Existing Participant Links</Typography>
+          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+            <Stack spacing={2}>
+              {existingLinks.map((link, index) => (
+                <Typography key={index} variant="subtitle1">
+                  {link}
+                </Typography>
+              ))}
+            </Stack>
+          </Box>
+        </Stack>
       </Grid>
     </Grid>
   );

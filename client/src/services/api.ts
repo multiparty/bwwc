@@ -61,17 +61,34 @@ export async function startSession(auth_token: string): Promise<CreateSessionRes
   };
 }
 
-export async function endSession(): Promise<EndSessionResponse> {
-  const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`);
+export async function endSession(sessionId?: string): Promise<EndSessionResponse> {
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`,
+    convertToFormData({
+      session_id: sessionId
+    })
+  );
   return response.data;
 }
 
-export async function getSubmissionUrls(auth_token: string, session_id: string, participant_count: number): Promise<GetSubmissionUrlsResponse> {
+export async function createNewSubmissionUrls(count: number, sessionId?: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`, 
+    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
-      auth_token: auth_token, 
-      session_id: session_id, 
+      session_id: sessionId,
+      participant_count: count,
+      auth_token: 'test'
+    })
+  );
+  return response.data;
+}
+
+export async function getSubmissionUrls(participant_count: number, session_id?: string, auth_token?: string): Promise<GetSubmissionUrlsResponse> {
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
+    convertToFormData({
+      auth_token: auth_token,
+      session_id: session_id,
       participant_count: participant_count
     })
   );

@@ -1,36 +1,36 @@
-import { FC, useState } from 'react';
-import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
+import { FC } from 'react';
+import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import CollapsibleTable from './table';
 import { LinkGenerator } from './generate-link';
-import { Buttons } from './buttons';
+import { useSession } from '@context/session.context';
+import { endSession } from '@services/api';
 
-export const SessionManage: FC = (props) => {
-  const [started, setStarted] = useState(false);
-  const [stopped, setStopped] = useState(false);
+export const SessionManage: FC = () => {
+  const { sessionId } = useSession();
   return (
-    <Card>
-      <CardContent sx={{ m: 2 }}>
-        <Stack spacing={2} sx={{ textAlign: 'center' }}>
-          <Typography component="h1" variant="h4">
-            Manage Session
-          </Typography>
-
-          <Typography>Start a new session and generate link for partners</Typography>
-
-          <Divider />
-
-          <Grid container spacing={2} direction="column">
-            <Grid item spacing={5} direction="row">
-              <Buttons started={started} setStarted={setStarted} stopped={stopped} setStopped={setStopped} />
-              <LinkGenerator started={started} stopped={stopped} />
-            </Grid>
-
-            <Grid item spacing={5} direction="column">
-              <CollapsibleTable />
-            </Grid>
-          </Grid>
-        </Stack>
-      </CardContent>
-    </Card>
+    <Stack spacing={2}>
+      <Card>
+        <CardContent>
+          <Stack spacing={2} sx={{ textAlign: 'center' }}>
+            <Typography component="h1" variant="h4">
+              Manage Session
+            </Typography>
+            <Typography>Stop a session and generate link for partners</Typography>
+            <Divider />
+            <Stack spacing={2} direction="row">
+              <Button fullWidth variant="contained" color="success" disabled>
+                Session Started
+              </Button>
+              <Button fullWidth variant="outlined" color="error" onClick={() => endSession(sessionId)}>
+                Stop Session
+              </Button>
+            </Stack>
+            <Divider />
+            <LinkGenerator />
+          </Stack>
+        </CardContent>
+      </Card>
+      <CollapsibleTable />
+    </Stack>
   );
 };
