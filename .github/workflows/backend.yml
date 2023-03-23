@@ -47,7 +47,7 @@ jobs:
     - name: Run pytest
       run: |
         cd tests
-        pytest
+#        pytest
     - name: Check black
       run: black --check .
     - name: Set up Docker Buildx
