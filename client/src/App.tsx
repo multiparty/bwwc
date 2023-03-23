@@ -11,26 +11,29 @@ import { AuthCallback } from '@pages/auth-callback';
 import { PermissionRequiredPage } from '@pages/permission-required';
 import { Page404 } from '@pages/404';
 import { LogoutPage } from '@pages/logout';
+import { ApiProvider } from '@services/api';
 
 function App() {
   return (
     <AuthProvider>
       <SessionProvider>
-        <ThemeProvider>
-          <Router>
-            <Routes>
-              <Route element={<AdminGuard />}>
-                <Route path={Paths.MANAGE} element={<ManagePage />} />
-                <Route path={Paths.CREATE} element={<CreatePage />} />
-              </Route>
-              <Route path={Paths.HOME} element={<HomePage />} />
-              <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
-              <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
-              <Route path={Paths.LOGOUT} element={<LogoutPage />} />
-              <Route path="*" element={<Page404 />} />
-            </Routes>
-          </Router>
-        </ThemeProvider>
+        <ApiProvider>
+          <ThemeProvider>
+            <Router>
+              <Routes>
+                <Route element={<AdminGuard />}>
+                  <Route path={Paths.MANAGE} element={<ManagePage />} />
+                  <Route path={Paths.CREATE} element={<CreatePage />} />
+                </Route>
+                <Route path={Paths.HOME} element={<HomePage />} />
+                <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
+                <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
+                <Route path={Paths.LOGOUT} element={<LogoutPage />} />
+                <Route path="*" element={<Page404 />} />
+              </Routes>
+            </Router>
+          </ThemeProvider>
+        </ApiProvider>
       </SessionProvider>
     </AuthProvider>
   );

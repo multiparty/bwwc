@@ -2,11 +2,10 @@ import { FC } from 'react';
 import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import CollapsibleTable from './table';
 import { LinkGenerator } from './generate-link';
-import { useSession } from '@context/session.context';
-import { endSession } from '@services/api';
+import { useApi } from '@services/api';
 
 export const SessionManage: FC = () => {
-  const { sessionId } = useSession();
+  const { endSession } = useApi();
   return (
     <Stack spacing={2}>
       <Card>
@@ -21,7 +20,7 @@ export const SessionManage: FC = () => {
               <Button fullWidth variant="contained" color="success" disabled>
                 Session Started
               </Button>
-              <Button fullWidth variant="outlined" color="error" onClick={() => endSession(sessionId)}>
+              <Button fullWidth variant="outlined" color="error" onClick={endSession}>
                 Stop Session
               </Button>
             </Stack>
