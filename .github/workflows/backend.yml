@@ -48,7 +48,7 @@ jobs:
       run: |
         cd tests
 #        pytest
-    - name: Check black
+#    - name: Check black
 #      run: black --check .
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
