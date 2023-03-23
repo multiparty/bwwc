@@ -39,7 +39,7 @@ class MPCEngine(object):
             self.prime = config_prime
 
         # Connect to Redis and MongoDB
-        self.redis_host = os.environ.get("REDIS_HOST", "localhost")
+        self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
         self.mongo_host = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
         self.mongo_client = pymongo.MongoClient(self.mongo_host)
