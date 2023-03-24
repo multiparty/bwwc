@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useContext } from 'react';
 import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -8,6 +8,7 @@ import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
+import { SessionContext } from '@context/session.context';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
@@ -24,6 +25,9 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const urlParams = new URLSearchParams(window.location.search);
   const session_id = urlParams.get('session_id') || '';
   const participant_token = urlParams.get('participant_code') || '';
+
+  const context = useContext(SessionContext);
+  const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = context;
 
   const [initialValues, setInitialValues] = useState({
     submissionId: session_id,
@@ -49,10 +53,10 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
               <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
                 <Form>
                   <Stack spacing={2}>
-                    <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" />
-                    <PasswordInput fullWidth name="participationCode" label="Participation code" />
-                    <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" />
-                    <AutoCompleteInput fullWidth name="size" options={Sizes} label="Size" />
+                    <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" onChangeAction={setSessionId} />
+                    <PasswordInput fullWidth name="participationCode" label="Participation code" onChangeAction={setParticipantCode} />
+                    <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" onChangeAction={setIndustry} />
+                    <AutoCompleteInput fullWidth name="size" options={Sizes} label="Size" onChangeAction={setCompanySize} />
                   </Stack>
                 </Form>
               </Formik>

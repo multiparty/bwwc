@@ -5,7 +5,7 @@ import { TextInput, TextInputProps } from './text-input';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-export const PasswordInput: FC<TextInputProps> = (props) => {
+export const PasswordInput: FC<TextInputProps> = ({ onChangeAction, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
   const { isSubmitting } = useFormikContext<any>();
 
@@ -28,6 +28,7 @@ export const PasswordInput: FC<TextInputProps> = (props) => {
           </InputAdornment>
         )
       }}
+      onChangeAction={onChangeAction}
     />
   );
 };
