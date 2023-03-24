@@ -43,7 +43,7 @@ export const Footer = () => {
                     <Box component="img" src={buLogo} sx={{ maxHeight: '40px' }} />
                   </Stack>
                   <Typography variant="h6" color="black">
-                    Software Applications & Innovation Lab
+                    Software & Applications Innovation Lab
                   </Typography>
                   <Typography variant="subtitle1" color="gray">
                     The Software & Applications Innovation Lab (SAIL) is the premier professional research, software engineering, and consulting lab within the Hariri Institute for
