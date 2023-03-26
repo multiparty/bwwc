@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
-
-type Point = [BigNumber, BigNumber];
+import { Point } from '@utils/data-format';
 
 function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   let bigMax = new BigNumber(0);

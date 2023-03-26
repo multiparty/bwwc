@@ -39,7 +39,7 @@ class MPCEngine(object):
             self.prime = config_prime
 
         # Connect to Redis and MongoDB
-        self.redis_client = redis.Redis(host="redis", port=6379, db=0)
+        self.redis_client = redis.Redis(host="localhost", port=6379, db=0)
         self.mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
         self.mongo_db = self.mongo_client["mpc_database"]
         self.mongo_collection = self.mongo_db["completed_sessions"]
