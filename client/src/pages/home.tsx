@@ -1,67 +1,39 @@
 import { FC, useEffect, useState } from 'react';
-import { Card, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
 import { CustomFile } from '@components/file-upload/file-upload';
-import { DataFormat, TableData, TotalEmployees, SecretTableData, SecretDataFormat, SecretTotalEmployees, AllEmployees } from '@utils/data-format';
-import { Ethnicity } from '@utils/ethnicity';
-import { Gender } from '@utils/gender';
-import { Positions } from '@utils/positions';
+import { DataFormat } from '@utils/data-format';
 import { readCsv } from '@utils/csv-parser';
 import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 
+function performDFS(obj: Record<string, any>): Record<string, any> {
+  const dfs = (
+    currentObj: Record<string, any>,
+    originalObj: Record<string, any>,
+    keyPath: string[] = [],
+  ): Record<string, any> => {
+    const keys = Object.keys(originalObj);
 
-function iterateTableData(data: DataFormat, numShares: number, threshold: number): SecretDataFormat {
-  const result: SecretDataFormat = {
-    numberOfEmployees: {} as SecretTableData,
-    wages: {} as SecretTableData,
-    performance: {} as SecretTableData,
-    lengthOfService: {} as SecretTableData,
-    totalEmployees: {} as SecretTotalEmployees,
-  };
-
-  for (const table of Object.keys(data) as (keyof DataFormat)[]) {
-    const currentData = data[table];
-
-    if (isTableData(currentData)) {
-      const positions = Object.keys(currentData) as Positions[];
-
-      for (const position of positions) {
-        const ethnicities = Object.keys(currentData[position]) as Ethnicity[];
-
-        for (const ethnicity of ethnicities) {
-          const genders = Object.keys(currentData[position][ethnicity]) as Gender[];
-
-          for (const gender of genders) {
-            const cellValue = currentData[position][ethnicity][gender];
-            (result[table] as SecretTableData)[position][ethnicity][gender] = shamirShare(cellValue, numShares, threshold);
-          }
+    for (const key of keys) {
+      if (typeof originalObj[key] === 'number') {
+        const numShares = 4
+        const threshold = 2
+        currentObj[key] = shamirShare(originalObj[key], numShares, threshold);
+      } else if (typeof originalObj[key] === 'object') {
+        if (!currentObj[key]) {
+          currentObj[key] = {};
         }
-      }
-    } else {
-      const secretTotalEmployees = currentData as TotalEmployees;
-      const ethnicities = Object.keys(secretTotalEmployees) as (Ethnicity | keyof AllEmployees)[];
-
-      for (const ethnicity of ethnicities) {
-        if (ethnicity !== "all") {
-          const genders = Object.keys(secretTotalEmployees[ethnicity as Ethnicity]) as Gender[];
-
-          for (const gender of genders) {
-            const cellValue = secretTotalEmployees[ethnicity as Ethnicity][gender];
-            (result[table] as SecretTotalEmployees)[ethnicity as Ethnicity][gender] = shamirShare(cellValue, numShares, threshold);
-          }
-        }
+        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
       }
     }
-  }
 
-  return result;
-}
+    return currentObj;
+  };
 
-function isTableData(data: TableData | TotalEmployees): data is TableData {
-  return Object.prototype.hasOwnProperty.call(data, Positions.Executive);
+  return dfs({}, obj);
 }
 
 export const HomePage: FC = () => {
@@ -75,19 +47,7 @@ export const HomePage: FC = () => {
         setData(csvData);
 
         // Compute secret shares
-        const numShares = 4
-        const threshold = 2
-        console.log(csvData)
-        console.log('start shamirShare')
-        // const shares = shamirShare(csvData.lengthOfService.Administrative.asian.M, numShares, threshold)
-        // iterateTableData(csvData.)
-        // const totalEmployeesGenders = Object.keys(data.totalEmployees) as Gender[];
-
-        // for (const gender of totalEmployeesGenders) {
-        //   const cellValue = data.totalEmployees[gender];
-        //   shamirShare(cellValue, numShares, threshold);
-        // }
-        console.log('end shamirShare')
+        console.log(performDFS(csvData))
       }
     };
     loadData();
