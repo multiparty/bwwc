@@ -9,7 +9,7 @@ import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 
-function performDFS(obj: Record<string, any>): Record<string, any> {
+function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number): Record<string, any> {
   const dfs = (
     currentObj: Record<string, any>,
     originalObj: Record<string, any>,
@@ -19,8 +19,6 @@ function performDFS(obj: Record<string, any>): Record<string, any> {
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const numShares = 4
-        const threshold = 2
         currentObj[key] = shamirShare(originalObj[key], numShares, threshold);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -39,6 +37,8 @@ function performDFS(obj: Record<string, any>): Record<string, any> {
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>({} as DataFormat);
+  const [numShares, setNumShares] = useState<number>(10);
+  const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
 
   useEffect(() => {
     const loadData = async () => {
@@ -46,8 +46,11 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
+        console.log('numShares', numShares)
+        console.log('threshold', threshold)
+
         // Compute secret shares
-        console.log(performDFS(csvData))
+        console.log(tableToSecretShares(csvData, numShares, threshold))
       }
     };
     loadData();

@@ -47,6 +47,7 @@ export interface CreateSessionResponse {
 export async function startSession(auth_token: string): Promise<CreateSessionResponse> {
   const { publicKey, privateKey } = await generateKeyPair();
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
+
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`,
     convertToFormData({

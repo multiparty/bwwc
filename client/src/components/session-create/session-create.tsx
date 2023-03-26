@@ -12,6 +12,7 @@ export const SessionCreateForm: FC = (props) => {
   const navigate = useNavigate();
   const { sessionId, setSessionId } = useSession();
   const [privateKey, setPrivateKey] = useState<string>('');
+  const [publicKey, setPublicKey] = useState<string>('');
   const [fileUrl, setFileUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -25,8 +26,10 @@ export const SessionCreateForm: FC = (props) => {
 
   const handleClick = async () => {
     setLoading(true);
-    const { sessionId } = await startSession('dummy_auth_token');
+    const { privateKey, publicKey, sessionId } = await startSession('dummy_auth_token');
     setSessionId(sessionId);
+    setPrivateKey(privateKey);
+    setPublicKey(publicKey);
     setLoading(false);
   };
 
