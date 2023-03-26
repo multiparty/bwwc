@@ -106,6 +106,16 @@ export async function submitData(data: any): Promise<SubmitDataResponse> {
   return response.data;
 }
 
+export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
+  return await axios.post(
+    `${API_BASE_URL}get_public_key/`, 
+    convertToFormData({
+      auth_token: auth_token,
+      session_id: session_id
+    })
+  );
+};
+
 const convertToFormData = (data: any): FormData => {
   return Object.keys(data).reduce((formData, key) => {
     formData.append(key, data[key]);

@@ -8,8 +8,9 @@ import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
+import { getPublicKey } from '@services/api';
 
-function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number): Record<string, any> {
+function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: string): Record<string, any> {
   const dfs = (
     currentObj: Record<string, any>,
     originalObj: Record<string, any>,
@@ -19,7 +20,7 @@ function tableToSecretShares(obj: Record<string, any>, numShares: number, thresh
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        currentObj[key] = shamirShare(originalObj[key], numShares, threshold);
+        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -39,6 +40,7 @@ export const HomePage: FC = () => {
   const [data, setData] = useState<DataFormat>({} as DataFormat);
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
+  const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold+1); // Encrypt amount "theshold + 1" shares with key
 
   useEffect(() => {
     const loadData = async () => {
@@ -46,11 +48,11 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
-        console.log('numShares', numShares)
-        console.log('threshold', threshold)
-
         // Compute secret shares
-        console.log(tableToSecretShares(csvData, numShares, threshold))
+        const session_id = ''; // TODO
+        const auth_token = ''; // TODO
+        const publicKey = getPublicKey(session_id, auth_token)
+        console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey))
       }
     };
     loadData();
