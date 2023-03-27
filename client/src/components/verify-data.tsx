@@ -1,14 +1,17 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { DataFormat } from '@utils/data-format';
 import { Box, Card, CardContent, Checkbox, Divider, FormControlLabel, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { TotalEmployeeCheck } from '@components/total-employee-check';
+import TableContextProvider from '@context/table.context';
 
 export interface VerifyDataProps {
   data: DataFormat;
 }
 
 export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
+  const {table, setTable} = useContext(TableContextProvider);
+
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>

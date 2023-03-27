@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, createContext } from 'react';
 import { Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
 import { CustomFile } from '@components/file-upload/file-upload';
@@ -10,6 +10,7 @@ import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 import { getPublicKey } from '@services/api';
 import { importPemPublicKey, encryptString } from '@utils/keypair';
+import TableContextProvider from '@context/table.context';
 
 async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<Point>> {
   let numCalls = 0;
@@ -63,6 +64,7 @@ export const HomePage: FC = () => {
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold+1); // Encrypt amount "theshold + 1" shares with key
+  const [table, setTable] = useState<Record<string, any>>({});
 
   useEffect(() => {
     const loadData = async () => {
@@ -77,20 +79,22 @@ export const HomePage: FC = () => {
         const publicKeyString = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArJTEFwAmb60hsspOyISyo+NAOGa8dtGzJVb+KuHbnhYiROM+aeUXm0FtLiq3Qn3ibjhTlWGxER6GSuIopwY83KP0EIOLDKSMxcEk4yS7yKbJRBqE5sc5VtV35H2yLO2qK8PunobD6ngBF4lDnCat3w7KdxwSw7VoDnnUFYmA7Kfmr05qHvh/KoZQvISa/wYjlHevoFVvGYR9FI83uU86BxhHuDkIwAtD3mDeEXGUAtBGrXKXWwrsNyXvjlX2pr8SxO9p/H+rGhCby243s+SlY9L1IsC5QN7SAp4EL6gqPzc5BNq8Fma4NmFa65nCAFXWG5a2j2eIAzxfnbRAqzHfcwIDAQAB';
         // const publicKeyString = await getPublicKey(session_id, auth_token);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
-        const table = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, asString);
-        console.log(table);
+        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, asString);
+        setTable(secretTable);
       }
     };
     loadData();
   }, [file]);
 
   return (
-    <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
-      <Stack spacing={5}>
-        <CompanyInputForm onFileUpload={setFile} />
-        <ViewData open={false} data={data} />
-        <VerifyData data={data} />
-      </Stack>
-    </Layout>
+    <TableContextProvider value={{ table, setTable }}>
+      <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
+        <Stack spacing={5}>
+          <CompanyInputForm onFileUpload={setFile} />
+          <ViewData open={false} data={data} />
+          <VerifyData data={data} />
+        </Stack>
+      </Layout>
+    </TableContextProvider>
   );
 };
