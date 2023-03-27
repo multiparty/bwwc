@@ -99,7 +99,27 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"status": 200})
     else:
         return HttpResponseBadRequest("Invalid request method")
+    
+'''
+A function that responds to a GET request for a public key. The incoming parameters are auth_token and session_id.
+'''
+@csrf_exempt
+def get_public_key(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        auth_token = req.GET.get("auth_token")
+        session_id = req.GET.get("session_id")
 
+        if not auth_token or not session_id:
+            return HttpResponseBadRequest("Invalid request body")
+
+        if not engine.session_exists(session_id):
+            return HttpResponseBadRequest("Invalid session ID")
+
+        public_key = engine.get_public_key(session_id)
+
+        return JsonResponse({"public_key": public_key})
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 def get_urlpatterns():
     return [
@@ -108,4 +128,5 @@ def get_urlpatterns():
         path("api/bwwc/get_submission_urls/", get_submission_urls),
         path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
         path("api/bwwc/submit_data/", submit_data),
+        path("api/bwwc/get_public_key/", get_public_key)
     ]
