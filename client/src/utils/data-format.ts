@@ -11,7 +11,7 @@ export type TableData = {
   };
 };
 
-export type Point = [BigNumber, BigNumber];
+export type Point = [BigNumber | string, BigNumber | string];
 
 export type SecretTableData = {
   [key in Positions]: {

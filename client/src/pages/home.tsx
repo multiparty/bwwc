@@ -20,7 +20,7 @@ function tableToSecretShares(obj: Record<string, any>, numShares: number, thresh
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey);
+        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey, true);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
