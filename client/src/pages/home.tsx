@@ -49,9 +49,9 @@ export const HomePage: FC = () => {
         setData(csvData);
 
         // Compute secret shares
-        const session_id = ''; // TODO
-        const auth_token = ''; // TODO
-        const publicKey = getPublicKey(session_id, auth_token)
+        const session_id = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
+        const auth_token = 'token'; // TODO
+        const publicKey = await getPublicKey(session_id, auth_token)
         console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey))
       }
     };

@@ -107,7 +107,8 @@ export async function submitData(data: any): Promise<SubmitDataResponse> {
 }
 
 export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
-  return await axios.get(`${API_BASE_URL}get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
+  const response = await axios.get(`${API_BASE_URL}get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
+  return response.data.public_key;
 };
 
 const convertToFormData = (data: any): FormData => {

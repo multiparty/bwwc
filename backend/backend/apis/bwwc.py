@@ -100,9 +100,6 @@ def submit_data(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
     
-'''
-A function that responds to a GET request for a public key. The incoming parameters are auth_token and session_id.
-'''
 @csrf_exempt
 def get_public_key(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
