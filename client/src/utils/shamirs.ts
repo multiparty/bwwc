@@ -75,19 +75,16 @@ inputs:
 secret (number) - The secret to be shared.
 numShares (number) - The number of shares to generate.
 threshold (number) - The minimum number of shares required to reconstruct the secret.
-numEncryptWithKey (number) - The number of shares to encrypt with the key.
-publicKey (CryptoKey) - Public key to encrypt shares with.
 asString (boolean, optional) - Whether to return the shares as strings. Default: false.
 prime (number, optional) - The prime number to use for the polynomial modulus. Default: 180252380737439.
 
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export async function shamirShare(secret: number, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, asString: boolean=false, prime: number=180252380737439): Promise<Point[]> {
+export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, prime: number=180252380737439): Point[] {
     const bigPrime = new BigNumber(prime);
     const bigSecret = new BigNumber(secret);
     const bigThreshold = new BigNumber(threshold);
-    const encoder = new TextEncoder();
     
     if (!isIntGreaterThanZero(secret) || !isIntGreaterThanZero(prime)) {
         throw new Error('Secret must be a positive integer');

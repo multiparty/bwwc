@@ -2,25 +2,47 @@ import { FC, useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
 import { CustomFile } from '@components/file-upload/file-upload';
-import { DataFormat } from '@utils/data-format';
+import { DataFormat, Point } from '@utils/data-format';
 import { readCsv } from '@utils/csv-parser';
 import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 import { getPublicKey } from '@services/api';
+import { importPemPublicKey, encryptString } from '@utils/keypair';
 
-function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, asString: boolean=false): Record<string, any> {
-  const dfs = (
+async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<Point>> {
+  let numCalls = 0;
+  const encryptedPoints = new Array();
+
+  for (let i = 0; i < points.length; i++) {
+    const x = points[i][0];
+    const y = points[i][1].toString();
+
+    if (numCalls < numEncryptWithKey) {
+      encryptedPoints.push([x, await encryptString(publicKey, y)]);
+    } else {
+      encryptedPoints.push([x, y]);
+    }
+    numCalls++;
+  }
+
+  return encryptedPoints;
+}
+
+async function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, asString: boolean=false): Promise<Record<string, any>> {
+  const dfs = async (
     currentObj: Record<string, any>,
     originalObj: Record<string, any>,
     keyPath: string[] = [],
-  ): Record<string, any> => {
+  ): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
+    const encoder = new TextEncoder();
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey, asString);
+        const points = shamirShare(originalObj[key], numShares, threshold, asString);
+        currentObj[key] = await encryptShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -32,7 +54,7 @@ function tableToSecretShares(obj: Record<string, any>, numShares: number, thresh
     return currentObj;
   };
 
-  return dfs({}, obj);
+  return await dfs({}, obj);
 }
 
 export const HomePage: FC = () => {
@@ -52,22 +74,11 @@ export const HomePage: FC = () => {
         const session_id = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
         const auth_token = 'token'; // TODO
         const asString = true;
-        const publicKeyString = await getPublicKey(session_id, auth_token);
-        const publicKeyArrayBuffer = new Uint8Array(atob(publicKeyString).split('').map(char => char.charCodeAt(0))).buffer;
-
-        // Import the public key from the ArrayBuffer
-        const publicKey = await crypto.subtle.importKey(
-          'spki',
-          publicKeyArrayBuffer,
-          {
-            name: 'RSA-OAEP',
-            hash: 'SHA-256'
-          },
-          true,
-          ['encrypt']
-        );
-
-        console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey, asString))
+        const publicKeyString = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArJTEFwAmb60hsspOyISyo+NAOGa8dtGzJVb+KuHbnhYiROM+aeUXm0FtLiq3Qn3ibjhTlWGxER6GSuIopwY83KP0EIOLDKSMxcEk4yS7yKbJRBqE5sc5VtV35H2yLO2qK8PunobD6ngBF4lDnCat3w7KdxwSw7VoDnnUFYmA7Kfmr05qHvh/KoZQvISa/wYjlHevoFVvGYR9FI83uU86BxhHuDkIwAtD3mDeEXGUAtBGrXKXWwrsNyXvjlX2pr8SxO9p/H+rGhCby243s+SlY9L1IsC5QN7SAp4EL6gqPzc5BNq8Fma4NmFa65nCAFXWG5a2j2eIAzxfnbRAqzHfcwIDAQAB';
+        // const publicKeyString = await getPublicKey(session_id, auth_token);
+        const publicCryptoKey = await importPemPublicKey(publicKeyString);
+        const table = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, asString);
+        console.log(table);
       }
     };
     loadData();
