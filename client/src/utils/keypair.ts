@@ -15,11 +15,11 @@ export async function generateKeyPair() {
     {
       name: 'RSASSA-PKCS1-v1_5',
       modulusLength: 2048,
-      publicExponent: new Uint8Array([1, 0, 1]),
+      publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: 'SHA-256'
     },
     true,
-    ['sign', 'verify']
+    ['encrypt', 'decrypt']
   );
 
   const publicKeySpki = await crypto.subtle.exportKey('spki', keyPair.publicKey);

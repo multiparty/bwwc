@@ -10,7 +10,7 @@ import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 import { getPublicKey } from '@services/api';
 
-function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: string, asString: boolean=false): Record<string, any> {
+function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, asString: boolean=false): Record<string, any> {
   const dfs = (
     currentObj: Record<string, any>,
     originalObj: Record<string, any>,
@@ -52,7 +52,21 @@ export const HomePage: FC = () => {
         const session_id = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
         const auth_token = 'token'; // TODO
         const asString = true;
-        const publicKey = await getPublicKey(session_id, auth_token)
+        const publicKeyString = await getPublicKey(session_id, auth_token);
+        const publicKeyArrayBuffer = new Uint8Array(atob(publicKeyString).split('').map(char => char.charCodeAt(0))).buffer;
+
+        // Import the public key from the ArrayBuffer
+        const publicKey = await crypto.subtle.importKey(
+          'spki',
+          publicKeyArrayBuffer,
+          {
+            name: 'RSA-OAEP',
+            hash: 'SHA-256'
+          },
+          true,
+          ['encrypt']
+        );
+
         console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey, asString))
       }
     };
