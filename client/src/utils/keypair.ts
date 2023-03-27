@@ -30,6 +30,74 @@ export async function generateKeyPair() {
   return { publicKey: publicKeyPem, privateKey: privateKeyPem };
 }
 
+function pemToUint8Array(pem: string): Uint8Array {
+  const base64String = pem
+    .replace(/-----BEGIN PUBLIC KEY-----/, '')
+    .replace(/-----END PUBLIC KEY-----/, '')
+    .replace(/\s+/g, '');
+  const byteArray = new Uint8Array(
+    atob(base64String)
+      .split('')
+      .map(char => char.charCodeAt(0))
+  );
+  return byteArray;
+}
+
+export async function importPemPublicKey(publicKeyPem: string): Promise<CryptoKey> {
+  try {
+    const publicKeyUint8Array = pemToUint8Array(publicKeyPem);
+    const publicKeyArrayBuffer = publicKeyUint8Array.buffer;
+    const publicKey = await crypto.subtle.importKey(
+      'spki',
+      publicKeyArrayBuffer,
+      {
+        name: 'RSA-OAEP',
+        hash: 'SHA-256',
+      },
+      true,
+      ['encrypt']
+    );
+    return publicKey;
+  } catch (error) {
+    console.error('Error importing the public key:', error);
+    throw error;
+  }
+}
+
+function pemToPrivateKeyUint8Array(pem: string): Uint8Array {
+  const base64String = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s+/g, '');
+  const byteArray = new Uint8Array(
+    atob(base64String)
+      .split('')
+      .map(char => char.charCodeAt(0))
+  );
+  return byteArray;
+}
+
+export async function importPemPrivateKey(privateKeyPem: string): Promise<CryptoKey> {
+  try {
+    const privateKeyUint8Array = pemToPrivateKeyUint8Array(privateKeyPem);
+    const privateKeyArrayBuffer = privateKeyUint8Array.buffer;
+    const privateKey = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKeyArrayBuffer,
+      {
+        name: 'RSA-OAEP',
+        hash: 'SHA-256',
+      },
+      true,
+      ['decrypt']
+    );
+    return privateKey;
+  } catch (error) {
+    console.error('Error importing the private key:', error);
+    throw error;
+  }
+}
+
 export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<ArrayBuffer> {
   try {
     const encoder = new TextEncoder();
@@ -44,6 +112,24 @@ export async function encryptString(publicKey: CryptoKey, plainText: string): Pr
     return encryptedData;
   } catch (error) {
     console.error('Error encrypting the string:', error);
+    throw error;
+  }
+}
+
+export async function decryptString(privateKey: CryptoKey, encryptedData: ArrayBuffer): Promise<string> {
+  try {
+    const decryptedData = await crypto.subtle.decrypt(
+      {
+        name: 'RSA-OAEP'
+      },
+      privateKey,
+      encryptedData
+    );
+    const decoder = new TextDecoder();
+    const decryptedString = decoder.decode(decryptedData);
+    return decryptedString;
+  } catch (error) {
+    console.error('Error decrypting the string:', error);
     throw error;
   }
 }
