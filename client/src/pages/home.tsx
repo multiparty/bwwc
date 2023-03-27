@@ -10,7 +10,7 @@ import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 import { getPublicKey } from '@services/api';
 
-function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: string): Record<string, any> {
+function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: string, asString: boolean=false): Record<string, any> {
   const dfs = (
     currentObj: Record<string, any>,
     originalObj: Record<string, any>,
@@ -20,7 +20,7 @@ function tableToSecretShares(obj: Record<string, any>, numShares: number, thresh
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey, true);
+        currentObj[key] = shamirShare(originalObj[key], numShares, threshold, numEncryptWithKey, publicKey, asString);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -51,8 +51,9 @@ export const HomePage: FC = () => {
         // Compute secret shares
         const session_id = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
         const auth_token = 'token'; // TODO
+        const asString = true;
         const publicKey = await getPublicKey(session_id, auth_token)
-        console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey))
+        console.log(tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicKey, asString))
       }
     };
     loadData();
