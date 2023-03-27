@@ -13,7 +13,7 @@ function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
 export async function generateKeyPair() {
   const keyPair = await crypto.subtle.generateKey(
     {
-      name: 'RSASSA-PKCS1-v1_5',
+      name: 'RSA-OAEP',
       modulusLength: 2048,
       publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
       hash: 'SHA-256'
@@ -28,4 +28,22 @@ export async function generateKeyPair() {
   const privateKeyPem = arrayBufferToPem(privateKeyPkcs8, false);
 
   return { publicKey: publicKeyPem, privateKey: privateKeyPem };
+}
+
+export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<ArrayBuffer> {
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plainText);
+    const encryptedData = await crypto.subtle.encrypt(
+      {
+        name: 'RSA-OAEP'
+      },
+      publicKey,
+      data
+    );
+    return encryptedData;
+  } catch (error) {
+    console.error('Error encrypting the string:', error);
+    throw error;
+  }
 }
