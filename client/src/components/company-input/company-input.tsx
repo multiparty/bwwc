@@ -33,7 +33,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const session_id = urlParams.get('session_id') || '';
   const participant_token = urlParams.get('participant_code') || '';
 
-  const context = useContext(SessionContext);
+  const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = useSession();
   const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = context;
   const [initialValues, setInitialValues] = useState({
     submissionId: session_id,
