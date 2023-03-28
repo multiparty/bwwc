@@ -1,4 +1,4 @@
-import { FC, useState, useContext, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
 import * as Yup from 'yup';
@@ -8,7 +8,7 @@ import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
-import { SessionContext } from '@context/session.context';
+import { useSession } from '@context/session.context';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
