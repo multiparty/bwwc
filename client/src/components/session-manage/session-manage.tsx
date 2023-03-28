@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
-import CollapsibleTable from './table';
+import {sessionManageTable} from './table';
 import { LinkGenerator } from './generate-link';
 import { useApi } from '@services/api';
 
@@ -29,7 +29,7 @@ export const SessionManage: FC = () => {
           </Stack>
         </CardContent>
       </Card>
-      <CollapsibleTable />
+      <sessionManageTable data={data} />
     </Stack>
   );
 };
