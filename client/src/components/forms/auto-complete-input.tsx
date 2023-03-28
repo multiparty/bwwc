@@ -10,10 +10,9 @@ export interface AutoCompleteOption {
 export interface AutoCompleteInputProps {
   name: string;
   options: AutoCompleteOption[];
-  onChangeAction?: (value: string) => void;
 }
 
-export const AutoCompleteInput: FC<AutoCompleteInputProps & TextFieldProps> = ({ onChangeAction, ...props }) => {
+export const AutoCompleteInput: FC<AutoCompleteInputProps & TextFieldProps> = (props) => {
   const { handleChange, handleBlur, values, touched, errors, isSubmitting } = useFormikContext<any>();
   return (
     <FormControl variant={props.variant} fullWidth={props.fullWidth}>
@@ -24,7 +23,6 @@ export const AutoCompleteInput: FC<AutoCompleteInputProps & TextFieldProps> = ({
         )}
         onChange={(event, value) => {
           handleChange({ target: { name: props.name, value: value?.value } });
-          onChangeAction && onChangeAction(value);
         }}
         onBlur={handleBlur}
         value={values[props.name]}
