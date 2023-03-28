@@ -86,7 +86,7 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         participant = req.POST.get("participant")
         share = req.POST.get("share")
 
-        if not auth_token or not session_id or not participant:
+        if not session_id or not participant:
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
