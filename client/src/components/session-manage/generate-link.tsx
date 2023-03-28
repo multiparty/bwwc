@@ -5,16 +5,15 @@ import * as Yup from 'yup';
 import { useAuth } from '@context/auth.context';
 import { TextInput } from '@components/forms/text-input';
 import { SubmitButton } from '@components/forms/submit-button';
-import { getSubmissionUrls, createNewSubmissionUrls } from '@services/api';
 import { useSession } from '@context/session.context';
+import { useApi } from '@services/api';
 
 export const LinkGenerator: FC = () => {
-  const { sessionId } = useSession();
-  const { token, decodedToken, initialized } = useAuth();
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
+  const { getSubmissionUrls, createNewSubmissionUrls } = useApi();
   useEffect(() => {
-    getSubmissionUrls(0, sessionId, token).then((urls) => {
+    getSubmissionUrls(0).then((urls) => {
       setExistingLinks(Object.values(urls));
     });
   }, []);
@@ -25,7 +24,7 @@ export const LinkGenerator: FC = () => {
 
   const handleSubmit = (values: { count: number }) => {
     const numSubmitters = values.count;
-    createNewSubmissionUrls(numSubmitters, sessionId).then((urls) => {
+    createNewSubmissionUrls(numSubmitters).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
   };

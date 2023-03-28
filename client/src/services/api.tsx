@@ -1,5 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { generateKeyPair } from '@utils/keypair';
+import React, { createContext, FC, useContext, useEffect } from 'react';
+import { useAuth } from '@context/auth.context';
+import { useSession } from '@context/session.context';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/bwwc/';
 
@@ -44,15 +47,24 @@ export interface CreateSessionResponse {
   sessionId: string;
 }
 
-export async function startSession(auth_token: string): Promise<CreateSessionResponse> {
+export interface ApiContextProps {
+  startSession: () => Promise<CreateSessionResponse>;
+  endSession: () => Promise<EndSessionResponse>;
+  createNewSubmissionUrls: (count: number) => Promise<GetSubmissionUrlsResponse>;
+  getSubmissionUrls: (participant_count: number) => Promise<GetSubmissionUrlsResponse>;
+  getEncryptedShares: () => Promise<GetEncryptedSharesResponse>;
+  submitData: (data: NestedObject) => Promise<SubmitDataResponse>;
+}
+
+export async function startSession(): Promise<CreateSessionResponse> {
   const { publicKey, privateKey } = await generateKeyPair();
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`,
     convertToFormData({
-      auth_token,
-      public_key: publicKeyPem
+      public_key: publicKeyPem,
+      auth_token: 'remove this later'
     })
   );
   return {
@@ -66,7 +78,8 @@ export async function endSession(sessionId?: string): Promise<EndSessionResponse
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`,
     convertToFormData({
-      session_id: sessionId
+      session_id: sessionId,
+      auth_token: 'remove this later'
     })
   );
   return response.data;
@@ -78,17 +91,17 @@ export async function createNewSubmissionUrls(count: number, sessionId?: string)
     convertToFormData({
       session_id: sessionId,
       participant_count: count,
-      auth_token: 'test'
+      auth_token: 'remove this later'
     })
   );
   return response.data;
 }
 
-export async function getSubmissionUrls(participant_count: number, session_id?: string, auth_token?: string): Promise<GetSubmissionUrlsResponse> {
+export async function getSubmissionUrls(participant_count: number, session_id?: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
-      auth_token: auth_token,
+      auth_token: 'remove this later',
       session_id: session_id,
       participant_count: participant_count
     })
@@ -117,3 +130,39 @@ const convertToFormData = (data: any): FormData => {
     return formData;
   }, new FormData());
 };
+
+const ApiContext = createContext<ApiContextProps>({} as ApiContextProps);
+
+export interface ApiProviderProps {
+  children: React.ReactNode;
+}
+
+export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
+  const { token } = useAuth();
+  const { sessionId } = useSession();
+
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+    }
+  }, [token]);
+
+  return (
+    <ApiContext.Provider
+      value={{
+        startSession: () => startSession(),
+        endSession: () => endSession(sessionId),
+        createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId),
+        getSubmissionUrls: (participant_count: number) => getSubmissionUrls(participant_count, sessionId),
+        getEncryptedShares: () => getEncryptedShares(),
+        submitData: (data: any) => submitData(data)
+      }}
+    >
+      {children}
+    </ApiContext.Provider>
+  );
+};
+
+export const useApi = () => useContext(ApiContext);

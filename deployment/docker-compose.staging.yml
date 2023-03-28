@@ -26,6 +26,8 @@ services:
     container_name: bwwc-redis-staging
     ports:
     - 6379:6379
+    volumes:
+      - bwwc_data:/data
   bwwc-frontend:
     container_name: bwwc-frontend
     restart: always

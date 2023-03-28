@@ -1,9 +1,11 @@
-import { FC, useContext } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { DataFormat } from '@utils/data-format';
 import { Box, Card, CardContent, Checkbox, Divider, FormControlLabel, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { TotalEmployeeCheck } from '@components/total-employee-check';
 import TableContextProvider from '@context/table.context';
+import { SubmissionAlert } from '@components/submission-alert';
+import { useSession } from '@context/session.context';
 
 export interface VerifyDataProps {
   onClick: ()=>void;
@@ -11,6 +13,26 @@ export interface VerifyDataProps {
 }
 
 export const VerifyData: FC<VerifyDataProps> = ({ data, onClick }) => {
+  const [verifyTicked, setVerifyTicked] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (verifyTicked && data?.totalEmployees) {
+      setCanSubmit(true);
+    } else {
+      setCanSubmit(false);
+    }
+  }, [verifyTicked, data]);
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVerifyTicked(event.target.checked);
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    onClick();
+  };
 
   return (
     <Card>
@@ -25,8 +47,11 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, onClick }) => {
           </Stack>
           <Typography variant="subtitle1">Totals Check</Typography>
           <TotalEmployeeCheck data={data?.totalEmployees} />
-          <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />} label="I verified all data is correct." />
-          <LoadingButton variant="contained" onClick={onClick}>Submit</LoadingButton>
+          <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} onChange={handleCheckboxChange} />} label="I verified all data is correct." />
+          <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit}>
+            Submit
+          </LoadingButton>
+          <SubmissionAlert success={submitted} />
         </Stack>
       </CardContent>
     </Card>

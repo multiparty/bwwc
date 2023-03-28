@@ -89,7 +89,7 @@ export const HomePage: FC = () => {
   }, [file]);
 
   const onSubmitHandler = () => {
-    submitData(table, session_id, participantCode);
+    submitData(table, sessionId, participantCode);
   }
 
   return (

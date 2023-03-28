@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
-import { Form, Formik } from 'formik';
+import { Form, Formik, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 import { TextInput } from '@components/forms/text-input';
 import { AutoCompleteInput } from '@components/forms/auto-complete-input';
@@ -8,6 +8,7 @@ import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
+import { useSession } from '@context/session.context';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
@@ -20,17 +21,36 @@ export interface CompanyInputFormProps {
   onFileUpload: (file: CustomFile) => void;
 }
 
+interface valueProps {
+  submissionId: string;
+  participationCode: string;
+  industry: string;
+  size: string;
+}
+
 export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const urlParams = new URLSearchParams(window.location.search);
   const session_id = urlParams.get('session_id') || '';
   const participant_token = urlParams.get('participant_code') || '';
 
+  const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = useSession();
   const [initialValues, setInitialValues] = useState({
     submissionId: session_id,
     participationCode: participant_token,
     industry: undefined,
     size: undefined
   });
+
+  const FormObserver: React.FC = () => {
+    const { values } = useFormikContext<valueProps>();
+    useEffect(() => {
+      setSessionId(values.submissionId);
+      setParticipantCode(values.participationCode);
+      setIndustry(values.industry);
+      setCompanySize(values.size);
+    }, [values]);
+    return null;
+  };
 
   return (
     <Card>
@@ -48,6 +68,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
             <Grid item xs={12} md={6}>
               <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
                 <Form>
+                  <FormObserver />
                   <Stack spacing={2}>
                     <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" />
                     <PasswordInput fullWidth name="participationCode" label="Participation code" />
