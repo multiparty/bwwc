@@ -49,7 +49,6 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
       setParticipantCode(values.participationCode);
       setIndustry(values.industry);
       setCompanySize(values.size);
-      console.log('FormObserver::values', values);
     }, [values]);
     return null;
   };
