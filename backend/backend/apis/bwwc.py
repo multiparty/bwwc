@@ -82,7 +82,6 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def submit_data(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        auth_token = req.POST.get("auth_token")
         session_id = req.POST.get("session_id")
         participant = req.POST.get("participant")
         share = req.POST.get("share")
