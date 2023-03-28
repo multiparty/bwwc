@@ -1,16 +1,12 @@
-import React, {FC} from 'react';
-import { Box, useTheme, Collapse, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { DataGrid, GridColDef, GridColumnGroup, GridColumnGroupingModel } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
-var data:Submission[] = []
+import { Box, useTheme } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 // Example usage
+var data:Submission[] = []
+
 const newSubmission: Submission = {
   industry: 'Information Technology',
-  participationID:  'dd34567833',
+  participationID:  '12345678912345678912345678',
   size: 'Medium (50-199 employees)',
   hist: '2022-03-12 12:34',
 };
@@ -18,7 +14,7 @@ data.push(newSubmission);
 
 const newSubmission2: Submission = {
   industry: 'Information Technology',
-  participationID:  'dd34567833',
+  participationID:  '1234567891ddd5678912345678',
   size: 'Medium (50-199 employees)',
   hist: '2022-03-12 12:34',
 };
@@ -26,14 +22,17 @@ data.push(newSubmission2);
 
 const newSubmission3: Submission = {
   industry: 'Biotech/Pharmaceuticals',
-  participationID:  '1234567833',
+  participationID:  '12345678912345678912345578',
   size: 'Medium (50-199 employees)',
   hist: '2022-03-12 12:34',
 };
 data.push(newSubmission3);
 
 
-const COLUMN_WIDTH = 90;
+
+
+const COLUMN_WIDTH = 190;
+const WIDE_WIDTH = 250;
 const HEIGHT = 400;
 
 interface Submission {
@@ -46,37 +45,49 @@ interface Submission {
 const columns: GridColDef[] = [
   {
     field: 'participationID',
-    width: COLUMN_WIDTH,
+    width: WIDE_WIDTH,
     sortable: true,
-    headerName: '',
+    headerName: 'ParticipationID',
+    cellClassName: 'position-cell'
   },
 
   {
     field: 'industry',
     width: COLUMN_WIDTH,
     sortable: true,
-    headerName: '',
+    headerName: 'Industry',
+    cellClassName: 'position-cell'
   },
   {
     field: 'size',
-    width: COLUMN_WIDTH,
+    width: WIDE_WIDTH,
     sortable: true,
-    headerName: '',
+    headerName: 'Size',
+    cellClassName: 'position-cell'
   },
   {
     field: 'hist',
     width: COLUMN_WIDTH,
     sortable: true,
-    headerName: '',
+    headerName: 'Submission',
+    cellClassName: 'position-cell'
   }
 ]
 
-
-interface TableProps {
-  data?: Submission;
+function convertToRows(data: Submission[]): any[] {
+  return data.map((submission, index) => {
+    return {
+      id:index+1,
+      participationID: submission.participationID,
+      industry: submission.industry,
+      size: submission.size,
+      hist: submission.hist
+    };
+  });
 }
 
-export const sessionManageTable: FC<TableProps> = () => {
+
+export const SessionManageTable = () => {
   const { palette } = useTheme();
   return (
     <Box
@@ -84,8 +95,7 @@ export const sessionManageTable: FC<TableProps> = () => {
         height: HEIGHT,
         width: '100%',
         '& .position-cell': {
-          backgroundColor: palette.background.paper,
-          fontWeight: 'bold'
+          backgroundColor: palette.background.paper
         }
       }}
     >
@@ -99,10 +109,9 @@ export const sessionManageTable: FC<TableProps> = () => {
         hideFooter={true}
         hideFooterPagination={true}
         hideFooterSelectedRowCount={true}
-        experimentalFeatures={{ columnGrouping: true }}
         rows={convertToRows(data)}
         columns={columns}
-        getRowId={(row) => row.position}
+        getRowId={(row) => row.id}
         getRowHeight={() => 'auto'}
       />
     </Box>

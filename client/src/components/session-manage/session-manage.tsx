@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
-import {sessionManageTable} from './table';
+import {SessionManageTable} from './table';
 import { LinkGenerator } from './generate-link';
 import { useApi } from '@services/api';
 
@@ -29,7 +29,7 @@ export const SessionManage: FC = () => {
           </Stack>
         </CardContent>
       </Card>
-      <sessionManageTable data={data} />
+      <SessionManageTable />
     </Stack>
   );
 };
