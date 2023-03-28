@@ -7,10 +7,11 @@ import { readCsv } from '@utils/csv-parser';
 import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
+import { defaultData } from '@constants/default-data';
 
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
-  const [data, setData] = useState<DataFormat>({} as DataFormat);
+  const [data, setData] = useState<DataFormat>(defaultData);
 
   useEffect(() => {
     const loadData = async () => {
