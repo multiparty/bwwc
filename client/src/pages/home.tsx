@@ -8,9 +8,10 @@ import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
-import { getPublicKey } from '@services/api';
+import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, encryptString } from '@utils/keypair';
 import TableContextProvider from '@context/table.context';
+import { useSession } from '@context/session.context';
 
 async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<Point>> {
   let numCalls = 0;
@@ -59,6 +60,7 @@ async function tableToSecretShares(obj: Record<string, any>, numShares: number, 
 }
 
 export const HomePage: FC = () => {
+  const { sessionId, participantCode } = useSession();
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>({} as DataFormat);
   const [numShares, setNumShares] = useState<number>(10);
@@ -86,15 +88,18 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
+  const onSubmitHandler = () => {
+    submitData(table, session_id, participantCode);
+  }
+
   return (
-    <TableContextProvider value={{ table, setTable }}>
+    
       <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
         <Stack spacing={5}>
           <CompanyInputForm onFileUpload={setFile} />
           <ViewData open={false} data={data} />
-          <VerifyData data={data} />
+          <VerifyData data={data} onClick={() => onSubmitHandler} />
         </Stack>
       </Layout>
-    </TableContextProvider>
   );
 };

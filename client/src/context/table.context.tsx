@@ -5,18 +5,14 @@ interface TableContextType {
   setTable: (newTable: Record<string, any>) => void;
 }
 
-export const TableContext = createContext<TableContextType>({
-  table: {},
-  setTable: () => {},
-});
+export const TableContext = createContext<TableContextType | undefined>(undefined);
 
 interface TableContextProviderProps {
-  value: TableContextType;
   children: React.ReactNode;
 }
 
-const TableContextProvider: React.FC<TableContextProviderProps> = ({ value, children }) => {
-  const [table, setTable] = useState(value.table);
+const TableContextProvider: React.FC<TableContextProviderProps> = ({ children }) => {
+  const [table, setTable] = useState<Record<string, any>>({});
 
   return (
     <TableContext.Provider value={{ table, setTable }}>

@@ -6,11 +6,11 @@ import { TotalEmployeeCheck } from '@components/total-employee-check';
 import TableContextProvider from '@context/table.context';
 
 export interface VerifyDataProps {
+  onClick: ()=>void;
   data: DataFormat;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
-  const {table, setTable} = useContext(TableContextProvider);
+export const VerifyData: FC<VerifyDataProps> = ({ data, onClick }) => {
 
   return (
     <Card>
@@ -26,7 +26,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
           <Typography variant="subtitle1">Totals Check</Typography>
           <TotalEmployeeCheck data={data?.totalEmployees} />
           <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} />} label="I verified all data is correct." />
-          <LoadingButton variant="contained">Submit</LoadingButton>
+          <LoadingButton variant="contained" onClick={onClick}>Submit</LoadingButton>
         </Stack>
       </CardContent>
     </Card>
