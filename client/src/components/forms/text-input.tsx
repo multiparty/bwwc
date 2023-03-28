@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { FormControl, TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
-
 export type TextInputProps = TextFieldProps & {
   name: string;
 };
