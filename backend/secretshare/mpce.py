@@ -50,7 +50,7 @@ class MPCEngine(object):
         self.redis_client.set(session_id, json.dumps(session_data))
 
     def create_session(self, auth_token: str, public_key: str) -> str:
-        session_id = str(uuid.uuid4())
+        session_id = str(uuid.uuid4())[:26]
         session_data = {
             "session_id": session_id,
             "participants": {},
@@ -135,7 +135,7 @@ class MPCEngine(object):
         participant_urls = {}
 
         for i in range(participant_count):
-            participant_token = str(uuid.uuid4())
+            participant_token = str(uuid.uuid4())[:26]
             participant_url = f"{self.base_url}?session_id={session_id}&participant_code={participant_token}"
             participant_urls[f"participant_{i + 1}"] = participant_url
 
