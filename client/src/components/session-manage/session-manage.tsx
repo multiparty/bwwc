@@ -29,8 +29,7 @@ export const SessionManage: FC = () => {
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
-      // Todo: Update this section
-      // setSessionId(values.submissionId);
+      setSessionId(values.submissionId);
     }, [values]);
     return null;
   };

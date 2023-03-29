@@ -30,7 +30,6 @@ data.push(newSubmission3);
 
 ////// ^Example usage ENDS //////
 
-
 const COLUMN_WIDTH = 250;
 const HEIGHT = 400;
 
