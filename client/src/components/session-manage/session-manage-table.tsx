@@ -28,8 +28,7 @@ const newSubmission3: Submission = {
 };
 data.push(newSubmission3);
 
-const COLUMN_WIDTH = 190;
-const WIDE_WIDTH = 250;
+const COLUMN_WIDTH = 250;
 const HEIGHT = 400;
 
 interface Submission {
@@ -42,7 +41,7 @@ interface Submission {
 const columns: GridColDef[] = [
   {
     field: 'participationID',
-    width: WIDE_WIDTH,
+    width: COLUMN_WIDTH,
     sortable: true,
     headerName: 'ParticipationID',
     cellClassName: 'position-cell'
@@ -57,7 +56,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'size',
-    width: WIDE_WIDTH,
+    width: COLUMN_WIDTH,
     sortable: true,
     headerName: 'Size',
     cellClassName: 'position-cell'
@@ -89,7 +88,8 @@ export const SessionManageTable = () => {
     <Box
       sx={{
         height: HEIGHT,
-        width: '100%',
+        width: '85%',
+        overflow: 'hidden',
         '& .position-cell': {
           backgroundColor: palette.background.paper
         }
@@ -109,6 +109,7 @@ export const SessionManageTable = () => {
         columns={columns}
         getRowId={(row) => row.id}
         getRowHeight={() => 'auto'}
+        autoHeight={true}
       />
     </Box>
   );

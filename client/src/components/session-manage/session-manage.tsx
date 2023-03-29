@@ -31,7 +31,7 @@ export const SessionManage: FC = () => {
       </Card>
       <Card>
         <CardContent>
-          <Stack spacing={2} sx={{ textAlign: 'center' }}>
+          <Stack spacing={2} sx={{ textAlign: 'center', alignItems: 'center' }}>
             <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
               Submission History
             </Typography>
