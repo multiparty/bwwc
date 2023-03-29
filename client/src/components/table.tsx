@@ -79,6 +79,8 @@ export const Table: FC<TableProps> = ({ data }) => {
         columns={columns}
         getRowId={(row) => row.position}
         getRowHeight={() => 'auto'}
+        showCellVerticalBorder={true}
+        showColumnVerticalBorder={true}
       />
     </Box>
   );
