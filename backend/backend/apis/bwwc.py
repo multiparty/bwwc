@@ -54,7 +54,7 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
-
+        
         participant_urls = engine.generate_participant_urls(
             session_id, participant_count
         )
