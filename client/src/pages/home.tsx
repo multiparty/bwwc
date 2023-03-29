@@ -75,11 +75,11 @@ export const HomePage: FC = () => {
         setData(csvData);
 
         // Compute secret shares
-        const session_id = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
-        const auth_token = 'token'; // TODO
+        const sessionId = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
+        const authToken = 'token'; // TODO
         const asString = true;
         const publicKeyString = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArJTEFwAmb60hsspOyISyo+NAOGa8dtGzJVb+KuHbnhYiROM+aeUXm0FtLiq3Qn3ibjhTlWGxER6GSuIopwY83KP0EIOLDKSMxcEk4yS7yKbJRBqE5sc5VtV35H2yLO2qK8PunobD6ngBF4lDnCat3w7KdxwSw7VoDnnUFYmA7Kfmr05qHvh/KoZQvISa/wYjlHevoFVvGYR9FI83uU86BxhHuDkIwAtD3mDeEXGUAtBGrXKXWwrsNyXvjlX2pr8SxO9p/H+rGhCby243s+SlY9L1IsC5QN7SAp4EL6gqPzc5BNq8Fma4NmFa65nCAFXWG5a2j2eIAzxfnbRAqzHfcwIDAQAB';
-        // const publicKeyString = await getPublicKey(session_id, auth_token);
+        // const publicKeyString = await getPublicKey(sessionId, authToken);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, asString);
         setTable(secretTable);
