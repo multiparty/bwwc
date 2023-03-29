@@ -1,7 +1,7 @@
 import { Box, useTheme } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
-// Example usage
+////// Example usage STARTS //////
 var data: Submission[] = [];
 
 const newSubmission: Submission = {
@@ -27,6 +27,9 @@ const newSubmission3: Submission = {
   hist: '2022-03-12 15:34'
 };
 data.push(newSubmission3);
+
+////// ^Example usage ENDS //////
+
 
 const COLUMN_WIDTH = 250;
 const HEIGHT = 400;
@@ -70,18 +73,6 @@ const columns: GridColDef[] = [
   }
 ];
 
-function convertToRows(data: Submission[]): any[] {
-  return data.map((submission, index) => {
-    return {
-      id: index + 1,
-      participationID: submission.participationID,
-      industry: submission.industry,
-      size: submission.size,
-      hist: submission.hist
-    };
-  });
-}
-
 export const SessionManageTable = () => {
   const { palette } = useTheme();
   return (
@@ -105,9 +96,9 @@ export const SessionManageTable = () => {
         hideFooter={true}
         hideFooterPagination={true}
         hideFooterSelectedRowCount={true}
-        rows={convertToRows(data)}
+        rows={data}
         columns={columns}
-        getRowId={(row) => row.id}
+        getRowId={(row) => row.participationID}
         getRowHeight={() => 'auto'}
         autoHeight={true}
       />
