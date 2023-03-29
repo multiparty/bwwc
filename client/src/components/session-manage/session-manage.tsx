@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from 'react';
 import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { TextInput } from '@components/forms/text-input';
-import CollapsibleTable from './table';
+import { SessionManageTable } from './session-manage-table';
 import { LinkGenerator } from './generate-link';
 import { useApi } from '@services/api';
 import * as Yup from 'yup';
@@ -68,7 +68,16 @@ export const SessionManage: FC = () => {
           </Stack>
         </CardContent>
       </Card>
-      <CollapsibleTable />
+      <Card>
+        <CardContent>
+          <Stack spacing={2} sx={{ textAlign: 'center', alignItems: 'center' }}>
+            <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
+              Submission History
+            </Typography>
+            <SessionManageTable />
+          </Stack>
+        </CardContent>
+      </Card>
     </Stack>
   );
 };
