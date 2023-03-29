@@ -89,6 +89,14 @@ export const HomePage: FC = () => {
   }, [file]);
 
   const onSubmitHandler = () => {
+    if (sessionId === undefined) {
+      throw new Error('Session ID is undefined');
+    }
+
+    if (participantCode === undefined) {
+      throw new Error('Participant code is undefined');
+    }
+
     submitData(table, sessionId, participantCode);
   }
 

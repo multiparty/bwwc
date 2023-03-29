@@ -114,7 +114,7 @@ export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> 
   return response.data;
 }
 
-export async function submitData(data: any): Promise<SubmitDataResponse> {
+export async function submitData(data: any, sessionId: string, participantCode: string): Promise<SubmitDataResponse> {
   const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`, data);
   return response.data;
 }
