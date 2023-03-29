@@ -76,7 +76,7 @@ export const HomePage: FC = () => {
 
         // Compute secret shares
         const sessionId = '357f8272-3f82-40ac-a4cf-18861352d8cb'; // TODO
-        const authToken = 'token'; // TODO
+        const authToken = 'token-357f8272'; // TODO
         const asString = true;
         const publicKeyString = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArJTEFwAmb60hsspOyISyo+NAOGa8dtGzJVb+KuHbnhYiROM+aeUXm0FtLiq3Qn3ibjhTlWGxER6GSuIopwY83KP0EIOLDKSMxcEk4yS7yKbJRBqE5sc5VtV35H2yLO2qK8PunobD6ngBF4lDnCat3w7KdxwSw7VoDnnUFYmA7Kfmr05qHvh/KoZQvISa/wYjlHevoFVvGYR9FI83uU86BxhHuDkIwAtD3mDeEXGUAtBGrXKXWwrsNyXvjlX2pr8SxO9p/H+rGhCby243s+SlY9L1IsC5QN7SAp4EL6gqPzc5BNq8Fma4NmFa65nCAFXWG5a2j2eIAzxfnbRAqzHfcwIDAQAB';
         // const publicKeyString = await getPublicKey(sessionId, authToken);
@@ -88,7 +88,7 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
-  const onSubmitHandler = () => {
+  const submitDataHandler = () => {
     if (sessionId === undefined) {
       throw new Error('Session ID is undefined');
     }
@@ -97,7 +97,14 @@ export const HomePage: FC = () => {
       throw new Error('Participant code is undefined');
     }
 
-    submitData(table, sessionId, participantCode);
+    const sessionIds = '8fab1938-407a-4e26-bcde-cf69ab59904a';
+    const payload = {
+      data: table,
+      sessionId: sessionIds,
+      participantCode: participantCode
+    }
+
+    submitData(payload);
   }
 
   return (
@@ -106,7 +113,7 @@ export const HomePage: FC = () => {
         <Stack spacing={5}>
           <CompanyInputForm onFileUpload={setFile} />
           <ViewData open={false} data={data} />
-          <VerifyData data={data} onClick={() => onSubmitHandler} />
+          <VerifyData data={data} submitDataHandler={submitDataHandler} />
         </Stack>
       </Layout>
   );
