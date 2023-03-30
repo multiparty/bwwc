@@ -82,9 +82,13 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def submit_data(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        session_id = req.POST.get("session_id")
-        participant = req.POST.get("participant")
-        share = req.POST.get("share")
+        session_id = req.POST.get("sessionId")
+        participant = req.POST.get("participantCode")
+        data = req.POST.get("data")
+
+        print(json.loads(data))
+        print(session_id)
+        print(participant)
 
         if not session_id or not participant:
             return HttpResponseBadRequest("Invalid request body")
@@ -93,7 +97,7 @@ def submit_data(req: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest("Invalid session ID")
 
         engine.add_participant(session_id, participant)
-        engine.update_session_data(session_id, participant, share)
+        engine.update_session_data(session_id, participant, data)
 
         return JsonResponse({"status": 200})
     else:
