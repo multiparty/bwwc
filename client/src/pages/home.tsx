@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, createContext } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
 import { CustomFile } from '@components/file-upload/file-upload';
@@ -10,7 +10,6 @@ import { Layout } from '@layouts/layout';
 import { shamirShare } from '@utils/shamirs';
 import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, encryptString } from '@utils/keypair';
-import TableContextProvider from '@context/table.context';
 import { useSession } from '@context/session.context';
 
 async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<Point>> {
@@ -99,7 +98,9 @@ export const HomePage: FC = () => {
 
     const sessionIds = '8fab1938-407a-4e26-bcde-cf69ab59904a';
 
-    submitData(data, sessionId, participantCode);
+    console.log(table)
+
+    submitData(table, sessionId, participantCode);
   }
 
   return (

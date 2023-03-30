@@ -98,7 +98,7 @@ export async function importPemPrivateKey(privateKeyPem: string): Promise<Crypto
   }
 }
 
-export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<ArrayBuffer> {
+export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<string> {
   try {
     const encoder = new TextEncoder();
     const data = encoder.encode(plainText);
@@ -109,7 +109,10 @@ export async function encryptString(publicKey: CryptoKey, plainText: string): Pr
       publicKey,
       data
     );
-    return encryptedData;
+    const encryptedString = new TextDecoder().decode(encryptedData);
+    console.log(`data: ${data}\tencryptedString: ${encryptedString}`)
+
+    return encryptedString;
   } catch (error) {
     console.error('Error encrypting the string:', error);
     throw error;
