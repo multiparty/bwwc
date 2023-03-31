@@ -55,7 +55,8 @@ const columns: CustomGridColDef[] = [
 
 const columnGroupingModel: GridColumnGroup[] = Object.values(Ethnicity).map((e) => ({
   groupId: EthnicityDisplayNames[e],
-  children: [{ field: `${e}M` }, { field: `${e}F` }, { field: `${e}NB` }]
+  children: [{ field: `${e}M` }, { field: `${e}F` }, { field: `${e}NB` }],
+  headerAlign: 'center' as GridAlignment, // Add this line
 }));
 
 export interface TableProps {
