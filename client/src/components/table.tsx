@@ -21,7 +21,7 @@ const columns: CustomGridColDef[] = [
     headerName: '',
     cellClassName: 'position-cell',
     headerAlign: 'center',
-    type: 'custom',
+    type: 'custom'
   },
   ...Object.values(Ethnicity)
     .map((e) => [
@@ -31,7 +31,7 @@ const columns: CustomGridColDef[] = [
         width: COLUMN_WIDTH,
         sortable: false,
         headerAlign: 'center' as GridAlignment,
-        type: 'custom',
+        type: 'custom'
       },
       {
         field: `${e}M`,
@@ -39,7 +39,7 @@ const columns: CustomGridColDef[] = [
         width: COLUMN_WIDTH,
         sortable: false,
         headerAlign: 'center' as GridAlignment,
-        type: 'custom',
+        type: 'custom'
       },
       {
         field: `${e}NB`,
@@ -47,7 +47,7 @@ const columns: CustomGridColDef[] = [
         width: COLUMN_WIDTH,
         sortable: false,
         headerAlign: 'center' as GridAlignment,
-        type: 'custom',
+        type: 'custom'
       }
     ])
     .flat()
@@ -56,7 +56,7 @@ const columns: CustomGridColDef[] = [
 const columnGroupingModel: GridColumnGroup[] = Object.values(Ethnicity).map((e) => ({
   groupId: EthnicityDisplayNames[e],
   children: [{ field: `${e}M` }, { field: `${e}F` }, { field: `${e}NB` }],
-  headerAlign: 'center' as GridAlignment, // Add this line
+  headerAlign: 'center' as GridAlignment // Add this line
 }));
 
 export interface TableProps {
