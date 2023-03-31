@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { convertToRows, DataFormat, TableData } from '@utils/data-format';
-import { DataGrid, GridColDef, GridColumnGroup, GridColumnGroupingModel } from '@mui/x-data-grid';
+import { convertToRows, TableData } from '@utils/data-format';
+import { DataGrid, GridColDef, GridColumnGroup, GridAlignment } from '@mui/x-data-grid';
 import { Box, useTheme } from '@mui/material';
 import { Ethnicity, EthnicityDisplayNames } from '@utils/ethnicity';
 import { Gender, GenderDisplayNames } from '@utils/gender';
@@ -9,13 +9,19 @@ const POSITION_WIDTH = 200;
 const COLUMN_WIDTH = 90;
 const HEIGHT = 400;
 
-const columns: GridColDef[] = [
+type CustomGridColDef = GridColDef & {
+  headerAlign?: GridAlignment;
+};
+
+const columns: CustomGridColDef[] = [
   {
     field: 'position',
     width: POSITION_WIDTH,
     sortable: false,
     headerName: '',
-    cellClassName: 'position-cell'
+    cellClassName: 'position-cell',
+    headerAlign: 'center',
+    type: 'custom',
   },
   ...Object.values(Ethnicity)
     .map((e) => [
@@ -23,19 +29,25 @@ const columns: GridColDef[] = [
         field: `${e}F`,
         headerName: GenderDisplayNames[Gender.Female],
         width: COLUMN_WIDTH,
-        sortable: false
+        sortable: false,
+        headerAlign: 'center' as GridAlignment,
+        type: 'custom',
       },
       {
         field: `${e}M`,
         headerName: GenderDisplayNames[Gender.Male],
         width: COLUMN_WIDTH,
-        sortable: false
+        sortable: false,
+        headerAlign: 'center' as GridAlignment,
+        type: 'custom',
       },
       {
         field: `${e}NB`,
         headerName: GenderDisplayNames[Gender.NonBinary],
         width: COLUMN_WIDTH,
-        sortable: false
+        sortable: false,
+        headerAlign: 'center' as GridAlignment,
+        type: 'custom',
       }
     ])
     .flat()
