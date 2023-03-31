@@ -10,7 +10,7 @@ function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
   return pem;
 }
 
-export async function generateKeyPair() {
+export async function generateKeyPair(): Promise<CryptoKeyPair> {
   const keyPair = await crypto.subtle.generateKey(
     {
       name: 'RSA-OAEP',
@@ -21,7 +21,11 @@ export async function generateKeyPair() {
     true,
     ['encrypt', 'decrypt']
   );
+  
+  return keyPair;
+}
 
+export async function keyPairToDictionary(keyPair: CryptoKeyPair): Promise<{ publicKey: string; privateKey: string }> {
   const publicKeySpki = await crypto.subtle.exportKey('spki', keyPair.publicKey);
   const publicKeyPem = arrayBufferToPem(publicKeySpki);
   const privateKeyPkcs8 = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
@@ -110,7 +114,6 @@ export async function encryptString(publicKey: CryptoKey, plainText: string): Pr
       data
     );
     const encryptedString = new TextDecoder().decode(encryptedData);
-    console.log(`data: ${data}\tencryptedString: ${encryptedString}`)
 
     return encryptedString;
   } catch (error) {
@@ -135,4 +138,9 @@ export async function decryptString(privateKey: CryptoKey, encryptedData: ArrayB
     console.error('Error decrypting the string:', error);
     throw error;
   }
+}
+
+export function isCryptoKeyPair(keypair: { publicKey: string; privateKey: string } | CryptoKeyPair): boolean {
+  return keypair.hasOwnProperty('publicKey') &&
+  keypair.hasOwnProperty('privateKey');
 }

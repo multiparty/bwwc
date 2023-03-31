@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { generateKeyPair } from '@utils/keypair';
+import { generateKeyPair, keyPairToDictionary } from '@utils/keypair';
 import React, { createContext, FC, useContext, useEffect } from 'react';
 import { useAuth } from '@context/auth.context';
 import { useSession } from '@context/session.context';
@@ -57,7 +57,8 @@ export interface ApiContextProps {
 }
 
 export async function startSession(): Promise<CreateSessionResponse> {
-  const { publicKey, privateKey } = await generateKeyPair();
+  const keypair = await generateKeyPair();
+  const { publicKey, privateKey } = await keyPairToDictionary(keypair);
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
