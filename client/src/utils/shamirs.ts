@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { Point } from '@utils/data-format';
+import { Point, PointWithEncryptedState } from '@utils/data-format';
+import { encryptString, arrayBufferToBase64 } from '@utils/keypair';
 
 function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   let bigMax = new BigNumber(0);
@@ -81,7 +82,9 @@ prime (number, optional) - The prime number to use for the polynomial modulus. D
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, prime: number=180252380737439): Point[] {
+export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, 
+  prime: number=180252380737439): Point[] {
+
     const bigPrime = new BigNumber(prime);
     const bigSecret = new BigNumber(secret);
     const bigThreshold = new BigNumber(threshold);
@@ -106,4 +109,77 @@ export function shamirShare(secret: number, numShares: number, threshold: number
           return point;
       }
   });
+}
+
+/*
+Encrypt a specified number of shares using a public key.
+
+inputs:
+points (Point[]) - The list of shares to be encrypted, where each share is a tuple of two numbers (x, y).
+numEncryptWithKey (number) - The number of shares to be encrypted using the public key.
+publicKey (CryptoKey) - The public key used for encryption.
+
+output:
+encryptedPoints (Promise<Array<Point>>) - A promise that resolves to a list of encrypted shares, where each share is a tuple 
+of two values (x, encrypted_y) for the encrypted shares, or (x, y) for the unencrypted shares.
+*/
+export async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<PointWithEncryptedState>> {
+  let numCalls = 0;
+  const encryptedPoints = new Array();
+
+  for (let i = 0; i < points.length; i++) {
+    const x = points[i][0];
+    const y = points[i][1].toString();
+
+    if (numCalls < numEncryptWithKey) {
+      encryptedPoints.push([x, arrayBufferToBase64(await encryptString(publicKey, y)), 'enc-share']);
+    } else {
+      encryptedPoints.push([x, y, 'share']);
+    }
+    numCalls++;
+  }
+
+  return encryptedPoints;
+}
+
+/*
+Convert a table into secret shares and encrypt a specified number of shares using a public key.
+
+inputs:
+obj (Record<string, any>) - The table object to be converted into secret shares.
+numShares (number) - The number of shares to generate for each secret in the table.
+threshold (number) - The minimum number of shares required to reconstruct each secret in the table.
+numEncryptWithKey (number) - The number of shares to be encrypted using the public key.
+publicKey (CryptoKey) - The public key used for encryption.
+stringify (boolean, optional) - Whether to return the shares as strings. Default: false.
+
+output:
+encryptedSecretShares (Promise<Record<string, any>>) - A promise that resolves to an object with the same structure as the
+ input table, where each secret value is replaced with a list of encrypted secret shares.
+*/
+export async function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, stringify: boolean=false): Promise<Record<string, any>> {
+  const dfs = async (
+    currentObj: Record<string, any>,
+    originalObj: Record<string, any>,
+    keyPath: string[] = [],
+  ): Promise<Record<string, any>> => {
+    const keys = Object.keys(originalObj);
+    const encoder = new TextEncoder();
+
+    for (const key of keys) {
+      if (typeof originalObj[key] === 'number') {
+        const points = shamirShare(originalObj[key], numShares, threshold, stringify);
+        currentObj[key] = await encryptShares(points, numEncryptWithKey, publicKey);
+      } else if (typeof originalObj[key] === 'object') {
+        if (!currentObj[key]) {
+          currentObj[key] = {};
+        }
+        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
+      }
+    }
+
+    return currentObj;
+  };
+
+  return await dfs({}, obj);
 }

@@ -102,10 +102,19 @@ export async function importPemPrivateKey(privateKeyPem: string): Promise<Crypto
   }
 }
 
-export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<string> {
+export function arrayBufferToString(buffer: ArrayBuffer): string {
+  const decoder = new TextDecoder('utf-8');
+  return decoder.decode(buffer);
+}
+
+export function stringToArrayBuffer(str: string): ArrayBuffer {
+  const encoder = new TextEncoder();
+  return encoder.encode(str);
+}
+
+export async function encryptString(publicKey: CryptoKey, plainText: string): Promise<ArrayBuffer> {
   try {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(plainText);
+    const data = stringToArrayBuffer(plainText);
     const encryptedData = await crypto.subtle.encrypt(
       {
         name: 'RSA-OAEP'
@@ -113,9 +122,7 @@ export async function encryptString(publicKey: CryptoKey, plainText: string): Pr
       publicKey,
       data
     );
-    const encryptedString = new TextDecoder().decode(encryptedData);
-
-    return encryptedString;
+    return encryptedData;
   } catch (error) {
     console.error('Error encrypting the string:', error);
     throw error;
@@ -131,9 +138,8 @@ export async function decryptString(privateKey: CryptoKey, encryptedData: ArrayB
       privateKey,
       encryptedData
     );
-    const decoder = new TextDecoder();
-    const decryptedString = decoder.decode(decryptedData);
-    return decryptedString;
+
+    return arrayBufferToString(decryptedData);
   } catch (error) {
     console.error('Error decrypting the string:', error);
     throw error;
@@ -144,3 +150,33 @@ export function isCryptoKeyPair(keypair: { publicKey: string; privateKey: string
   return keypair.hasOwnProperty('publicKey') &&
   keypair.hasOwnProperty('privateKey');
 }
+
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+  return btoa(binary);
+}
+
+export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  const binary = atob(base64);
+  const buffer = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+      buffer[i] = binary.charCodeAt(i);
+  }
+  return buffer.buffer;
+}
+
+interface ArrayBufferWrapper {
+  type: 'ArrayBuffer';
+  data: string;
+}
+
+export function convertArrayBuffersToBase64(json: any): any {
+  return JSON.parse(JSON.stringify(json, (key: string, value: any) => {
+      if (value instanceof ArrayBuffer) {
+          return { type: 'ArrayBuffer', data: arrayBufferToBase64(value) } as ArrayBufferWrapper;
+      }
+      return value;
+  }));
+}
+

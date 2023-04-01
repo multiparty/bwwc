@@ -7,56 +7,12 @@ import { readCsv } from '@utils/csv-parser';
 import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
-import { shamirShare } from '@utils/shamirs';
 import { getPublicKey, submitData } from '@services/api';
-import { importPemPublicKey, encryptString } from '@utils/keypair';
+import { importPemPublicKey, keyPairToDictionary } from '@utils/keypair';
 import { useSession } from '@context/session.context';
+import { generateKeyPair } from '@utils/keypair'; // TODO: remove later
+import { tableToSecretShares } from '@utils/shamirs';
 
-async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<Point>> {
-  let numCalls = 0;
-  const encryptedPoints = new Array();
-
-  for (let i = 0; i < points.length; i++) {
-    const x = points[i][0];
-    const y = points[i][1].toString();
-
-    if (numCalls < numEncryptWithKey) {
-      encryptedPoints.push([x, await encryptString(publicKey, y)]);
-    } else {
-      encryptedPoints.push([x, y]);
-    }
-    numCalls++;
-  }
-
-  return encryptedPoints;
-}
-
-async function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, asString: boolean=false): Promise<Record<string, any>> {
-  const dfs = async (
-    currentObj: Record<string, any>,
-    originalObj: Record<string, any>,
-    keyPath: string[] = [],
-  ): Promise<Record<string, any>> => {
-    const keys = Object.keys(originalObj);
-    const encoder = new TextEncoder();
-
-    for (const key of keys) {
-      if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(originalObj[key], numShares, threshold, asString);
-        currentObj[key] = await encryptShares(points, numEncryptWithKey, publicKey);
-      } else if (typeof originalObj[key] === 'object') {
-        if (!currentObj[key]) {
-          currentObj[key] = {};
-        }
-        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
-      }
-    }
-
-    return currentObj;
-  };
-
-  return await dfs({}, obj);
-}
 
 export const HomePage: FC = () => {
   const { sessionId, participantCode } = useSession();
@@ -74,13 +30,16 @@ export const HomePage: FC = () => {
         setData(csvData);
 
         // Compute secret shares
-        const sessionId = '32eccc37-baff-4fca-9871-dc'; // TODO
+        const sessionId = 'd09c948a-a2fe-4d3b-8853-21'; // TODO
         const authToken = 'auth_token'; // TODO
-        const asString = true;
-        const publicKeyString = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArJTEFwAmb60hsspOyISyo+NAOGa8dtGzJVb+KuHbnhYiROM+aeUXm0FtLiq3Qn3ibjhTlWGxER6GSuIopwY83KP0EIOLDKSMxcEk4yS7yKbJRBqE5sc5VtV35H2yLO2qK8PunobD6ngBF4lDnCat3w7KdxwSw7VoDnnUFYmA7Kfmr05qHvh/KoZQvISa/wYjlHevoFVvGYR9FI83uU86BxhHuDkIwAtD3mDeEXGUAtBGrXKXWwrsNyXvjlX2pr8SxO9p/H+rGhCby243s+SlY9L1IsC5QN7SAp4EL6gqPzc5BNq8Fma4NmFa65nCAFXWG5a2j2eIAzxfnbRAqzHfcwIDAQAB';
-        // const publicKeyString = await getPublicKey(sessionId, authToken);
-        const publicCryptoKey = await importPemPublicKey(publicKeyString);
-        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, asString);
+        
+        const keypair = await generateKeyPair();
+        const { publicKey, privateKey } = await keyPairToDictionary(keypair);
+        const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
+        const publicCryptoKey = await importPemPublicKey(publicKeyPem);
+
+        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
+        console.log(secretTable);
         setTable(secretTable);
       }
     };
