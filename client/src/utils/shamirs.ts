@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
-import { encryptString, arrayBufferToBase64 } from '@utils/keypair';
+import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from '@utils/keypair';
 
 function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   let bigMax = new BigNumber(0);
@@ -82,8 +82,7 @@ prime (number, optional) - The prime number to use for the polynomial modulus. D
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, 
-  prime: number=180252380737439): Point[] {
+export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, prime: number=180252380737439): Point[] {
 
     const bigPrime = new BigNumber(prime);
     const bigSecret = new BigNumber(secret);
@@ -142,6 +141,24 @@ export async function encryptShares(points: Point[], numEncryptWithKey: number, 
   return encryptedPoints;
 }
 
+async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
+  const decryptedShares = new Array();
+
+  for (let i = 0; i < encryptedShares.length; i++) {
+    const x = encryptedShares[i][0];
+    const y = encryptedShares[i][1];
+    const state = encryptedShares[i][2];
+
+    if (state === 'enc-share') {
+      decryptedShares.push([x, new BigNumber(await decryptString(privateKey, base64ToArrayBuffer(y)))]);
+    } else {
+      decryptedShares.push([x, new BigNumber(y)]);
+    }
+  }
+
+  return decryptedShares;
+}
+
 /*
 Convert a table into secret shares and encrypt a specified number of shares using a public key.
 
@@ -170,6 +187,32 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
       if (typeof originalObj[key] === 'number') {
         const points = shamirShare(originalObj[key], numShares, threshold, stringify);
         currentObj[key] = await encryptShares(points, numEncryptWithKey, publicKey);
+      } else if (typeof originalObj[key] === 'object') {
+        if (!currentObj[key]) {
+          currentObj[key] = {};
+        }
+        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
+      }
+    }
+
+    return currentObj;
+  };
+
+  return await dfs({}, obj);
+}
+
+export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
+  const dfs = async (
+    currentObj: Record<string, any>,
+    originalObj: Record<string, any>,
+    keyPath: string[] = [],
+  ): Promise<Record<string, any>> => {
+    const keys = Object.keys(originalObj);
+    const encoder = new TextEncoder();
+
+    for (const key of keys) {
+      if (Array.isArray(originalObj[key])) {
+        currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};

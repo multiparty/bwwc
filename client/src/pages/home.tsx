@@ -10,8 +10,8 @@ import { Layout } from '@layouts/layout';
 import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, keyPairToDictionary } from '@utils/keypair';
 import { useSession } from '@context/session.context';
-import { generateKeyPair } from '@utils/keypair'; // TODO: remove later
-import { tableToSecretShares } from '@utils/shamirs';
+import { generateKeyPair, importPemPrivateKey } from '@utils/keypair'; // TODO: remove later
+import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
 
 
 export const HomePage: FC = () => {
@@ -37,9 +37,14 @@ export const HomePage: FC = () => {
         const { publicKey, privateKey } = await keyPairToDictionary(keypair);
         const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
         const publicCryptoKey = await importPemPublicKey(publicKeyPem);
+        const privateCryptoKey = await importPemPrivateKey(privateKey);
 
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
+        console.log(`secretTable:`);
         console.log(secretTable);
+        const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
+        console.log(`decTable: `);
+        console.log(decTable);
         setTable(secretTable);
       }
     };
