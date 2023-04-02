@@ -225,3 +225,43 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
 
   return await dfs({}, obj);
 }
+
+export function deepEqual(obj1: Record<string, any>, obj2: Record<string, any>): boolean {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  // Check if both objects have the same number of keys
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    // Check if the key is present in the second object
+    if (!keys2.includes(key)) return false;
+
+    const val1 = obj1[key];
+    const val2 = obj2[key];
+
+    // If the values are arrays of strings, compare them
+    if (Array.isArray(val1) && Array.isArray(val2) && val1.every((elem: any) => typeof elem === 'string') && val2.every((elem: any) => typeof elem === 'string')) {
+      if (!arraysEqual(val1, val2)) return false;
+    } else if (typeof val1 === 'object' && typeof val2 === 'object') {
+      // If the values are objects, perform a deep comparison using DFS
+      if (!deepEqual(val1, val2)) return false;
+    } else {
+      // If the values are not equal, return false
+      if (val1 !== val2) return false;
+    }
+  }
+
+  // If all keys and values are equal, the objects are deeply equal
+  return true;
+}
+
+function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
+  if (arr1.length !== arr2.length) return false;
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
