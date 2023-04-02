@@ -12,8 +12,10 @@ export const LinkGenerator: FC = () => {
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
   const { createNewSubmissionUrls } = useApi();
+
   useEffect(() => {
-    createNewSubmissionUrls(0).then((urls) => {
+    const sessionId = 'dummy_session_id'; // TODO: remove later
+    createNewSubmissionUrls(0, sessionId).then((urls) => {
       setExistingLinks(Object.values(urls));
     });
   }, []);
@@ -24,7 +26,8 @@ export const LinkGenerator: FC = () => {
 
   const handleSubmit = (values: { count: number }) => {
     const numSubmitters = values.count;
-    createNewSubmissionUrls(numSubmitters).then((urls) => {
+    const sessionId = 'dummy_session_id';
+    createNewSubmissionUrls(numSubmitters, sessionId).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
   };
