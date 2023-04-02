@@ -201,6 +201,7 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
   return await dfs({}, obj);
 }
 
+
 export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
   const dfs = async (
     currentObj: Record<string, any>,
@@ -218,8 +219,12 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
         });
 
         if (isSecretShareArray) {
-          console.log(originalObj[key])
-          currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
+          currentObj[key] = {};
+          // console.log(originalObj[key])
+
+          for (const [gender, encryptedShares] of Object.entries(originalObj[key])) {
+            currentObj[key][gender] = await decryptSecretShares(encryptedShares as PointWithEncryptedState[], privateKey);
+          }
         } else {
           if (!currentObj[key]) {
             currentObj[key] = {};

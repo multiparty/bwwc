@@ -44,8 +44,9 @@ export const HomePage: FC = () => {
         console.log(secretTable);
         const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
         console.log(`decTable: `);
-        console.log(decTable);
+        // console.log(decTable);
         setTable(secretTable);
+        console.log(decTable)
       }
     };
     loadData();
