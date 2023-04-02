@@ -2,6 +2,16 @@ import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
 import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from '@utils/keypair';
 
+/*
+This function generates a random BigNumber within the range of min and max (inclusive), using the browser's crypto.getRandomValues() function.
+
+inputs:
+min (BigNumber): the lower bound of the range (inclusive)
+max (BigNumber): the upper bound of the range (inclusive). If null is passed, then min is used as the upper bound and 0 is used as the lower bound.
+
+outputs:
+A randomly generated BigNumber within the given range.
+*/
 function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   let bigMax = new BigNumber(0);
   let bigMin = new BigNumber(0);
@@ -28,6 +38,15 @@ function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   return bigMin.plus(result.mod(range));
 }  
 
+/*
+Check if a given number is an integer greater than zero.
+
+inputs:
+num (number) - The number to check.
+
+output:
+(boolean) - Whether the number is an integer greater than zero.
+*/
 function isIntGreaterThanZero(num: number): boolean {
     return Number.isInteger(num) && num > 0;
 }
@@ -141,6 +160,16 @@ export async function encryptSecretShares(points: Point[], numEncryptWithKey: nu
   return encryptedPoints;
 }
 
+/*
+Decrypt an array of secret shares using a private key.
+
+inputs:
+encryptedShares (Array<PointWithEncryptedState>) - An array of encrypted secret shares, each represented by a tuple with x, y, and state ('enc-share' or 'plain').
+privateKey (CryptoKey) - The private key used for decryption.
+
+outputs:
+Promise<Array<Point>> - A Promise that resolves to an array of decrypted secret shares, each represented by a tuple with x and y values.
+*/
 async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
   const decryptedShares = new Array();
 
