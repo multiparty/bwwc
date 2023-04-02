@@ -177,8 +177,7 @@ encryptedSecretShares (Promise<Record<string, any>>) - A promise that resolves t
 export async function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, stringify: boolean=false): Promise<Record<string, any>> {
   const dfs = async (
     currentObj: Record<string, any>,
-    originalObj: Record<string, any>,
-    keyPath: string[] = [],
+    originalObj: Record<string, any>
   ): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
@@ -191,7 +190,7 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
         if (!currentObj[key]) {
           currentObj[key] = {};
         }
-        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
+        await dfs(currentObj[key], originalObj[key]);
       }
     }
 
@@ -205,32 +204,19 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
 export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
   const dfs = async (
     currentObj: Record<string, any>,
-    originalObj: Record<string, any>,
-    keyPath: string[] = [],
+    originalObj: Record<string, any>
   ): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
+    const encoder = new TextEncoder();
 
     for (const key of keys) {
-      if (typeof originalObj[key] === 'object' && !Array.isArray(originalObj[key])) {
-        const innerKeys = Object.keys(originalObj[key]);
-        const isSecretShareArray = innerKeys.every(innerKey => {
-          const innerArray = originalObj[key][innerKey];
-          return Array.isArray(innerArray) && innerArray.length === 3 && innerArray.every(item => typeof item === 'string');
-        });
-
-        if (isSecretShareArray) {
+      if (Array.isArray(originalObj[key])) {
+        currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
+      } else if (typeof originalObj[key] === 'object') {
+        if (!currentObj[key]) {
           currentObj[key] = {};
-          // console.log(originalObj[key])
-
-          for (const [gender, encryptedShares] of Object.entries(originalObj[key])) {
-            currentObj[key][gender] = await decryptSecretShares(encryptedShares as PointWithEncryptedState[], privateKey);
-          }
-        } else {
-          if (!currentObj[key]) {
-            currentObj[key] = {};
-          }
-          await dfs(currentObj[key], originalObj[key], keyPath.concat(key));
         }
+        await dfs(currentObj[key], originalObj[key]);
       }
     }
 
