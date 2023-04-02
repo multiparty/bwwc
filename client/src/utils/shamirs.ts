@@ -210,14 +210,21 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
     const keys = Object.keys(originalObj);
 
     for (const key of keys) {
-      console.log(Object.prototype.toString.call(originalObj[key]));
-      if (originalObj[key] has three elements as strings) {
-        currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
-      } else if (typeof originalObj[key] === 'object') {
-        if (!currentObj[key]) {
-          currentObj[key] = {};
+      if (typeof originalObj[key] === 'object' && !Array.isArray(originalObj[key])) {
+        const innerKeys = Object.keys(originalObj[key]);
+        const isSecretShareArray = innerKeys.every(innerKey => {
+          const innerArray = originalObj[key][innerKey];
+          return Array.isArray(innerArray) && innerArray.length === 3 && innerArray.every(item => typeof item === 'string');
+        });
+
+        if (isSecretShareArray) {
+          currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
+        } else {
+          if (!currentObj[key]) {
+            currentObj[key] = {};
+          }
+          await dfs(currentObj[key], originalObj[key], keyPath.concat(key));
         }
-        await dfs(currentObj[key], originalObj[key], keyPath.concat(key));
       }
     }
 
