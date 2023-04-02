@@ -200,7 +200,16 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
   return await dfs({}, obj);
 }
 
+/*
+Convert encrypted secret shares in a nested table structure back to the original table.
 
+inputs:
+obj (Record<string, any>) - The nested object containing encrypted secret shares in a table structure.
+privateKey (CryptoKey) - The private key used to decrypt the secret shares.
+
+outputs:
+Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
+*/
 export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
   const dfs = async (
     currentObj: Record<string, any>,
@@ -226,6 +235,16 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
   return await dfs({}, obj);
 }
 
+/*
+Perform a deep comparison between two nested objects.
+
+inputs:
+obj1 (Record<string, any>) - The first nested object to be compared.
+obj2 (Record<string, any>) - The second nested object to be compared.
+
+outputs:
+boolean - Returns true if the objects are deeply equal (same structure, same keys, and same values), otherwise false.
+*/
 export function deepEqual(obj1: Record<string, any>, obj2: Record<string, any>): boolean {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
@@ -256,6 +275,16 @@ export function deepEqual(obj1: Record<string, any>, obj2: Record<string, any>):
   return true;
 }
 
+/*
+Compare two arrays for element-wise equality.
+
+inputs:
+arr1 (T[]) - The first array to be compared.
+arr2 (T[]) - The second array to be compared.
+
+outputs:
+boolean - Returns true if the arrays are equal (same length and same elements in the same order), otherwise false.
+*/
 function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
   if (arr1.length !== arr2.length) return false;
   for (let i = 0; i < arr1.length; i++) {
