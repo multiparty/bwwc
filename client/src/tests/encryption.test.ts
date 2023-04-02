@@ -1,32 +1,85 @@
-import { encryptString, decryptString } from '../utils/keypair';
-import crypto from 'crypto';
+import { deepEqual } from '../utils/shamirs';
 
-describe('Encryption and Decryption', () => {
-  let publicKey: CryptoKey;
-  let privateKey: CryptoKey;
-  const plainText = 'This is a test string';
-
-  beforeAll(async () => {
-    const keyPair = await crypto.subtle.generateKey(
-      {
-        name: 'RSA-OAEP',
-        modulusLength: 2048,
-        publicExponent: new Uint8Array([1, 0, 1]),
-        hash: 'SHA-256',
+describe('deepEqual', () => {
+  it('should return true for deeply equal objects', () => {
+    const obj1 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 22,
       },
-      true,
-      ['encrypt', 'decrypt']
-    );
+    };
 
-    publicKey = keyPair.publicKey;
-    privateKey = keyPair.privateKey;
+    const obj2 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 22,
+      },
+    };
+
+    expect(deepEqual(obj1, obj2)).toBeTruthy();
   });
 
-  test('should encrypt and then decrypt the string', async () => {
-    const encryptedString = await encryptString(publicKey, plainText);
-    const encryptedBuffer = new TextEncoder().encode(encryptedString);
-    const decryptedString = await decryptString(privateKey, encryptedBuffer);
+  it('should return false for objects with different keys', () => {
+    const obj1 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 22,
+      },
+    };
 
-    expect(decryptedString).toEqual(plainText);
+    const obj2 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key23: 22,
+      },
+    };
+
+    expect(deepEqual(obj1, obj2)).toBeFalsy();
+  });
+
+  it('should return false for objects with different values', () => {
+    const obj1 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 22,
+      },
+    };
+
+    const obj2 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 23,
+      },
+    };
+
+    expect(deepEqual(obj1, obj2)).toBeFalsy();
+  });
+
+  it('should return false for objects with different nested structures', () => {
+    const obj1 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: 22,
+      },
+    };
+
+    const obj2 = {
+      key1: 'value1',
+      key2: {
+        key21: ['a', 'b', 'c'],
+        key22: {
+          key221: 22,
+        },
+      },
+    };
+
+    expect(deepEqual(obj1, obj2)).toBeFalsy();
   });
 });

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
-import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from '@utils/keypair';
+import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from './keypair';
 
 /*
 This function generates a random BigNumber within the range of min and max (inclusive), using the browser's crypto.getRandomValues() function.
