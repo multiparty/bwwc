@@ -122,7 +122,7 @@ output:
 encryptedPoints (Promise<Array<Point>>) - A promise that resolves to a list of encrypted shares, where each share is a tuple 
 of two values (x, encrypted_y) for the encrypted shares, or (x, y) for the unencrypted shares.
 */
-export async function encryptShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<PointWithEncryptedState>> {
+export async function encryptSecretShares(points: Point[], numEncryptWithKey: number, publicKey: CryptoKey): Promise<Array<PointWithEncryptedState>> {
   let numCalls = 0;
   const encryptedPoints = new Array();
 
@@ -186,7 +186,7 @@ export async function tableToSecretShares(obj: Record<string, any>, numShares: n
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
         const points = shamirShare(originalObj[key], numShares, threshold, stringify);
-        currentObj[key] = await encryptShares(points, numEncryptWithKey, publicKey);
+        currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -218,6 +218,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
         });
 
         if (isSecretShareArray) {
+          console.log(originalObj[key])
           currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
         } else {
           if (!currentObj[key]) {
