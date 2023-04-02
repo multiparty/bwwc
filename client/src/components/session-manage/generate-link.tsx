@@ -11,9 +11,9 @@ import { useApi } from '@services/api';
 export const LinkGenerator: FC = () => {
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
-  const { getSubmissionUrls, createNewSubmissionUrls } = useApi();
+  const { createNewSubmissionUrls } = useApi();
   useEffect(() => {
-    getSubmissionUrls(0).then((urls) => {
+    createNewSubmissionUrls(0).then((urls) => {
       setExistingLinks(Object.values(urls));
     });
   }, []);

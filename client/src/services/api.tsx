@@ -51,7 +51,6 @@ export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number) => Promise<GetSubmissionUrlsResponse>;
-  getSubmissionUrls: (participant_count: number) => Promise<GetSubmissionUrlsResponse>;
   getEncryptedShares: () => Promise<GetEncryptedSharesResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
@@ -93,18 +92,6 @@ export async function createNewSubmissionUrls(count: number, sessionId?: string)
       session_id: sessionId,
       participant_count: count,
       auth_token: 'remove this later'
-    })
-  );
-  return response.data;
-}
-
-export async function getSubmissionUrls(participant_count: number, session_id?: string): Promise<GetSubmissionUrlsResponse> {
-  const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
-    convertToFormData({
-      auth_token: 'remove this later',
-      session_id: session_id,
-      participant_count: participant_count
     })
   );
   return response.data;
@@ -162,7 +149,6 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
         createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId),
-        getSubmissionUrls: (participant_count: number) => getSubmissionUrls(participant_count, sessionId),
         getEncryptedShares: () => getEncryptedShares(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
