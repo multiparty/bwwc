@@ -208,16 +208,16 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
     keyPath: string[] = [],
   ): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
-    const encoder = new TextEncoder();
 
     for (const key of keys) {
-      if (Array.isArray(originalObj[key])) {
+      console.log(Object.prototype.toString.call(originalObj[key]));
+      if (originalObj[key] has three elements as strings) {
         currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
         }
-        dfs(currentObj[key], originalObj[key], keyPath.concat(key));
+        await dfs(currentObj[key], originalObj[key], keyPath.concat(key));
       }
     }
 
