@@ -42,7 +42,7 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
-  const submitDataHandler = () => {
+  const submitDataHandler = (secretTable: Record<string, any>) => {
     if (sessionId === undefined) {
       throw new Error('Session ID is undefined');
     }
@@ -51,10 +51,7 @@ export const HomePage: FC = () => {
       throw new Error('Participant code is undefined');
     }
 
-    const sessionIds = '8fab1938-407a-4e26-bcde-cf69ab59904a';
-
-
-    submitData(table, sessionId, participantCode);
+    submitData(secretTable, sessionId, participantCode);
   }
 
   return (
@@ -63,7 +60,7 @@ export const HomePage: FC = () => {
         <Stack spacing={5}>
           <CompanyInputForm onFileUpload={setFile} />
           <ViewData open={false} data={data} />
-          <VerifyData data={data} submitDataHandler={submitDataHandler} />
+          <VerifyData data={data} submitDataHandler={submitDataHandler} secretTable={table} />
         </Stack>
       </Layout>
   );

@@ -103,6 +103,8 @@ export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> 
 }
 
 export async function submitData(data: any, sessionId: string, participantCode: string): Promise<SubmitDataResponse> {
+  console.log(`submitting data: ${JSON.stringify(data)}`)
+  
   const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`,
     convertToFormData({
       data: JSON.stringify(data),
