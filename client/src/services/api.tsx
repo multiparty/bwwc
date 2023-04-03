@@ -9,9 +9,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 // trailing slash is required by backend
 const API_ENDPOINTS = {
   START_SESSION: 'start_session/',
+  STOP_SESSION: 'stop_session/',
   END_SESSION: 'end_session/',
   GET_SUBMISSION_URLS: 'get_submission_urls/',
-  GET_ENCRYPTED_SHARES: 'get_encrypted_shares/',
+  GET_SUBMISSIONS: 'get_submitted_data/',
   SUBMIT_DATA: 'submit_data/'
 };
 
@@ -51,7 +52,7 @@ export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string) => Promise<GetSubmissionUrlsResponse>;
-  getEncryptedShares: () => Promise<GetEncryptedSharesResponse>;
+  getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
 
@@ -97,8 +98,8 @@ export async function createNewSubmissionUrls(count: number, sessionId: string):
   return response.data;
 }
 
-export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_ENCRYPTED_SHARES}`);
+export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
+  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSIONS}`);
   return response.data;
 }
 
@@ -152,7 +153,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
         createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId as string),
-        getEncryptedShares: () => getEncryptedShares(),
+        getSubmissions: () => getSubmissions(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
     >
