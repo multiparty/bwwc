@@ -6,6 +6,7 @@ import { useApi } from '@services/api';
 
 export const SessionManage: FC = () => {
   const { endSession } = useApi();
+
   return (
     <Stack spacing={2}>
       <Card>
