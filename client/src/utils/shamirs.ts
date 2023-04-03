@@ -30,13 +30,13 @@ function getRandomBigNumber(min: BigNumber, max: BigNumber) {
   const crypto = window.crypto || window.Crypto;
   crypto.getRandomValues(randomBytes);
   let result = new BigNumber(0);
-  
+
   for (let i = 0; i < bytesNeeded; i++) {
     result = result.plus(new BigNumber(randomBytes[i]).shiftedBy(i * 8));
   }
 
   return bigMin.plus(result.mod(range));
-}  
+}
 
 /*
 Check if a given number is an integer greater than zero.
@@ -48,7 +48,7 @@ output:
 (boolean) - Whether the number is an integer greater than zero.
 */
 function isIntGreaterThanZero(num: number): boolean {
-    return Number.isInteger(num) && num > 0;
+  return Number.isInteger(num) && num > 0;
 }
 
 /*
@@ -63,9 +63,9 @@ output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
 function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
-    const length = threshold.minus(BigNumber(1)).toNumber();
-    const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
-    return coefs;
+  const length = threshold.minus(BigNumber(1)).toNumber();
+  const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
+  return coefs;
 }
 
 /*
@@ -80,12 +80,12 @@ output:
 result (BigNumber) - The result of the polynomial evaluation at the specified point, modulo the prime.
 */
 function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
-    let result = BigNumber(0);
-    const bigIntPoint = BigNumber(point); // Convert point to a BigInt
-    for (const coef of coefs.reverse()) {
-        result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
-    }
-    return result;
+  let result = BigNumber(0);
+  const bigIntPoint = BigNumber(point); // Convert point to a BigInt
+  for (const coef of coefs.reverse()) {
+    result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
+  }
+  return result;
 }
 
 /*
@@ -101,31 +101,27 @@ prime (number, optional) - The prime number to use for the polynomial modulus. D
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean=false, prime: number=180252380737439): Point[] {
+export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean = false, prime: number = 180252380737439): Point[] {
+  const bigPrime = new BigNumber(prime);
+  const bigSecret = new BigNumber(secret);
+  const bigThreshold = new BigNumber(threshold);
 
-    const bigPrime = new BigNumber(prime);
-    const bigSecret = new BigNumber(secret);
-    const bigThreshold = new BigNumber(threshold);
-    
-    if (!isIntGreaterThanZero(secret) || !isIntGreaterThanZero(prime)) {
-        throw new Error('Secret must be a positive integer');
+  if (!isIntGreaterThanZero(secret) || !isIntGreaterThanZero(prime)) {
+    throw new Error('Secret must be a positive integer');
+  }
+
+  const polynomial = sampleShamirPolynomial(bigSecret, bigThreshold, bigPrime);
+
+  return Array.from({ length: numShares }, (_, i) => {
+    const point: Point = [new BigNumber(i + 1), evaluateAtPoint(polynomial, i + 1, bigPrime)];
+
+    if (asString) {
+      const x = point[0].toString();
+      const y = point[1].toString();
+      return [x, y];
+    } else {
+      return point;
     }
-
-    const polynomial = sampleShamirPolynomial(bigSecret, bigThreshold, bigPrime);
-
-    return Array.from({ length: numShares }, (_, i) => {
-      const point: Point = [
-          new BigNumber(i + 1),
-          evaluateAtPoint(polynomial, i + 1, bigPrime)
-      ];
-
-      if (asString) {
-          const x = point[0].toString();
-          const y = point[1].toString();
-          return [x, y];
-      } else {
-          return point;
-      }
   });
 }
 
@@ -203,11 +199,15 @@ output:
 encryptedSecretShares (Promise<Record<string, any>>) - A promise that resolves to an object with the same structure as the
  input table, where each secret value is replaced with a list of encrypted secret shares.
 */
-export async function tableToSecretShares(obj: Record<string, any>, numShares: number, threshold: number, numEncryptWithKey: number, publicKey: CryptoKey, stringify: boolean=false): Promise<Record<string, any>> {
-  const dfs = async (
-    currentObj: Record<string, any>,
-    originalObj: Record<string, any>
-  ): Promise<Record<string, any>> => {
+export async function tableToSecretShares(
+  obj: Record<string, any>,
+  numShares: number,
+  threshold: number,
+  numEncryptWithKey: number,
+  publicKey: CryptoKey,
+  stringify: boolean = false
+): Promise<Record<string, any>> {
+  const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
 
@@ -240,10 +240,7 @@ outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
 export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
-  const dfs = async (
-    currentObj: Record<string, any>,
-    originalObj: Record<string, any>
-  ): Promise<Record<string, any>> => {
+  const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
 

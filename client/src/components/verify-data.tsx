@@ -8,7 +8,7 @@ import { SubmissionAlert } from '@components/submission-alert';
 import { useSession } from '@context/session.context';
 
 export interface VerifyDataProps {
-  submitDataHandler: (secretTable: Record<string, any>)=>void;
+  submitDataHandler: (secretTable: Record<string, any>) => void;
   data: DataFormat;
   secretTable: Record<string, any>;
 }

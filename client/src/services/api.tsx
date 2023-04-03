@@ -103,13 +103,14 @@ export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> 
 }
 
 export async function submitData(data: any, sessionId: string, participantCode: string): Promise<SubmitDataResponse> {
-  console.log(`submitting data: ${JSON.stringify(data)}`)
-  
-  const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`,
+  console.log(`submitting data: ${JSON.stringify(data)}`);
+
+  const response: AxiosResponse = await axios.post(
+    `${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`,
     convertToFormData({
       data: JSON.stringify(data),
       sessionId: sessionId,
-      participantCode: participantCode,
+      participantCode: participantCode
     })
   );
   return response.data;
@@ -118,7 +119,7 @@ export async function submitData(data: any, sessionId: string, participantCode: 
 export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
   const response = await axios.get(`${API_BASE_URL}get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
   return response.data.public_key;
-};
+}
 
 const convertToFormData = (data: any): FormData => {
   return Object.keys(data).reduce((formData, key) => {

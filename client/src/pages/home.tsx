@@ -18,7 +18,7 @@ export const HomePage: FC = () => {
   const [data, setData] = useState<DataFormat>({} as DataFormat);
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
-  const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold+1); // Encrypt amount "theshold + 1" shares with key
+  const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
   const [table, setTable] = useState<Record<string, any>>({});
   const { authToken, participantCode, privateKey, sessionId } = useSelector((state: AppState) => state.session);
 
@@ -27,7 +27,7 @@ export const HomePage: FC = () => {
       if (file) {
         const csvData = await readCsv(file);
         setData(csvData);
-              
+
         const publicKeyString = await getPublicKey(sessionId, authToken);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
@@ -53,16 +53,15 @@ export const HomePage: FC = () => {
     }
 
     submitData(secretTable, sessionId, participantCode);
-  }
+  };
 
   return (
-    
-      <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
-        <Stack spacing={5}>
-          <CompanyInputForm onFileUpload={setFile} />
-          <ViewData open={false} data={data} />
-          <VerifyData data={data} submitDataHandler={submitDataHandler} secretTable={table} />
-        </Stack>
-      </Layout>
+    <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
+      <Stack spacing={5}>
+        <CompanyInputForm onFileUpload={setFile} />
+        <ViewData open={false} data={data} />
+        <VerifyData data={data} submitDataHandler={submitDataHandler} secretTable={table} />
+      </Stack>
+    </Layout>
   );
 };

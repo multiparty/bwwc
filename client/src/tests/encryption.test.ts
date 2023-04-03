@@ -7,16 +7,16 @@ describe('deepEqual', () => {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 22,
-      },
+        key22: 22
+      }
     };
 
     const obj2 = {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 22,
-      },
+        key22: 22
+      }
     };
 
     expect(deepEqual(obj1, obj2)).toBeTruthy();
@@ -27,16 +27,16 @@ describe('deepEqual', () => {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 22,
-      },
+        key22: 22
+      }
     };
 
     const obj2 = {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key23: 22,
-      },
+        key23: 22
+      }
     };
 
     expect(deepEqual(obj1, obj2)).toBeFalsy();
@@ -47,16 +47,16 @@ describe('deepEqual', () => {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 22,
-      },
+        key22: 22
+      }
     };
 
     const obj2 = {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 23,
-      },
+        key22: 23
+      }
     };
 
     expect(deepEqual(obj1, obj2)).toBeFalsy();
@@ -67,8 +67,8 @@ describe('deepEqual', () => {
       key1: 'value1',
       key2: {
         key21: ['a', 'b', 'c'],
-        key22: 22,
-      },
+        key22: 22
+      }
     };
 
     const obj2 = {
@@ -76,9 +76,9 @@ describe('deepEqual', () => {
       key2: {
         key21: ['a', 'b', 'c'],
         key22: {
-          key221: 22,
-        },
-      },
+          key221: 22
+        }
+      }
     };
 
     expect(deepEqual(obj1, obj2)).toBeFalsy();

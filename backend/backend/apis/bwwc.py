@@ -28,7 +28,8 @@ def start_session(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"session_id": session_id})
     else:
         return HttpResponseBadRequest("Invalid request method")
-    
+
+
 @csrf_exempt
 def stop_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
@@ -37,7 +38,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
 
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
-        
+
         if engine.is_initiator(auth_token):
             engine.close_submissions(session_id)
             return JsonResponse({"status": 200})
@@ -71,13 +72,13 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         auth_token = req.POST.get("auth_token")
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
-        
+
         if not engine.is_initiator(auth_token):
             return HttpResponseBadRequest("Invalid auth token")
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
-        
+
         participant_urls = engine.generate_participant_urls(
             session_id, participant_count
         )
@@ -121,7 +122,8 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"status": 200})
     else:
         return HttpResponseBadRequest("Invalid request method")
-    
+
+
 @csrf_exempt
 def get_public_key(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
@@ -139,7 +141,8 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"public_key": public_key})
     else:
         return HttpResponseBadRequest("Invalid request method")
-    
+
+
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
@@ -157,6 +160,7 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"data": data})
     else:
         return HttpResponseBadRequest("Invalid request method")
+
 
 def get_urlpatterns():
     return [

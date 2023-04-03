@@ -14,11 +14,7 @@ interface TableContextProviderProps {
 const TableContextProvider: React.FC<TableContextProviderProps> = ({ children }) => {
   const [table, setTable] = useState<Record<string, any>>({});
 
-  return (
-    <TableContext.Provider value={{ table, setTable }}>
-      {children}
-    </TableContext.Provider>
-  );
+  return <TableContext.Provider value={{ table, setTable }}>{children}</TableContext.Provider>;
 };
 
 export default TableContextProvider;

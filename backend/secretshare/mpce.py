@@ -59,12 +59,12 @@ class MPCEngine(object):
             "prime": self.prime,
             "public_key": public_key,
             "auth_token": auth_token,
-            "state": "open"
+            "state": "open",
         }
 
         self.save_session(session_id, session_data)
         return session_id
-    
+
     def is_initiator(self, session_id: str, auth_token: str) -> bool:
         session_data = self.get_session(session_id)
         return session_data["auth_token"] == auth_token
@@ -74,7 +74,7 @@ class MPCEngine(object):
 
     def add_participant(self, session_id: str, participant: str) -> None:
         session_data = self.get_session(session_id)
-        
+
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
 
@@ -109,7 +109,7 @@ class MPCEngine(object):
         self, session_id: str, participant_id: str, data: dict
     ) -> None:
         session_data = self.get_session(session_id)
-        
+
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
 
@@ -119,7 +119,7 @@ class MPCEngine(object):
         session_data["participant_submissions"][participant_id] = data
 
         self.save_session(session_id, session_data)
-        
+
     def close_submissions(self, session_id: str) -> None:
         session_data = self.get_session(session_id)
 
@@ -153,7 +153,7 @@ class MPCEngine(object):
         self, session_id: str, participant_count: int
     ) -> Dict[str, str]:
         participant_urls = {}
-        
+
         for i in range(participant_count):
             participant_token = str(uuid.uuid4())[:26]
             participant_url = f"{self.base_url}?session_id={session_id}&participant_code={participant_token}"
@@ -168,7 +168,7 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["shares"]
-    
+
     def get_public_key(self, session_id: str) -> str:
         session_data = self.get_session(session_id)
 
@@ -176,10 +176,10 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["public_key"]
-    
+
     def get_submitted_data(self, session_id: str) -> dict:
         session_data = self.get_session(session_id)
-        
+
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
 
@@ -187,7 +187,7 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["participant_submissions"]
-    
+
     def get_session_state(self, session_id: str) -> str:
         session_data = self.get_session(session_id)
 

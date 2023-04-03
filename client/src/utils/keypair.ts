@@ -21,7 +21,7 @@ export async function generateKeyPair(): Promise<CryptoKeyPair> {
     true,
     ['encrypt', 'decrypt']
   );
-  
+
   return keyPair;
 }
 
@@ -42,7 +42,7 @@ function pemToUint8Array(pem: string): Uint8Array {
   const byteArray = new Uint8Array(
     atob(base64String)
       .split('')
-      .map(char => char.charCodeAt(0))
+      .map((char) => char.charCodeAt(0))
   );
   return byteArray;
 }
@@ -56,7 +56,7 @@ export async function importPemPublicKey(publicKeyPem: string): Promise<CryptoKe
       publicKeyArrayBuffer,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-256',
+        hash: 'SHA-256'
       },
       true,
       ['encrypt']
@@ -76,7 +76,7 @@ function pemToPrivateKeyUint8Array(pem: string): Uint8Array {
   const byteArray = new Uint8Array(
     atob(base64String)
       .split('')
-      .map(char => char.charCodeAt(0))
+      .map((char) => char.charCodeAt(0))
   );
   return byteArray;
 }
@@ -90,7 +90,7 @@ export async function importPemPrivateKey(privateKeyPem: string): Promise<Crypto
       privateKeyArrayBuffer,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-256',
+        hash: 'SHA-256'
       },
       true,
       ['decrypt']
@@ -147,8 +147,7 @@ export async function decryptString(privateKey: CryptoKey, encryptedData: ArrayB
 }
 
 export function isCryptoKeyPair(keypair: { publicKey: string; privateKey: string } | CryptoKeyPair): boolean {
-  return keypair.hasOwnProperty('publicKey') &&
-  keypair.hasOwnProperty('privateKey');
+  return keypair.hasOwnProperty('publicKey') && keypair.hasOwnProperty('privateKey');
 }
 
 export function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -161,7 +160,7 @@ export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binary = atob(base64);
   const buffer = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
-      buffer[i] = binary.charCodeAt(i);
+    buffer[i] = binary.charCodeAt(i);
   }
   return buffer.buffer;
 }
@@ -172,11 +171,12 @@ interface ArrayBufferWrapper {
 }
 
 export function convertArrayBuffersToBase64(json: any): any {
-  return JSON.parse(JSON.stringify(json, (key: string, value: any) => {
+  return JSON.parse(
+    JSON.stringify(json, (key: string, value: any) => {
       if (value instanceof ArrayBuffer) {
-          return { type: 'ArrayBuffer', data: arrayBufferToBase64(value) } as ArrayBufferWrapper;
+        return { type: 'ArrayBuffer', data: arrayBufferToBase64(value) } as ArrayBufferWrapper;
       }
       return value;
-  }));
+    })
+  );
 }
-

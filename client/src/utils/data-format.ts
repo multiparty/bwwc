@@ -10,7 +10,7 @@ export interface AppState {
     publicKey: string;
     privateKey: string;
     sessionId: string;
-  }
+  };
 }
 
 export type TableData = {

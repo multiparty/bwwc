@@ -18,7 +18,7 @@ export const LinkGenerator: FC = () => {
     count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
-  const handleSubmit = (values: { count: number, sessionId: string }) => {
+  const handleSubmit = (values: { count: number; sessionId: string }) => {
     createNewSubmissionUrls(values.count, values.sessionId).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
