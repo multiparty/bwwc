@@ -12,30 +12,35 @@ import { PermissionRequiredPage } from '@pages/permission-required';
 import { Page404 } from '@pages/404';
 import { LogoutPage } from '@pages/logout';
 import { ApiProvider } from '@services/api';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+
 
 function App() {
   return (
-    <AuthProvider>
-      <SessionProvider>
-        <ApiProvider>
-          <ThemeProvider>
-            <Router>
-              <Routes>
-                <Route element={<AdminGuard />}>
-                  <Route path={Paths.MANAGE} element={<ManagePage />} />
-                  <Route path={Paths.CREATE} element={<CreatePage />} />
-                </Route>
-                <Route path={Paths.HOME} element={<HomePage />} />
-                <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
-                <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
-                <Route path={Paths.LOGOUT} element={<LogoutPage />} />
-                <Route path="*" element={<Page404 />} />
-              </Routes>
-            </Router>
-          </ThemeProvider>
-        </ApiProvider>
-      </SessionProvider>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <SessionProvider>
+          <ApiProvider>
+            <ThemeProvider>
+              <Router>
+                <Routes>
+                  <Route element={<AdminGuard />}>
+                    <Route path={Paths.MANAGE} element={<ManagePage />} />
+                    <Route path={Paths.CREATE} element={<CreatePage />} />
+                  </Route>
+                  <Route path={Paths.HOME} element={<HomePage />} />
+                  <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
+                  <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
+                  <Route path={Paths.LOGOUT} element={<LogoutPage />} />
+                  <Route path="*" element={<Page404 />} />
+                </Routes>
+              </Router>
+            </ThemeProvider>
+          </ApiProvider>
+        </SessionProvider>
+      </AuthProvider>
+    </Provider>
   );
 }
 

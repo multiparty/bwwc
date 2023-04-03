@@ -3,6 +3,16 @@ import { Ethnicity } from './ethnicity';
 import { Gender } from './gender';
 import BigNumber from 'bignumber.js';
 
+export interface AppState {
+  session: {
+    authToken: string;
+    participantCode: string;
+    publicKey: string;
+    privateKey: string;
+    sessionId: string;
+  }
+}
+
 export type TableData = {
   [key in Positions]: {
     [key in Ethnicity]: {
