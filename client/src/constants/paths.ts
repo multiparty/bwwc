@@ -5,5 +5,6 @@ export enum Paths {
   AUTH_CALLBACK = '/auth/callback',
   CREATE = '/create',
   MANAGE = '/manage',
+  RESULT = '/result',
   LOGOUT = '/logout'
 }
