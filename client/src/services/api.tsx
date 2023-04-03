@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { generateKeyPair } from '@utils/keypair';
+import { generateKeyPair, keyPairToDictionary } from '@utils/keypair';
 import React, { createContext, FC, useContext, useEffect } from 'react';
 import { useAuth } from '@context/auth.context';
 import { useSession } from '@context/session.context';
@@ -50,15 +50,16 @@ export interface CreateSessionResponse {
 export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
-  createNewSubmissionUrls: (count: number) => Promise<GetSubmissionUrlsResponse>;
-  getSubmissionUrls: (participant_count: number) => Promise<GetSubmissionUrlsResponse>;
+  createNewSubmissionUrls: (count: number, sessionId: string) => Promise<GetSubmissionUrlsResponse>;
   getEncryptedShares: () => Promise<GetEncryptedSharesResponse>;
-  submitData: (data: NestedObject) => Promise<SubmitDataResponse>;
+  submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
 
-async function startSession(): Promise<CreateSessionResponse> {
-  const { publicKey, privateKey } = await generateKeyPair();
+export async function startSession(): Promise<CreateSessionResponse> {
+  const keypair = await generateKeyPair();
+  const { publicKey, privateKey } = await keyPairToDictionary(keypair);
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
+
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`,
     convertToFormData({
@@ -73,7 +74,7 @@ async function startSession(): Promise<CreateSessionResponse> {
   };
 }
 
-async function endSession(sessionId?: string): Promise<EndSessionResponse> {
+export async function endSession(sessionId?: string): Promise<EndSessionResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`,
     convertToFormData({
@@ -84,7 +85,7 @@ async function endSession(sessionId?: string): Promise<EndSessionResponse> {
   return response.data;
 }
 
-export async function createNewSubmissionUrls(count: number, sessionId?: string): Promise<GetSubmissionUrlsResponse> {
+export async function createNewSubmissionUrls(count: number, sessionId: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
@@ -96,26 +97,28 @@ export async function createNewSubmissionUrls(count: number, sessionId?: string)
   return response.data;
 }
 
-async function getSubmissionUrls(participant_count: number, session_id?: string): Promise<GetSubmissionUrlsResponse> {
+export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> {
+  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_ENCRYPTED_SHARES}`);
+  return response.data;
+}
+
+export async function submitData(data: any, sessionId: string, participantCode: string): Promise<SubmitDataResponse> {
+  console.log(`submitting data: ${JSON.stringify(data)}`);
+
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
+    `${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`,
     convertToFormData({
-      auth_token: 'remove this later',
-      session_id: session_id,
-      participant_count: participant_count
+      data: JSON.stringify(data),
+      sessionId: sessionId,
+      participantCode: participantCode
     })
   );
   return response.data;
 }
 
-async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_ENCRYPTED_SHARES}`);
-  return response.data;
-}
-
-async function submitData(data: any): Promise<SubmitDataResponse> {
-  const response: AxiosResponse = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`, data);
-  return response.data;
+export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
+  const response = await axios.get(`${API_BASE_URL}get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
+  return response.data.public_key;
 }
 
 const convertToFormData = (data: any): FormData => {
@@ -148,10 +151,9 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
       value={{
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
-        createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId),
-        getSubmissionUrls: (participant_count: number) => getSubmissionUrls(participant_count, sessionId),
+        createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId as string),
         getEncryptedShares: () => getEncryptedShares(),
-        submitData: (data: any) => submitData(data)
+        submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
     >
       {children}

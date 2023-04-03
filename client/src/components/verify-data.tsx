@@ -3,13 +3,17 @@ import { DataFormat } from '@utils/data-format';
 import { Box, Card, CardContent, Checkbox, Divider, FormControlLabel, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { TotalEmployeeCheck } from '@components/total-employee-check';
+import TableContextProvider from '@context/table.context';
 import { SubmissionAlert } from '@components/submission-alert';
+import { useSession } from '@context/session.context';
 
 export interface VerifyDataProps {
+  submitDataHandler: (secretTable: Record<string, any>) => void;
   data: DataFormat;
+  secretTable: Record<string, any>;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler, secretTable }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -28,6 +32,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data }) => {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    submitDataHandler(secretTable);
   };
 
   return (
