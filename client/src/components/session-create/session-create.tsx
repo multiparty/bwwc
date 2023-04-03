@@ -1,22 +1,23 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Card, CardContent, Checkbox, Divider, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material';
-import { useSession } from '@context/session.context';
+import { AppState } from '@utils/data-format';
 import { TextInput } from '@components/forms/text-input';
 import { Form, Formik } from 'formik';
 import { LoadingButton } from '@mui/lab';
 import { LockOpenTwoTone, LockTwoTone, DownloadTwoTone } from '@mui/icons-material';
 import { useApi } from '@services/api';
+import { setPublicKey, setPrivateKey, setSessionId } from '../../redux/session';
+import { useSelector, useDispatch } from 'react-redux';
 
 export const SessionCreateForm: FC = (props) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { sessionId, setSessionId } = useSession();
-  const [privateKey, setPrivateKey] = useState<string>('');
-  const [publicKey, setPublicKey] = useState<string>('');
   const [fileUrl, setFileUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
   const { startSession } = useApi();
+  const { privateKey, sessionId } = useSelector((state: AppState) => state.session);
 
   useEffect(() => {
     // create key file to download
@@ -28,11 +29,10 @@ export const SessionCreateForm: FC = (props) => {
   const handleClick = async () => {
     setLoading(true);
     const { privateKey, publicKey, sessionId } = await startSession();
-    setSessionId(sessionId);
-    setPrivateKey(privateKey);
+    dispatch(setSessionId(sessionId));
+    dispatch(setPrivateKey(privateKey));
     setPublicKey(publicKey);
     setLoading(false);
-    setPrivateKey(privateKey);
   };
 
   return (
