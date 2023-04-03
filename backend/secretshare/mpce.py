@@ -54,7 +54,7 @@ class MPCEngine(object):
         session_data = {
             "session_id": session_id,
             "participants": {},
-            "added_shares": None,
+            "participant_submissions": None,
             "shares": {},
             "protocol": self.protocol,
             "prime": self.prime,
@@ -99,14 +99,14 @@ class MPCEngine(object):
         return d1
 
     def update_session_data(
-        self, session_id: str, participant_id: str, share: dict
+        self, session_id: str, participant_id: str, data: dict
     ) -> None:
         session_data = self.get_session(session_id)
 
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        session_data["shares"][participant_id] = share
+        session_data["participant_submissions"][participant_id] = data
 
         self.save_session(session_id, session_data)
 
@@ -156,3 +156,11 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["public_key"]
+    
+    def get_submitted_data(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["participant_submissions"]
