@@ -179,9 +179,9 @@ async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedStat
     const state = encryptedShares[i][2];
 
     if (state === 'enc-share') {
-      decryptedShares.push([x, new BigNumber(await decryptString(privateKey, base64ToArrayBuffer(y)))]);
+      decryptedShares.push([x, await decryptString(privateKey, base64ToArrayBuffer(y))]);
     } else {
-      decryptedShares.push([x, new BigNumber(y)]);
+      decryptedShares.push([x, y]);
     }
   }
 
