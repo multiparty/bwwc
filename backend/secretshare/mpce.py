@@ -205,5 +205,7 @@ class MPCEngine(object):
         for _, table in session_data["participant_submissions"].items():
             data = self.merge_nested_dict(data, table)
             
+        # TODO: sum over the unencrypted shares
+            
         session_data["merged"] = data
         self.save_session(session_id, session_data)
