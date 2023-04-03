@@ -11,8 +11,8 @@ import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
 import { useSession } from '@context/session.context';
 
 const validationSchema = Yup.object().shape({
-  submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
-  participationCode: Yup.string().required('Please input the 26-character participation code.').length(26, 'Participation Code must be 26 characters long.'),
+  submissionId: Yup.string().uuid('Invalid  Submission ID').required('Please input the BWWC 2023 Submission ID.'),
+  participationCode: Yup.string().uuid('Invalid participation code').required('Please input the participation code.'),
   industry: Yup.string().required('Required'),
   size: Yup.string().required('Required')
 });
