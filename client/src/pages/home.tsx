@@ -10,6 +10,7 @@ import { Layout } from '@layouts/layout';
 import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
 import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
+import { defaultData } from '@constants/default-data';
 import { useSelector } from 'react-redux';
 
 export const HomePage: FC = () => {

@@ -16,7 +16,16 @@ export const Footer = () => {
                   Need Help?
                 </Typography>
                 <Typography variant="subtitle1" color="gray">
-                  Contact us at team@thebwwc.org
+                  For immediate questions, the team will be available during the following times from 2 - 4PM.
+                </Typography>
+                <Typography variant="subtitle1" color="gray" sx={{ ml: 2 }}>
+                  M/W/F: Please reach out to Renee Lucas at 508-498-7341
+                </Typography>
+                <Typography variant="subtitle1" color="gray" sx={{ ml: 2 }}>
+                  T/Th: Please reach out to Cindy Nguyen at 774-641-2130
+                </Typography>
+                <Typography variant="subtitle1" color="gray">
+                  For any other times, please email us at <Link>team@thebwwc.org</Link> and we will get back to you within 24 hours.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>
@@ -31,8 +40,8 @@ export const Footer = () => {
                     The Boston Women’s Workforce Council (BWWC) leads a unique public-private partnership between the Boston Mayor and Greater Boston employers dedicated to
                     eliminating gender and racial wage gaps.
                   </Typography>
-                  <Link href="https://thebwwc.org" target="_blank">
-                    https://thebwwc.org
+                  <Link href="https://thebwwc.org/data-submission-resources-2023" target="_blank">
+                    https://thebwwc.org/data-submission-resources-2023
                   </Link>
                 </Stack>
               </Grid>
