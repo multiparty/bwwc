@@ -7,14 +7,17 @@ import { TextInput } from '@components/forms/text-input';
 import { SubmitButton } from '@components/forms/submit-button';
 import { useSession } from '@context/session.context';
 import { useApi } from '@services/api';
+import { AppState } from '@utils/data-format';
+import { useSelector } from 'react-redux';
 
 export const LinkGenerator: FC = () => {
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
   const { createNewSubmissionUrls } = useApi();
+  const {  sessionId } = useSelector((state: AppState) => state.session);
+  console.log(`Session ID: ${sessionId}`)
 
   useEffect(() => {
-    const sessionId = 'dummy_session_id'; // TODO: remove later
     createNewSubmissionUrls(0, sessionId).then((urls) => {
       setExistingLinks(Object.values(urls));
     });
@@ -26,7 +29,6 @@ export const LinkGenerator: FC = () => {
 
   const handleSubmit = (values: { count: number }) => {
     const numSubmitters = values.count;
-    const sessionId = 'dummy_session_id';
     createNewSubmissionUrls(numSubmitters, sessionId).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
