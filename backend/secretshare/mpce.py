@@ -55,21 +55,28 @@ class MPCEngine(object):
             "session_id": session_id,
             "participants": {},
             "participant_submissions": None,
-            "shares": {},
             "protocol": self.protocol,
             "prime": self.prime,
             "public_key": public_key,
             "auth_token": auth_token,
+            "state": "open"
         }
 
         self.save_session(session_id, session_data)
         return session_id
+    
+    def is_initiator(self, session_id: str, auth_token: str) -> bool:
+        session_data = self.get_session(session_id)
+        return session_data["auth_token"] == auth_token
 
     def session_exists(self, key):
         return self.redis_client.exists(key) == 1
 
     def add_participant(self, session_id: str, participant: str) -> None:
         session_data = self.get_session(session_id)
+        
+        if session_data["state"] == "closed":
+            raise ValueError("Session is closed")
 
         if not session_data:
             raise ValueError("Invalid session ID")
@@ -102,11 +109,24 @@ class MPCEngine(object):
         self, session_id: str, participant_id: str, data: dict
     ) -> None:
         session_data = self.get_session(session_id)
+        
+        if session_data["state"] == "closed":
+            raise ValueError("Session is closed")
 
         if not session_data:
             raise ValueError("Invalid session ID")
 
         session_data["participant_submissions"][participant_id] = data
+
+        self.save_session(session_id, session_data)
+        
+    def close_submissions(self, session_id: str) -> None:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        session_data["state"] = "closed"
 
         self.save_session(session_id, session_data)
 
@@ -159,8 +179,19 @@ class MPCEngine(object):
     
     def get_submitted_data(self, session_id: str) -> dict:
         session_data = self.get_session(session_id)
+        
+        if session_data["state"] == "closed":
+            raise ValueError("Session is closed")
 
         if not session_data:
             raise ValueError("Invalid session ID")
 
         return session_data["participant_submissions"]
+    
+    def get_session_state(self, session_id: str) -> str:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["state"]
