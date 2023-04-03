@@ -5,7 +5,7 @@ export const sessionSlice = createSlice({
 	initialState: {
 		authToken: '',
 		participantCode: '',
-		publicKey: 'initialPubKey',
+		publicKey: '',
 		privateKey: '',
 		sessionId: ''
 	},
