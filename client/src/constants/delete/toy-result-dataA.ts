@@ -37,6 +37,7 @@ const totalEmpData: TotalEmployees = {
   all: 0
 };
 
+
 export const toyresultDataA: DataFormat = {
   numberOfEmployees: Data,
   wages: Data,

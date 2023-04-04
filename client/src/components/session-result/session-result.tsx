@@ -1,7 +1,9 @@
 import { FC, useState } from 'react';
 import { Box, Card, CardContent, Divider, Typography, Stack, Tabs, Tab } from '@mui/material';
-import { ResultTable } from './result-table';
+import { TableView } from './table-view';
 import { ToyResult } from '@constants/delete/toy-result';
+import { toyresultDataA } from '@constants/delete/toy-result-dataA';
+import { ResultTable } from './result-table';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,7 +54,8 @@ export const SessionResult: FC = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            <ResultTable data={ToyResult[value.toString()]} />
+            {value==0?<ResultTable data={toyresultDataA} />:
+            <TableView tabSelection={value} datas={ToyResult[value.toString()]} />}
           </TabPanel>
         </CardContent>
       </Card>

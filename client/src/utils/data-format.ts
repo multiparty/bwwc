@@ -104,3 +104,7 @@ export function convertToRows(data?: TableData): TableRow[] {
   }
   return rows;
 }
+
+export interface StringDataFormatMap {
+  [key: string]: DataFormat;
+}
