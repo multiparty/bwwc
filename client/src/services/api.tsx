@@ -3,6 +3,7 @@ import { generateKeyPair, keyPairToDictionary } from '@utils/keypair';
 import React, { createContext, FC, useContext, useEffect } from 'react';
 import { useAuth } from '@context/auth.context';
 import { useSession } from '@context/session.context';
+import { AppState } from '@utils/data-format';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/bwwc/';
 
@@ -151,7 +152,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
       value={{
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
-        createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId as string),
+        createNewSubmissionUrls: (count: number, sessionId: string) => createNewSubmissionUrls(count, sessionId),
         getSubmissions: () => getSubmissions(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
