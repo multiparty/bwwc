@@ -11,10 +11,11 @@ import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
 import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
 import { useSelector } from 'react-redux';
+import { defaultData } from '@constants/default-data';
 
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
-  const [data, setData] = useState<DataFormat>({} as DataFormat);
+  const [data, setData] = useState<DataFormat>(defaultData);
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
