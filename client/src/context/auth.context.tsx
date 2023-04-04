@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useEffect, useState } from 'react';
-import { decode } from 'jsonwebtoken';
+import jwt_decode from "jwt-decode";
 
 export interface DecodedToken {
   id: string;
@@ -36,7 +36,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   useEffect(() => {
     if (token) {
       saveToken(token);
-      //setDecodedToken(decode(token, { json: true }) as DecodedToken);
+      setDecodedToken(jwt_decode(token) as DecodedToken);
     }
   }, [token]);
 
