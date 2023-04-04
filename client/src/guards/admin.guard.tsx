@@ -12,7 +12,7 @@ export const AdminGuard: FC = () => {
 
   useEffect(() => {
     if (initialized && !token) {
-      window.location.replace(loginUrl);
+      // window.location.replace(loginUrl);
     }
 
     if (initialized && decodedToken && decodedToken.role !== 1) {

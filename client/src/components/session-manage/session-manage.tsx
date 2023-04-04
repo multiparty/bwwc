@@ -6,7 +6,6 @@ import { LinkGenerator } from './generate-link';
 import { useApi } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
-import { useSession } from '@context/session.context';
 import { AppState } from '@utils/data-format';
 import { useSelector } from 'react-redux';
 import { setSessionId } from '../../redux/session';
@@ -20,9 +19,9 @@ interface valueProps {
 }
 
 export const SessionManage: FC = () => {
-  const { endSession } = useApi();
+  const { stopSession } = useApi();
   const urlParams = new URLSearchParams(window.location.search);
-  const { sessionId } = useSelector((state: AppState) => state.session);
+  const { sessionId, authToken } = useSelector((state: AppState) => state.session);
 
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId
@@ -34,6 +33,10 @@ export const SessionManage: FC = () => {
       setSessionId(values.submissionId);
     }, [values]);
     return null;
+  };
+
+  const handleClick = async () => {
+    stopSession(sessionId, authToken);
   };
 
   return (
@@ -50,7 +53,7 @@ export const SessionManage: FC = () => {
               <Button fullWidth variant="contained" color="success" disabled>
                 Session Started
               </Button>
-              <Button fullWidth variant="outlined" color="error" onClick={endSession}>
+              <Button fullWidth variant="outlined" color="error" onClick={handleClick}>
                 Stop Session
               </Button>
             </Stack>

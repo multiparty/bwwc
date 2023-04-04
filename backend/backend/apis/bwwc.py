@@ -165,6 +165,7 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
 def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
+        path("api/bwwc/stop_session/", stop_session),
         path("api/bwwc/end_session/", end_session),
         path("api/bwwc/get_submission_urls/", get_submission_urls),
         path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
