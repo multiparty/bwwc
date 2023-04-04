@@ -8,12 +8,11 @@ import { SubmissionAlert } from '@components/submission-alert';
 import { useSession } from '@context/session.context';
 
 export interface VerifyDataProps {
-  submitDataHandler: (secretTable: Record<string, any>) => void;
+  submitDataHandler: () => void;
   data: DataFormat;
-  secretTable: Record<string, any>;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler, secretTable }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -32,7 +31,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler, secre
 
   const handleSubmit = () => {
     setSubmitted(true);
-    submitDataHandler(secretTable);
+    submitDataHandler();
   };
 
   return (
