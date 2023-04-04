@@ -33,7 +33,6 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
         setDDSelection(values.size);
       }
       if (tabSelection == 2) {
-        console.log(values.industry);
         setDDSelection(values.industry);
       }
     }, [values]);
@@ -49,9 +48,9 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
               <Form>
                 <FormObserver />
                 {tabSelection == 1 ? (
-                  <AutoCompleteInput fullWidth name="size" options={Sizes} label="Company Size selection" defaultValue={ddSelection}/>
+                  <AutoCompleteInput fullWidth name="size" options={Sizes} label="Company Size selection" defaultValue={ddSelection} />
                 ) : (
-                  <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" defaultValue={ddSelection}/>
+                  <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" defaultValue={ddSelection} />
                 )}
               </Form>
             </Formik>
@@ -59,7 +58,7 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
             ''
           )}
         </Grid>
-        <ResultTable data={data[ddSelection]} />
+        {data!=undefined?<ResultTable data={data[ddSelection?.toString()]} />:''}
       </Stack>
     </Box>
   );

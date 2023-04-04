@@ -45,19 +45,19 @@ const table: DataFormat = {
   performance: Data,
   lengthOfService: Data,
   totalEmployees: totalEmpData
-}
+};
 
 interface StringDataFormatMap {
   [key: string]: DataFormat;
 }
 
-export const toyresultDataB = (()=>{
-  const industriesData:StringDataFormatMap= {};
+export const toyresultDataB = (() => {
+  const industriesData: StringDataFormatMap = {};
   for (const { value } of Industries) {
-    industriesData[value] =table; // use the value as a key and add data as the value of the new object
+    industriesData[value] = table; // use the value as a key and add data as the value of the new object
   }
   for (const { value } of Sizes) {
-    industriesData[value] =table; // use the value as a key and add data as the value of the new object
+    industriesData[value] = table; // use the value as a key and add data as the value of the new object
   }
-  return industriesData
+  return industriesData;
 })();

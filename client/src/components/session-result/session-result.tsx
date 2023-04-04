@@ -54,8 +54,7 @@ export const SessionResult: FC = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            {value==0?<ResultTable data={toyresultDataA} />:
-            <TableView tabSelection={value} datas={ToyResult[value.toString()]} />}
+            {value == 0 ? <ResultTable data={toyresultDataA} /> : <TableView tabSelection={value} data={ToyResult[value.toString()]} />}
           </TabPanel>
         </CardContent>
       </Card>
