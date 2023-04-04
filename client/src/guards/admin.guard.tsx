@@ -10,9 +10,8 @@ export const AdminGuard: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loginUrl = `${VITE_SAIL_AUTH_CLIENT}?projectId=${VITE_SAIL_PROJECT_ID}&redirectUrl=${encodeURIComponent(window.location.origin + Paths.AUTH_CALLBACK)}`;
-    if (initialized && !token && VITE_SAIL_AUTH_CLIENT && VITE_SAIL_PROJECT_ID) {
-      window.location.replace(loginUrl);
+    if (initialized && !token && !!VITE_SAIL_AUTH_CLIENT && !!VITE_SAIL_PROJECT_ID) {
+      window.location.replace(`${VITE_SAIL_AUTH_CLIENT}?projectId=${VITE_SAIL_PROJECT_ID}&redirectUrl=${encodeURIComponent(window.location.origin + Paths.AUTH_CALLBACK)}`);
     }
 
     if (initialized && decodedToken && decodedToken.role !== 1) {
