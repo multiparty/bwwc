@@ -4,15 +4,17 @@ import React, { createContext, FC, useContext, useEffect } from 'react';
 import { useAuth } from '@context/auth.context';
 import { useSession } from '@context/session.context';
 import { useSettings } from '@context/settings.context';
+import { AppState } from '@utils/data-format';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/bwwc/';
 
 // trailing slash is required by backend
 const API_ENDPOINTS = {
   START_SESSION: 'start_session/',
+  STOP_SESSION: 'stop_session/',
   END_SESSION: 'end_session/',
   GET_SUBMISSION_URLS: 'get_submission_urls/',
-  GET_ENCRYPTED_SHARES: 'get_encrypted_shares/',
+  GET_SUBMISSIONS: 'get_submitted_data/',
   SUBMIT_DATA: 'submit_data/'
 };
 
@@ -52,7 +54,7 @@ export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string) => Promise<GetSubmissionUrlsResponse>;
-  getEncryptedShares: () => Promise<GetEncryptedSharesResponse>;
+  getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
 
@@ -68,6 +70,7 @@ export async function startSession(): Promise<CreateSessionResponse> {
       auth_token: 'remove this later'
     })
   );
+
   return {
     privateKey,
     publicKey,
@@ -98,14 +101,13 @@ export async function createNewSubmissionUrls(count: number, sessionId: string):
   return response.data;
 }
 
-export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_ENCRYPTED_SHARES);
+
+export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
+  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS);
   return response.data;
 }
 
 export async function submitData(data: any, sessionId: string, participantCode: string): Promise<SubmitDataResponse> {
-  console.log(`submitting data: ${JSON.stringify(data)}`);
-
   const response: AxiosResponse = await axios.post(
     API_ENDPOINTS.SUBMIT_DATA,
     convertToFormData({
@@ -154,8 +156,8 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
       value={{
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
-        createNewSubmissionUrls: (count: number) => createNewSubmissionUrls(count, sessionId as string),
-        getEncryptedShares: () => getEncryptedShares(),
+        createNewSubmissionUrls: (count: number, sessionId: string) => createNewSubmissionUrls(count, sessionId),
+        getSubmissions: () => getSubmissions(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
     >

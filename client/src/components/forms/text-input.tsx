@@ -7,6 +7,7 @@ export type TextInputProps = TextFieldProps & {
 
 export const TextInput: FC<TextInputProps> = (props) => {
   const { handleChange, handleBlur, values, touched, errors, isSubmitting } = useFormikContext<any>();
+
   return (
     <FormControl variant={props.variant} fullWidth={props.fullWidth}>
       <TextField
