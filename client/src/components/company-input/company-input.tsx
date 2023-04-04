@@ -30,13 +30,13 @@ interface valueProps {
 
 export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const urlParams = new URLSearchParams(window.location.search);
-  const session_id = urlParams.get('session_id') || '';
-  const participant_token = urlParams.get('participant_code') || '';
+  const sessionId = urlParams.get('session_id') || '';
+  const participantToken = urlParams.get('participant_code') || '';
 
   const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = useSession();
   const [initialValues, setInitialValues] = useState({
-    submissionId: session_id,
-    participationCode: participant_token,
+    submissionId: sessionId,
+    participationCode: participantToken,
     industry: undefined,
     size: undefined
   });

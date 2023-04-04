@@ -53,6 +53,7 @@ export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
+  getPublicKey: (sessionId: string, authToken: string) => Promise<string>;
   getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
@@ -153,6 +154,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
         createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
+        getPublicKey: (session_id: string, auth_token: string) => getPublicKey(session_id, auth_token),
         getSubmissions: () => getSubmissions(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
