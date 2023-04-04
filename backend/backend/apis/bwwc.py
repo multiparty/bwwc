@@ -73,8 +73,8 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
 
-        # if not engine.is_initiator(session_id, auth_token):
-        #     return HttpResponseBadRequest("Invalid auth token")
+        if not engine.is_initiator(session_id, auth_token):
+            return HttpResponseBadRequest("Invalid auth token")
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")

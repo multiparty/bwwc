@@ -52,7 +52,7 @@ export interface CreateSessionResponse {
 export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: () => Promise<EndSessionResponse>;
-  createNewSubmissionUrls: (count: number, sessionId: string) => Promise<GetSubmissionUrlsResponse>;
+  createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
   getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
@@ -88,7 +88,7 @@ export async function endSession(sessionId?: string): Promise<EndSessionResponse
   return response.data;
 }
 
-export async function createNewSubmissionUrls(count: number, sessionId: string): Promise<GetSubmissionUrlsResponse> {
+export async function createNewSubmissionUrls(count: number, sessionId: string, authToken: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
     convertToFormData({
@@ -152,7 +152,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
       value={{
         startSession: () => startSession(),
         endSession: () => endSession(sessionId),
-        createNewSubmissionUrls: (count: number, sessionId: string) => createNewSubmissionUrls(count, sessionId),
+        createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
         getSubmissions: () => getSubmissions(),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}

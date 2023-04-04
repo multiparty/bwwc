@@ -12,14 +12,14 @@ export const LinkGenerator: FC = () => {
   const [generatedLinks, setGeneratedLinks] = useState<string[]>([]);
   const [existingLinks, setExistingLinks] = useState<string[]>([]);
   const { createNewSubmissionUrls } = useApi();
-  const { sessionId } = useSelector((state: AppState) => state.session);
+  const { sessionId, authToken } = useSelector((state: AppState) => state.session);
 
   const validationSchema = Yup.object().shape({
     count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
   const handleSubmit = (values: { count: number }) => {
-    createNewSubmissionUrls(values.count, sessionId).then((urls) => {
+    createNewSubmissionUrls(values.count, sessionId, authToken).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
   };
