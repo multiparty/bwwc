@@ -15,6 +15,7 @@ services:
     env_file:
       - ../stack.env
   bwwc-mongo:
+    restart: always
     container_name: bwwc-mongo
     image: mongo:6.0
     ports:
@@ -22,6 +23,7 @@ services:
     volumes:
       - bwwc_data_production:/data/db
   bwwc-redis:
+    restart: always
     image: redis:7.0-alpine
     container_name: bwwc-redis
     ports:

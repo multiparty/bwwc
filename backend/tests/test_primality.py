@@ -30,7 +30,7 @@ def test_large_primes():
 
 
 def test_large_composites():
-    assert not is_prime_miller_rabin(10 ** 10)  # 10-digit composite
+    assert not is_prime_miller_rabin(10**10)  # 10-digit composite
     assert not is_prime_miller_rabin(15485863 * 15485867)  # product of two primes
     assert not is_prime_miller_rabin(982451653 * 982451657)  # product of two primes
     assert not is_prime_miller_rabin(
@@ -41,6 +41,6 @@ def test_large_composites():
 def test_edge_cases():
     assert not is_prime_miller_rabin(0)
     assert not is_prime_miller_rabin(1)
-    assert is_prime_miller_rabin(2 ** 31 - 1)  # largest Mersenne prime
+    assert is_prime_miller_rabin(2**31 - 1)  # largest Mersenne prime
     assert not is_prime_miller_rabin(75361)  # Carmichael number less than 100,000
     assert not is_prime_miller_rabin(34830684315505)  # large Carmichael number

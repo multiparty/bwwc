@@ -19,7 +19,7 @@ print("BASE_URL:", os.environ.get("BASE_URL"))
 @pytest.fixture(autouse=True)
 def clear_redis():
     # Connect to your Redis server
-    r = redis.Redis(host="redis", port=6379, db=0)
+    r = redis.Redis(host="localhost", port=6379, db=0)
 
     # Flush the currently selected Redis database (db=0 in this case)
     r.flushdb()

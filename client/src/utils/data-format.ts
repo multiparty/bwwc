@@ -1,6 +1,17 @@
 import { PositionDisplayNames, Positions } from './positions';
 import { Ethnicity } from './ethnicity';
 import { Gender } from './gender';
+import BigNumber from 'bignumber.js';
+
+export interface AppState {
+  session: {
+    authToken: string;
+    participantCode: string;
+    publicKey: string;
+    privateKey: string;
+    sessionId: string;
+  };
+}
 
 export type TableData = {
   [key in Positions]: {
@@ -10,12 +21,27 @@ export type TableData = {
   };
 };
 
-type AllEmployees = {
+export type Point = [BigNumber | string, BigNumber | string];
+export type PointWithEncryptedState = [string, string, string];
+
+export type SecretTableData = {
+  [key in Positions]: {
+    [key in Ethnicity]: {
+      [key in Gender]: Point[];
+    };
+  };
+};
+
+export type AllEmployees = {
   all: number;
 };
 
 export type TotalEmployees = {
   [key in Gender]: number;
+} & AllEmployees;
+
+export type SecretTotalEmployees = {
+  [key in Gender]: Point[];
 } & AllEmployees;
 
 export interface DataFormat {
@@ -24,6 +50,14 @@ export interface DataFormat {
   performance: TableData;
   lengthOfService: TableData;
   totalEmployees: TotalEmployees;
+}
+
+export interface SecretDataFormat {
+  numberOfEmployees: SecretTableData;
+  wages: SecretTableData;
+  performance: SecretTableData;
+  lengthOfService: SecretTableData;
+  totalEmployees: SecretTotalEmployees;
 }
 
 export interface TableRow {

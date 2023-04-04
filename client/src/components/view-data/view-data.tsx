@@ -18,6 +18,7 @@ export const ViewData: FC<ViewDataProps> = ({ open, data }) => {
             View your data
           </Typography>
           <Typography>Your data will appear here after you drag/drop or browse to find your completed Excel template file above.</Typography>
+          <Typography>If you have noticed an error in the submitted data, make the necessary corrections in the excel file, and reupload it.</Typography>
           <Divider />
           <Stack spacing={4} sx={{ textAlign: 'start' }}>
             <Box>
