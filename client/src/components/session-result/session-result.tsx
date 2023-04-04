@@ -45,10 +45,8 @@ export const SessionResult: FC = () => {
             <Box>
               <Tabs value={value} onChange={handleChange}>
                 <Tab label="All" {...a11yProps(value)} />
-                <Tab label="Large" {...a11yProps(value)} />
-                <Tab label="Medium-Large" {...a11yProps(value)} />
-                <Tab label="Medium" {...a11yProps(value)} />
-                <Tab label="Small" {...a11yProps(value)} />
+                <Tab label="Company Size" {...a11yProps(value)} />
+                <Tab label="Industry" {...a11yProps(value)} />
               </Tabs>
             </Box>
           </Stack>
