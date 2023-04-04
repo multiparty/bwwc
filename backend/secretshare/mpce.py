@@ -14,6 +14,7 @@ import redis
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
+from pprint import pprint
 
 
 class MPCEngine(object):
@@ -54,13 +55,13 @@ class MPCEngine(object):
         session_data = {
             "session_id": session_id,
             "participants": {},
-            "participant_submissions": None,
+            "participant_submissions": {},
             "protocol": self.protocol,
             "prime": self.prime,
             "public_key": public_key,
             "auth_token": auth_token,
             "state": "open",
-            "merged": None
+            "merged": {}
         }
 
         self.save_session(session_id, session_data)
@@ -116,9 +117,10 @@ class MPCEngine(object):
 
         if not session_data:
             raise ValueError("Invalid session ID")
-        
-        print(type(session_data["participant_submissions"]))
 
+        if not session_data["participant_submissions"]:
+            session_data["participant_submissions"] = {}
+        
         session_data["participant_submissions"][participant_id] = data
 
         self.save_session(session_id, session_data)
@@ -208,6 +210,9 @@ class MPCEngine(object):
             data = self.merge_nested_dict(data, table)
             
         # TODO: sum over the unencrypted shares
+            
+        if "merged" not in session_data:
+            session_data["merged"] = {}
             
         session_data["merged"] = data
         self.save_session(session_id, session_data)
