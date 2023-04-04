@@ -8,8 +8,7 @@ interface ToyResult {
   [key: string]: DataFormat;
 }
 
-
-export const ToyResult:ToyResult = {
+export const ToyResult: ToyResult = {
   '0': toyresultDataA,
   '1': toyresultDataB,
   '2': toyresultDataC,

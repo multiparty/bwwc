@@ -1,6 +1,5 @@
 import { FC, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { Tabs, Tab } from '@mui/material';
+import { Box, Card, CardContent, Divider, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { ResultTable } from './result-table';
 import { ToyResult } from '@constants/delete/toy-result';
 
@@ -36,19 +35,29 @@ export const SessionResult: FC = () => {
     setValue(newValue);
   };
   return (
-    <div>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="All" {...a11yProps(value)} />
-          <Tab label="Large" {...a11yProps(value)} />
-          <Tab label="Medium-Large" {...a11yProps(value)} />
-          <Tab label="Medium" {...a11yProps(value)} />
-          <Tab label="Small" {...a11yProps(value)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={value}>
-        <ResultTable data={ToyResult[value.toString()]} />
-      </TabPanel>
-    </div>
+    <Box>
+      <Card>
+        <CardContent sx={{ m: 2 }}>
+          <Stack spacing={2} sx={{ textAlign: 'center' }}>
+            <Typography component="h1" variant="h4">
+              Result Data
+            </Typography>
+            <Box>
+              <Tabs value={value} onChange={handleChange}>
+                <Tab label="All" {...a11yProps(value)} />
+                <Tab label="Large" {...a11yProps(value)} />
+                <Tab label="Medium-Large" {...a11yProps(value)} />
+                <Tab label="Medium" {...a11yProps(value)} />
+                <Tab label="Small" {...a11yProps(value)} />
+              </Tabs>
+            </Box>
+          </Stack>
+          <Divider sx={{ width: '98%' }} />
+          <TabPanel value={value} index={value}>
+            <ResultTable data={ToyResult[value.toString()]} />
+          </TabPanel>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
