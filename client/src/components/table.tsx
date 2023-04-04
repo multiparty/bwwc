@@ -73,7 +73,8 @@ export const Table: FC<TableProps> = ({ data }) => {
         '& .position-cell': {
           backgroundColor: palette.background.paper,
           fontWeight: 'bold'
-        }
+        },
+        boxShadow: 'inset -1em 0em 1em rgba(0, 0, 0, 0.25)'
       }}
     >
       <DataGrid
