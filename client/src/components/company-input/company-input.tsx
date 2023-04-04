@@ -9,6 +9,8 @@ import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
 import { useSession } from '@context/session.context';
+import { setSessionId, setParticipantCode } from '../../redux/session';
+import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().uuid('Invalid  Submission ID').required('Please input the BWWC 2023 Submission ID.'),
@@ -29,11 +31,13 @@ interface valueProps {
 }
 
 export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
+  const dispatch = useDispatch();
+
   const urlParams = new URLSearchParams(window.location.search);
   const sessionId = urlParams.get('session_id') || '';
   const participantToken = urlParams.get('participant_code') || '';
 
-  const { setSessionId, setParticipantCode, setIndustry, setCompanySize } = useSession();
+  const { setIndustry, setCompanySize } = useSession();
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId,
     participationCode: participantToken,
@@ -44,8 +48,8 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
-      setSessionId(values.submissionId);
-      setParticipantCode(values.participationCode);
+      dispatch(setSessionId(values.submissionId));
+      dispatch(setParticipantCode(values.participationCode));
       setIndustry(values.industry);
       setCompanySize(values.size);
     }, [values]);
