@@ -101,7 +101,6 @@ export async function createNewSubmissionUrls(count: number, sessionId: string):
   return response.data;
 }
 
-
 export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
   const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS);
   return response.data;
