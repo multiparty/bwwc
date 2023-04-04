@@ -130,8 +130,8 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
         auth_token = req.GET.get("auth_token")
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not session_id:
-            return HttpResponseBadRequest("Invalid request body")
+        # if not auth_token or not session_id:
+        #     return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")

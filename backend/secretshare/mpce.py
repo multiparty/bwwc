@@ -116,6 +116,8 @@ class MPCEngine(object):
 
         if not session_data:
             raise ValueError("Invalid session ID")
+        
+        print(type(session_data["participant_submissions"]))
 
         session_data["participant_submissions"][participant_id] = data
 
