@@ -3,6 +3,7 @@ import { generateKeyPair, keyPairToDictionary } from '@utils/keypair';
 import React, { createContext, FC, useContext, useEffect } from 'react';
 import { useAuth } from '@context/auth.context';
 import { useSession } from '@context/session.context';
+import { useSettings } from '@context/settings.context';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/bwwc/';
 
@@ -61,7 +62,7 @@ export async function startSession(): Promise<CreateSessionResponse> {
   const publicKeyPem = publicKey.replace(/\n/g, '').replace('-----BEGIN PUBLIC KEY-----', '').replace('-----END PUBLIC KEY-----', '');
 
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.START_SESSION}`,
+    API_ENDPOINTS.START_SESSION,
     convertToFormData({
       public_key: publicKeyPem,
       auth_token: 'remove this later'
@@ -76,7 +77,7 @@ export async function startSession(): Promise<CreateSessionResponse> {
 
 export async function endSession(sessionId?: string): Promise<EndSessionResponse> {
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.END_SESSION}`,
+    API_ENDPOINTS.END_SESSION,
     convertToFormData({
       session_id: sessionId,
       auth_token: 'remove this later'
@@ -87,7 +88,7 @@ export async function endSession(sessionId?: string): Promise<EndSessionResponse
 
 export async function createNewSubmissionUrls(count: number, sessionId: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.GET_SUBMISSION_URLS}`,
+    API_ENDPOINTS.GET_SUBMISSION_URLS,
     convertToFormData({
       session_id: sessionId,
       participant_count: count,
@@ -98,7 +99,7 @@ export async function createNewSubmissionUrls(count: number, sessionId: string):
 }
 
 export async function getEncryptedShares(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_ENCRYPTED_SHARES}`);
+  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_ENCRYPTED_SHARES);
   return response.data;
 }
 
@@ -106,7 +107,7 @@ export async function submitData(data: any, sessionId: string, participantCode: 
   console.log(`submitting data: ${JSON.stringify(data)}`);
 
   const response: AxiosResponse = await axios.post(
-    `${API_BASE_URL}${API_ENDPOINTS.SUBMIT_DATA}`,
+    API_ENDPOINTS.SUBMIT_DATA,
     convertToFormData({
       data: JSON.stringify(data),
       sessionId: sessionId,
@@ -117,7 +118,7 @@ export async function submitData(data: any, sessionId: string, participantCode: 
 }
 
 export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
-  const response = await axios.get(`${API_BASE_URL}get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
+  const response = await axios.get(`get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
   return response.data.public_key;
 }
 
@@ -137,6 +138,7 @@ export interface ApiProviderProps {
 export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
   const { token } = useAuth();
   const { sessionId } = useSession();
+  const { VITE_API_BASE_URL } = useSettings();
 
   useEffect(() => {
     if (token) {
@@ -144,7 +146,8 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
     } else {
       delete axios.defaults.headers.common['Authorization'];
     }
-  }, [token]);
+    axios.defaults.baseURL = VITE_API_BASE_URL;
+  }, [token, VITE_API_BASE_URL]);
 
   return (
     <ApiContext.Provider
