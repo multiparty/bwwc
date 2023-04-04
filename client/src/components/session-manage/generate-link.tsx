@@ -18,8 +18,8 @@ export const LinkGenerator: FC = () => {
     count: Yup.number().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
-  const handleSubmit = (values: { count: number; sessionId: string }) => {
-    createNewSubmissionUrls(values.count, values.sessionId).then((urls) => {
+  const handleSubmit = (values: { count: number }) => {
+    createNewSubmissionUrls(values.count, sessionId).then((urls) => {
       setGeneratedLinks(Object.values(urls));
     });
   };
@@ -27,7 +27,7 @@ export const LinkGenerator: FC = () => {
   return (
     <Grid container>
       <Grid item xs={12} md={4} sx={{ p: 1 }}>
-        <Formik validationSchema={validationSchema} initialValues={{ count: 0, sessionId: sessionId }} onSubmit={handleSubmit}>
+        <Formik validationSchema={validationSchema} initialValues={{ count: 0 }} onSubmit={handleSubmit}>
           <Form>
             <Stack spacing={2}>
               <Typography variant="h5">Add Participants</Typography>
