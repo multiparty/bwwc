@@ -204,6 +204,9 @@ class MPCEngine(object):
     def sum_unencrypted(self, session_id: str):
         session_data = self.get_session(session_id)
         data = {}
+
+        if session_data["state"] != "closed":
+            raise ValueError("Session is not closed")
         
         for _, table in session_data["participant_submissions"].items():
             data = self.merge_nested_dict(data, table)
