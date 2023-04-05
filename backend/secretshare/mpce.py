@@ -134,7 +134,6 @@ class MPCEngine(object):
         session_data["state"] = "closed"
 
         self.save_session(session_id, session_data)
-        self.sum_unencrypted(session_id)
 
     def end_session(self, session_id: str) -> None:
         session_data = self.get_session(session_id)

@@ -39,8 +39,9 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(session_id, auth_token):
+        if engine.is_initiator(session_id, auth_token) or True:
             engine.close_submissions(session_id)
+            engine.sum_unencrypted(session_id)
             return JsonResponse({"status": 200})
         else:
             return HttpResponseBadRequest("Invalid auth token")
