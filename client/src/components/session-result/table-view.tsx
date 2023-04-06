@@ -48,9 +48,9 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
               <Form>
                 <FormObserver />
                 {tabSelection == 1 ? (
-                  <AutoCompleteInput fullWidth name="size" options={Sizes} label="Company Size selection" defaultValue={ddSelection} />
+                  <AutoCompleteInput fullWidth name="size" options={Sizes} label="Company Size selection" />
                 ) : (
-                  <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" defaultValue={ddSelection} />
+                  <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" />
                 )}
               </Form>
             </Formik>
