@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { FC, useState, useEffect } from 'react';
 import { DataFormat } from '@utils/data-format';
 import { Box, Card, CardContent, Checkbox, Divider, FormControlLabel, Stack, Typography } from '@mui/material';
@@ -9,13 +10,13 @@ import { useSession } from '@context/session.context';
 
 export interface VerifyDataProps {
   submitDataHandler: () => void;
+  submitResp: AxiosResponse | undefined;
   data: DataFormat;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (verifyTicked && data?.totalEmployees) {
@@ -29,8 +30,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler }) => 
     setVerifyTicked(event.target.checked);
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
     submitDataHandler();
   };
 
@@ -51,7 +51,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitDataHandler }) => 
           <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit}>
             Submit
           </LoadingButton>
-          <SubmissionAlert success={submitted} />
+          <SubmissionAlert submitResp={submitResp} />
         </Stack>
       </CardContent>
     </Card>

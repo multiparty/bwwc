@@ -18,7 +18,7 @@ engine = MPCEngine()
 def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         public_key = req.POST.get("public_key")
-        auth_token = req.POST.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
 
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
@@ -34,18 +34,22 @@ def start_session(req: HttpRequest) -> HttpResponse:
 def stop_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         session_id = req.POST.get("session_id")
-        auth_token = req.POST.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
+
+        print(auth_token)
 
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(session_id, auth_token) or True:
+        if engine.is_initiator(session_id, auth_token):
             engine.close_submissions(session_id)
             engine.sum_unencrypted(session_id)
             return JsonResponse({"status": 200})
         else:
+            print('Invalid auth token')
             return HttpResponseBadRequest("Invalid auth token")
     else:
+        print('Invalid request method')
         return HttpResponseBadRequest("Invalid request method")
 
 
@@ -53,7 +57,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
 def end_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         session_id = req.POST.get("session_id")
-        auth_token = req.POST.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
 
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
@@ -70,7 +74,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_submission_urls(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        auth_token = req.POST.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
 
@@ -92,7 +96,7 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
-        auth_token = req.POST.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.POST.get("session_id")
 
         if not engine.is_initiator(session_id, auth_token) or not auth_token or not session_id:
@@ -117,10 +121,13 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
 
-        engine.add_participant(session_id, participant)
-        engine.update_session_data(session_id, participant, data)
+        try:
+            engine.add_participant(session_id, participant)
+            engine.update_session_data(session_id, participant, data)
 
-        return JsonResponse({"status": 200})
+            return JsonResponse({"status": 200})
+        except Exception as e:
+            return HttpResponseBadRequest(str(e))
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -128,11 +135,11 @@ def submit_data(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_public_key(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        auth_token = req.GET.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.GET.get("session_id")
 
-        # if not auth_token or not session_id:
-        #     return HttpResponseBadRequest("Invalid request body")
+        if not auth_token or not session_id:
+            return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
@@ -147,7 +154,7 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        auth_token = req.GET.get("auth_token")
+        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.GET.get("session_id")
 
         if not auth_token or not engine.is_initiator(session_id, auth_token):

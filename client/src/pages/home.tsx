@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { FC, useEffect, useState } from 'react';
 import { Stack } from '@mui/material';
 import { CompanyInputForm } from '@components/company-input/company-input';
@@ -16,6 +17,7 @@ import { defaultData } from '@constants/default-data';
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
+  const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
@@ -27,8 +29,6 @@ export const HomePage: FC = () => {
       if (file) {
         const csvData = await readCsv(file);
         setData(csvData);
-
-        console.log(`Session ID: ${sessionId}`);
 
         const publicKeyString = await getPublicKey(sessionId, authToken);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
@@ -45,7 +45,7 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
-  const submitDataHandler = () => {
+  const submitDataHandler = async () => {
     if (sessionId === undefined) {
       throw new Error('Session ID is undefined');
     }
@@ -54,7 +54,12 @@ export const HomePage: FC = () => {
       throw new Error('Participant code is undefined');
     }
 
-    submitData(table, sessionId, participantCode);
+    try {
+      const resp = await submitData(table, sessionId, participantCode);
+      setSubmitResp(resp);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -62,7 +67,7 @@ export const HomePage: FC = () => {
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
         <ViewData open={false} data={data} />
-        <VerifyData data={data} submitDataHandler={submitDataHandler} />
+        <VerifyData data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} />
       </Stack>
     </Layout>
   );

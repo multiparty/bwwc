@@ -185,9 +185,6 @@ class MPCEngine(object):
     def get_submitted_data(self, session_id: str) -> dict:
         session_data = self.get_session(session_id)
 
-        if session_data["state"] == "closed":
-            raise ValueError("Session is closed")
-
         if not session_data:
             raise ValueError("Invalid session ID")
 
@@ -217,4 +214,5 @@ class MPCEngine(object):
             session_data["merged"] = {}
             
         session_data["merged"] = data
+        print(session_data["merged"])
         self.save_session(session_id, session_data)

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const sessionSlice = createSlice({
   name: 'session',
   initialState: {
-    authToken: 'authtoken',
+    authToken: '',
     participantCode: '',
     publicKey: '',
     privateKey: '',
