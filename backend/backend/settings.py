@@ -36,7 +36,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "mpc-api.sail.codes",
+    "training-api.100talent.org",
+    "api.100talent.org",
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",

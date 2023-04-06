@@ -8,17 +8,16 @@ export const AdminGuard: FC = () => {
   const { token, decodedToken, initialized } = useAuth();
   const { VITE_SAIL_PROJECT_ID, VITE_SAIL_AUTH_CLIENT } = useSettings();
   const navigate = useNavigate();
-  const loginUrl = `${VITE_SAIL_AUTH_CLIENT}?projectId=${VITE_SAIL_PROJECT_ID}&redirectUrl=${encodeURIComponent(window.location.origin + Paths.AUTH_CALLBACK)}`;
 
   useEffect(() => {
-    if (initialized && !token) {
-      // window.location.replace(loginUrl);
+    if (initialized && !token && !!VITE_SAIL_AUTH_CLIENT && !!VITE_SAIL_PROJECT_ID) {
+      window.location.replace(`${VITE_SAIL_AUTH_CLIENT}?projectId=${VITE_SAIL_PROJECT_ID}&redirectUrl=${encodeURIComponent(window.location.origin + Paths.AUTH_CALLBACK)}`);
     }
 
     if (initialized && decodedToken && decodedToken.role !== 1) {
       navigate(Paths.PERMISSION_REQUIRED, { replace: true });
     }
-  }, [token, decodedToken, initialized]);
+  }, [token, decodedToken, initialized, VITE_SAIL_PROJECT_ID, VITE_SAIL_AUTH_CLIENT]);
 
   return <Outlet />;
 };
