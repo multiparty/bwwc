@@ -26,6 +26,12 @@ interface StartSessionResponse {
   session_id: string;
 }
 
+interface StopSessionResponse {
+  status: {
+    [code: number]: any;
+  };
+}
+
 interface EndSessionResponse {
   status: {
     [code: number]: any;
@@ -52,9 +58,11 @@ export interface CreateSessionResponse {
 
 export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
-  endSession: () => Promise<EndSessionResponse>;
-  createNewSubmissionUrls: (count: number, sessionId: string) => Promise<GetSubmissionUrlsResponse>;
+  endSession: (sessionId: string, authToken: string) => Promise<EndSessionResponse>;
+  createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
+  getPublicKey: (sessionId: string, authToken: string) => Promise<string>;
   getSubmissions: () => Promise<GetEncryptedSharesResponse>;
+  stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
 }
 
@@ -78,18 +86,29 @@ export async function startSession(): Promise<CreateSessionResponse> {
   };
 }
 
-export async function endSession(sessionId?: string): Promise<EndSessionResponse> {
+export async function stopSession(sessionId: string, authToken: string): Promise<StopSessionResponse> {
   const response: AxiosResponse = await axios.post(
-    API_ENDPOINTS.END_SESSION,
+    API_ENDPOINTS.STOP_SESSION,
     convertToFormData({
       session_id: sessionId,
-      auth_token: 'remove this later'
+      auth_token: authToken
     })
   );
   return response.data;
 }
 
-export async function createNewSubmissionUrls(count: number, sessionId: string): Promise<GetSubmissionUrlsResponse> {
+export async function endSession(sessionId: string, authToken: string): Promise<EndSessionResponse> {
+  const response: AxiosResponse = await axios.post(
+    API_ENDPOINTS.END_SESSION,
+    convertToFormData({
+      session_id: sessionId,
+      auth_token: authToken
+    })
+  );
+  return response.data;
+}
+
+export async function createNewSubmissionUrls(count: number, sessionId: string, authToken: string): Promise<GetSubmissionUrlsResponse> {
   const response: AxiosResponse = await axios.post(
     API_ENDPOINTS.GET_SUBMISSION_URLS,
     convertToFormData({
@@ -154,9 +173,11 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
     <ApiContext.Provider
       value={{
         startSession: () => startSession(),
-        endSession: () => endSession(sessionId),
-        createNewSubmissionUrls: (count: number, sessionId: string) => createNewSubmissionUrls(count, sessionId),
+        endSession: (sessionId: string, authToken: string) => endSession(sessionId, authToken),
+        createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
+        getPublicKey: (session_id: string, auth_token: string) => getPublicKey(session_id, auth_token),
         getSubmissions: () => getSubmissions(),
+        stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
         submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
     >

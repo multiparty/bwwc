@@ -28,6 +28,8 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
+        console.log(`Session ID: ${sessionId}`);
+
         const publicKeyString = await getPublicKey(sessionId, authToken);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
