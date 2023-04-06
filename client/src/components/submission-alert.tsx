@@ -1,12 +1,33 @@
-import { Alert } from '@mui/material';
+import { AxiosResponse } from 'axios';
+import { Alert, AlertColor } from '@mui/material';
 
 interface SubmissionAlertProps {
-  success: boolean;
+  submitResp: AxiosResponse | undefined;
 }
 
-export const SubmissionAlert = ({ success }: SubmissionAlertProps) => {
-  const Severity = success ? 'success' : 'warning';
-  const Message = success ? 'Your submission was successful — You can close the window. Thank you!' : 'You have not submitted yet';
+export const SubmissionAlert = ({ submitResp }: SubmissionAlertProps) => {
+  let severity: AlertColor | undefined;
+  let message = '';
 
-  return <Alert severity={Severity}>{Message}</Alert>;
+  if (submitResp === undefined) {
+    severity = 'warning';
+    message = 'Cannot submit data. Please contact an administrator.';
+  }
+
+  else if (submitResp.status == 0) {
+    severity = 'warning';
+    message = 'You have not submitted yet';
+  }
+
+  else if (submitResp.status == 200) {
+    severity = 'success';
+    message = 'Your submission was successful — You can close the window. Thank you!';
+  } 
+
+  else if (submitResp.status == 400) {
+    severity = 'error';
+    message = submitResp.data;
+  }
+
+  return <Alert severity={severity}>{message}</Alert>;
 };

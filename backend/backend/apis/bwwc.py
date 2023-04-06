@@ -117,10 +117,13 @@ def submit_data(req: HttpRequest) -> HttpResponse:
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
 
-        engine.add_participant(session_id, participant)
-        engine.update_session_data(session_id, participant, data)
+        try:
+            engine.add_participant(session_id, participant)
+            engine.update_session_data(session_id, participant, data)
 
-        return JsonResponse({"status": 200})
+            return JsonResponse({"status": 200})
+        except Exception as e:
+            return HttpResponseBadRequest(str(e))
     else:
         return HttpResponseBadRequest("Invalid request method")
 
