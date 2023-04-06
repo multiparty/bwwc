@@ -39,7 +39,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(auth_token):
+        if engine.is_initiator(session_id, auth_token):
             engine.close_submissions(session_id)
             return JsonResponse({"status": 200})
         else:
@@ -57,7 +57,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(auth_token):
+        if engine.is_initiator(session_id, auth_token):
             engine.end_session(session_id)
             return JsonResponse({"status": 200})
         else:
@@ -73,8 +73,8 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
 
-        if not engine.is_initiator(auth_token):
-            return HttpResponseBadRequest("Invalid auth token")
+        # if not engine.is_initiator(session_id, auth_token):
+        #     return HttpResponseBadRequest("Invalid auth token")
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -94,7 +94,7 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
         auth_token = req.POST.get("auth_token")
         session_id = req.POST.get("session_id")
 
-        if not engine.is_initiator(auth_token) or not auth_token or not session_id:
+        if not engine.is_initiator(session_id, auth_token) or not auth_token or not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
         result = engine.get_encrypted_shares(session_id)
@@ -149,7 +149,7 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
         auth_token = req.GET.get("auth_token")
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not engine.is_initiator(auth_token):
+        if not auth_token or not engine.is_initiator(session_id, auth_token):
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):

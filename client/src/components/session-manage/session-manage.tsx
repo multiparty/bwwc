@@ -7,6 +7,9 @@ import { useApi } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useSession } from '@context/session.context';
+import { AppState } from '@utils/data-format';
+import { useSelector } from 'react-redux';
+import { setSessionId } from '../../redux/session';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
@@ -19,11 +22,10 @@ interface valueProps {
 export const SessionManage: FC = () => {
   const { endSession } = useApi();
   const urlParams = new URLSearchParams(window.location.search);
-  const session_id = urlParams.get('session_id') || '';
-  const { sessionId, setSessionId } = useSession();
+  const { sessionId } = useSelector((state: AppState) => state.session);
 
   const [initialValues, setInitialValues] = useState({
-    submissionId: session_id
+    submissionId: sessionId
   });
 
   const FormObserver: React.FC = () => {

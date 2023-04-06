@@ -60,6 +60,7 @@ class MPCEngine(object):
             "public_key": public_key,
             "auth_token": auth_token,
             "state": "open",
+            "merged": None
         }
 
         self.save_session(session_id, session_data)
@@ -129,6 +130,7 @@ class MPCEngine(object):
         session_data["state"] = "closed"
 
         self.save_session(session_id, session_data)
+        self.sum_unencrypted(session_id)
 
     def end_session(self, session_id: str) -> None:
         session_data = self.get_session(session_id)
@@ -186,7 +188,7 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        return session_data["participant_submissions"]
+        return session_data["merged"]
 
     def get_session_state(self, session_id: str) -> str:
         session_data = self.get_session(session_id)
@@ -195,3 +197,15 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["state"]
+    
+    def sum_unencrypted(self, session_id: str):
+        session_data = self.get_session(session_id)
+        data = {}
+        
+        for _, table in session_data["participant_submissions"].items():
+            data = self.merge_nested_dict(data, table)
+            
+        # TODO: sum over the unencrypted shares
+            
+        session_data["merged"] = data
+        self.save_session(session_id, session_data)

@@ -10,12 +10,12 @@ import { Layout } from '@layouts/layout';
 import { getPublicKey, submitData } from '@services/api';
 import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
 import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
-import { defaultData } from '@constants/default-data';
 import { useSelector } from 'react-redux';
+import { defaultData } from '@constants/default-data';
 
 export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
-  const [data, setData] = useState<DataFormat>({} as DataFormat);
+  const [data, setData] = useState<DataFormat>(defaultData);
   const [numShares, setNumShares] = useState<number>(10);
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
@@ -43,7 +43,7 @@ export const HomePage: FC = () => {
     loadData();
   }, [file]);
 
-  const submitDataHandler = (secretTable: Record<string, any>) => {
+  const submitDataHandler = () => {
     if (sessionId === undefined) {
       throw new Error('Session ID is undefined');
     }
@@ -52,7 +52,7 @@ export const HomePage: FC = () => {
       throw new Error('Participant code is undefined');
     }
 
-    submitData(secretTable, sessionId, participantCode);
+    submitData(table, sessionId, participantCode);
   };
 
   return (
@@ -60,7 +60,7 @@ export const HomePage: FC = () => {
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
         <ViewData open={false} data={data} />
-        <VerifyData data={data} submitDataHandler={submitDataHandler} secretTable={table} />
+        <VerifyData data={data} submitDataHandler={submitDataHandler} />
       </Stack>
     </Layout>
   );
