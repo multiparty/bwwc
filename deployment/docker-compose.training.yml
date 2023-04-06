@@ -24,8 +24,8 @@ services:
   bwwc-redis:
     image: redis:7.0-alpine
     container_name: bwwc-redis-training
-    command:
-      - redis-server --protected-mode no
+    environment:
+      - redis_read_only=0
     ports:
       - 6380:6379
     volumes:
