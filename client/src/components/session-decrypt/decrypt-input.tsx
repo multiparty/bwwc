@@ -11,8 +11,8 @@ const validationSchema = Yup.object().shape({
 });
 
 export interface CompanyInputFormProps {
-  onFileUpload: (file: CustomFile) => void,
-  setPrivateKey: (privateKey: string) => void,
+  onFileUpload: (file: CustomFile) => void;
+  setPrivateKey: (privateKey: string) => void;
 }
 
 interface valueProps {
@@ -20,7 +20,6 @@ interface valueProps {
 }
 
 export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
-  
   const [initialValues, setInitialValues] = useState({
     privateKey: ''
   });
