@@ -23,8 +23,8 @@ const validationSchema = Yup.object().shape({
 });
 
 export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
-  const [initialValue, setInitialValue] = useState({ input: tabSelection==1?'small':'it' });
-  const [ddSelection, setDDSelection] = useState<String>(tabSelection==1?'small':'it' );
+  const [initialValue, setInitialValue] = useState({ input: tabSelection == 1 ? 'small' : 'it' });
+  const [ddSelection, setDDSelection] = useState<String>(tabSelection == 1 ? 'small' : 'it');
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -58,7 +58,7 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
             ''
           )}
         </Grid>
-        {data!=undefined?<ResultTable data={data[ddSelection?.toString()]} />:''}
+        {data != undefined ? <ResultTable data={data[ddSelection?.toString()]} /> : ''}
       </Stack>
     </Box>
   );

@@ -16,11 +16,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -54,9 +50,7 @@ export const SessionResult: FC = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            <Box>
-            {value == 0 ? <ResultTable data={toyresultDataA} /> : <TableView tabSelection={value} data={ToyResult[value.toString()]} />}
-            </Box>
+            <Box>{value == 0 ? <ResultTable data={toyresultDataA} /> : <TableView tabSelection={value} data={ToyResult[value.toString()]} />}</Box>
           </TabPanel>
         </CardContent>
       </Card>
