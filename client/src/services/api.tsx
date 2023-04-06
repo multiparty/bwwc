@@ -63,7 +63,7 @@ export interface ApiContextProps {
   getPublicKey: (sessionId: string, authToken: string) => Promise<string>;
   getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
-  submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<SubmitDataResponse>;
+  submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
 }
 
 export async function startSession(): Promise<CreateSessionResponse> {
@@ -125,7 +125,7 @@ export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
   return response.data;
 }
 
-export async function submitData(data: any, sessionId: string, participantCode: string): Promise<AxiosResponse> {
+export async function submitData(data: NestedObject, sessionId: string, participantCode: string): Promise<AxiosResponse> {
   const response: AxiosResponse = await axios.post(
     API_ENDPOINTS.SUBMIT_DATA,
     convertToFormData({
@@ -178,7 +178,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         getPublicKey: (session_id: string, auth_token: string) => getPublicKey(session_id, auth_token),
         getSubmissions: () => getSubmissions(),
         stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
-        submitData: (data: any, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
+        submitData: (data: NestedObject, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
     >
       {children}
