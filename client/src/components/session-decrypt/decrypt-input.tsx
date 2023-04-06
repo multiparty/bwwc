@@ -7,7 +7,7 @@ import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
 
 const validationSchema = Yup.object().shape({
-  privateKey: Yup.string().uuid('Invalid Private Key').required('Please input your Private Key.')
+  privateKey: Yup.string().required('Please input your Private Key.')
 });
 
 export interface CompanyInputFormProps {
@@ -20,10 +20,6 @@ interface valueProps {
 }
 
 export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
-  const [initialValues, setInitialValues] = useState({
-    privateKey: ''
-  });
-
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
@@ -45,7 +41,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
           <Divider />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
+              <Formik validationSchema={validationSchema} initialValues={{ privateKey: '' }} onSubmit={console.log}>
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>
