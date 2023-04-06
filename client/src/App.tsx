@@ -32,11 +32,11 @@ function App() {
                       <Route path={Paths.MANAGE} element={<ManagePage />} />
                       <Route path={Paths.CREATE} element={<CreatePage />} />
                       <Route path={Paths.DECRYPT} element={<DecryptPage />} />
+                      <Route path={Paths.RESULT} element={<ResultPage />} />
                     </Route>
                     <Route path={Paths.HOME} element={<HomePage />} />
                     <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
                     <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
-                    <Route path={Paths.RESULT} element={<ResultPage />} />
                     <Route path={Paths.LOGOUT} element={<LogoutPage />} />
                     <Route path="*" element={<Page404 />} />
                   </Routes>
