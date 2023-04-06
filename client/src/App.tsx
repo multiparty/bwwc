@@ -9,6 +9,7 @@ import { Paths } from '@constants/paths';
 import { AuthProvider } from '@context/auth.context';
 import { AuthCallback } from '@pages/auth-callback';
 import { PermissionRequiredPage } from '@pages/permission-required';
+import { DecryptPage } from '@pages/decrypt';
 import { ResultPage } from '@pages/result';
 import { Page404 } from '@pages/404';
 import { LogoutPage } from '@pages/logout';
@@ -34,6 +35,7 @@ function App() {
                     <Route path={Paths.HOME} element={<HomePage />} />
                     <Route path={Paths.AUTH_CALLBACK} element={<AuthCallback />} />
                     <Route path={Paths.PERMISSION_REQUIRED} element={<PermissionRequiredPage />} />
+                    <Route path={Paths.DECRYPT} element={<DecryptPage />} />
                     <Route path={Paths.RESULT} element={<ResultPage />} />
                     <Route path={Paths.LOGOUT} element={<LogoutPage />} />
                     <Route path="*" element={<Page404 />} />

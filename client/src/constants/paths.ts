@@ -4,6 +4,7 @@ export enum Paths {
   PERMISSION_REQUIRED = '/permission-required',
   AUTH_CALLBACK = '/auth/callback',
   CREATE = '/create',
+  DECRYPT = '/decrypt',
   MANAGE = '/manage',
   RESULT = '/result',
   LOGOUT = '/logout'
