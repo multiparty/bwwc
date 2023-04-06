@@ -6,7 +6,6 @@ import { LinkGenerator } from './generate-link';
 import { useApi } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
-import { useSession } from '@context/session.context';
 import { AppState } from '@utils/data-format';
 import { useSelector } from 'react-redux';
 import { setSessionId } from '../../redux/session';
@@ -52,6 +51,9 @@ export const SessionManage: FC = () => {
               </Button>
               <Button fullWidth variant="outlined" color="error" onClick={endSession}>
                 Stop Session
+              </Button>
+              <Button fullWidth variant="outlined" color="success" onClick={endSession}>
+                Reveal Result
               </Button>
             </Stack>
 
