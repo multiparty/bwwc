@@ -20,7 +20,7 @@ interface valueProps {
 }
 
 export const SessionManage: FC = () => {
-  const { endSession } = useApi();
+  const { stopSession } = useApi();
   const urlParams = new URLSearchParams(window.location.search);
   const { sessionId } = useSelector((state: AppState) => state.session);
   const navigate = useNavigate();
@@ -40,6 +40,9 @@ export const SessionManage: FC = () => {
   function revealResult() {
     navigate('/decrypt');
   }
+  const handleClick = async () => {
+    stopSession(sessionId, authToken);
+  };
 
   return (
     <Stack spacing={2}>
@@ -55,6 +58,7 @@ export const SessionManage: FC = () => {
               <Button fullWidth variant="contained" color="success" disabled>
                 Session Started
               </Button>
+
               {stopped ? (
                 <Button fullWidth variant="outlined" color="success" onClick={revealResult}>
                   Reveal Result
@@ -72,6 +76,7 @@ export const SessionManage: FC = () => {
                   Stop Session
                 </Button>
               )}
+
             </Stack>
 
             <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>

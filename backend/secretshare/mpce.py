@@ -14,6 +14,7 @@ import redis
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
+from pprint import pprint
 
 
 class MPCEngine(object):
@@ -54,13 +55,13 @@ class MPCEngine(object):
         session_data = {
             "session_id": session_id,
             "participants": {},
-            "participant_submissions": None,
+            "participant_submissions": {},
             "protocol": self.protocol,
             "prime": self.prime,
             "public_key": public_key,
             "auth_token": auth_token,
             "state": "open",
-            "merged": None
+            "merged": {}
         }
 
         self.save_session(session_id, session_data)
@@ -117,6 +118,9 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
+        if not session_data["participant_submissions"]:
+            session_data["participant_submissions"] = {}
+        
         session_data["participant_submissions"][participant_id] = data
 
         self.save_session(session_id, session_data)
@@ -130,7 +134,6 @@ class MPCEngine(object):
         session_data["state"] = "closed"
 
         self.save_session(session_id, session_data)
-        self.sum_unencrypted(session_id)
 
     def end_session(self, session_id: str) -> None:
         session_data = self.get_session(session_id)
@@ -201,11 +204,17 @@ class MPCEngine(object):
     def sum_unencrypted(self, session_id: str):
         session_data = self.get_session(session_id)
         data = {}
+
+        if session_data["state"] != "closed":
+            raise ValueError("Session is not closed")
         
         for _, table in session_data["participant_submissions"].items():
             data = self.merge_nested_dict(data, table)
             
         # TODO: sum over the unencrypted shares
+            
+        if "merged" not in session_data:
+            session_data["merged"] = {}
             
         session_data["merged"] = data
         self.save_session(session_id, session_data)

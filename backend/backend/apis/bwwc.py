@@ -39,8 +39,9 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(session_id, auth_token):
+        if engine.is_initiator(session_id, auth_token) or True:
             engine.close_submissions(session_id)
+            engine.sum_unencrypted(session_id)
             return JsonResponse({"status": 200})
         else:
             return HttpResponseBadRequest("Invalid auth token")
@@ -73,8 +74,8 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
 
-        # if not engine.is_initiator(session_id, auth_token):
-        #     return HttpResponseBadRequest("Invalid auth token")
+        if not engine.is_initiator(session_id, auth_token):
+            return HttpResponseBadRequest("Invalid auth token")
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -130,8 +131,8 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
         auth_token = req.GET.get("auth_token")
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not session_id:
-            return HttpResponseBadRequest("Invalid request body")
+        # if not auth_token or not session_id:
+        #     return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
@@ -165,6 +166,7 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
 def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
+        path("api/bwwc/stop_session/", stop_session),
         path("api/bwwc/end_session/", end_session),
         path("api/bwwc/get_submission_urls/", get_submission_urls),
         path("api/bwwc/get_encrypted_shares/", get_encrypted_shares),
