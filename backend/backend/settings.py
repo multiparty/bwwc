@@ -41,6 +41,8 @@ ALLOWED_HOSTS = [
     "mpc-api.sail.codes",
     "training-api.100talent.org",
     "api.100talent.org",
+    "localhost",
+    '127.0.0.1'
 ]
 
 CORS_ALLOWED_ORIGINS = [
