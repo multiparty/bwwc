@@ -29,7 +29,7 @@ export const SessionCreateForm: FC = (props) => {
   const handleClick = async () => {
     setLoading(true);
     const { privateKey, publicKey, sessionId } = await startSession();
-    
+
     dispatch(setSessionId(sessionId));
     dispatch(setPrivateKey(privateKey));
     setPublicKey(publicKey);
