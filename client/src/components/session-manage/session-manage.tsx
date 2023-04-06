@@ -9,6 +9,7 @@ import { Form, Formik, useFormikContext } from 'formik';
 import { AppState } from '@utils/data-format';
 import { useSelector } from 'react-redux';
 import { setSessionId } from '../../redux/session';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
@@ -22,10 +23,11 @@ export const SessionManage: FC = () => {
   const { endSession } = useApi();
   const urlParams = new URLSearchParams(window.location.search);
   const { sessionId } = useSelector((state: AppState) => state.session);
-
+  const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId
   });
+  const [stopped, setStopped] = useState(false);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -34,6 +36,10 @@ export const SessionManage: FC = () => {
     }, [values]);
     return null;
   };
+
+  function revealResult() {
+    navigate('/decrypt');
+  }
 
   return (
     <Stack spacing={2}>
@@ -49,12 +55,23 @@ export const SessionManage: FC = () => {
               <Button fullWidth variant="contained" color="success" disabled>
                 Session Started
               </Button>
-              <Button fullWidth variant="outlined" color="error" onClick={endSession}>
-                Stop Session
-              </Button>
-              <Button fullWidth variant="outlined" color="success" onClick={endSession}>
-                Reveal Result
-              </Button>
+              {stopped ? (
+                <Button fullWidth variant="outlined" color="success" onClick={revealResult}>
+                  Reveal Result
+                </Button>
+              ) : (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="error"
+                  onClick={() => {
+                    setStopped(true);
+                    endSession();
+                  }}
+                >
+                  Stop Session
+                </Button>
+              )}
             </Stack>
 
             <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
