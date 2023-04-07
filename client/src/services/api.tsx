@@ -60,7 +60,7 @@ export interface ApiContextProps {
   startSession: () => Promise<CreateSessionResponse>;
   endSession: (sessionId: string, authToken: string) => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
-  getPublicKey: (sessionId: string, authToken: string) => Promise<string>;
+  getPublicKey: (sessionId: string) => Promise<string>;
   getSubmissions: () => Promise<GetEncryptedSharesResponse>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
@@ -175,7 +175,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         startSession: () => startSession(),
         endSession: (sessionId: string, authToken: string) => endSession(sessionId, authToken),
         createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
-        getPublicKey: (session_id: string, auth_token: string) => getPublicKey(session_id, auth_token),
+        getPublicKey: (session_id: string) => getPublicKey(session_id),
         getSubmissions: () => getSubmissions(),
         stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
         submitData: (data: NestedObject, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
