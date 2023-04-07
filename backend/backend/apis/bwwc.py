@@ -25,7 +25,7 @@ def start_session(req: HttpRequest) -> HttpResponse:
 
         session_id = engine.create_session(auth_token, public_key)
 
-        return JsonResponse({"session_id": session_id})
+        return JsonResponse({"session_id": session_id, "auth_token": auth_token})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -36,8 +36,6 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
 
-        print(auth_token)
-
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
@@ -46,10 +44,8 @@ def stop_session(req: HttpRequest) -> HttpResponse:
             engine.sum_unencrypted(session_id)
             return JsonResponse({"status": 200})
         else:
-            print('Invalid auth token')
             return HttpResponseBadRequest("Invalid auth token")
     else:
-        print('Invalid request method')
         return HttpResponseBadRequest("Invalid request method")
 
 
@@ -135,10 +131,9 @@ def submit_data(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_public_key(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not session_id:
+        if not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
@@ -154,10 +149,9 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not engine.is_initiator(session_id, auth_token):
+        if not engine.is_initiator(session_id, auth_token):
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):

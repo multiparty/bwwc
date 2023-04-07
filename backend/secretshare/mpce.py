@@ -39,9 +39,10 @@ class MPCEngine(object):
         if config_prime and is_prime_miller_rabin(config_prime):
             self.prime = config_prime
 
-        # Connect to Redis and MongoDB
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
-        self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
+        redis_connection = redis.StrictRedis(host=self.redis_host, port=6379, decode_responses=True)
+        redis_connection.config_set('replica-read-only', 'no')
+    
         self.mongo_host = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
         self.mongo_client = pymongo.MongoClient(self.mongo_host)
         self.mongo_db = self.mongo_client["mpc_database"]

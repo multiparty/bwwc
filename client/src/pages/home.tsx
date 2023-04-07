@@ -13,8 +13,10 @@ import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
 import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
 import { useSelector } from 'react-redux';
 import { defaultData } from '@constants/default-data';
+import { useAuth } from '@context/auth.context';
 
 export const HomePage: FC = () => {
+  const { token } = useAuth();
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
@@ -30,7 +32,7 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
-        const publicKeyString = await getPublicKey(sessionId, authToken);
+        const publicKeyString = await getPublicKey(sessionId);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
         setTable(secretTable);
