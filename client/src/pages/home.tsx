@@ -29,7 +29,6 @@ export const HomePage: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (file) {
-
         if (token === undefined) {
           throw new Error('Token is undefined');
           // TODO: redirect to login page
