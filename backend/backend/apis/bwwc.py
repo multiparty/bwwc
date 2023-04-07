@@ -131,10 +131,9 @@ def submit_data(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_public_key(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        auth_token = req.META.get('HTTP_AUTHORIZATION').split()[1]
         session_id = req.GET.get("session_id")
 
-        if not auth_token or not session_id:
+        if not session_id:
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):

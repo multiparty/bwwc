@@ -137,8 +137,8 @@ export async function submitData(data: NestedObject, sessionId: string, particip
   return response;
 }
 
-export async function getPublicKey(session_id: string, auth_token: string): Promise<string> {
-  const response = await axios.get(`get_public_key/`, { params: { auth_token: auth_token, session_id: session_id } });
+export async function getPublicKey(session_id: string): Promise<string> {
+  const response = await axios.get(`get_public_key/`, { params: { session_id: session_id } });
   return response.data.public_key;
 }
 

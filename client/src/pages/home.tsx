@@ -29,23 +29,18 @@ export const HomePage: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (file) {
-        if (token === undefined) {
-          throw new Error('Token is undefined');
-          // TODO: redirect to login page
-        } else {
-          const csvData = await readCsv(file);
-          setData(csvData);
+        const csvData = await readCsv(file);
+        setData(csvData);
 
-          const publicKeyString = await getPublicKey(sessionId, token);
-          const publicCryptoKey = await importPemPublicKey(publicKeyString);
-          const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
-          setTable(secretTable);
+        const publicKeyString = await getPublicKey(sessionId);
+        const publicCryptoKey = await importPemPublicKey(publicKeyString);
+        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
+        setTable(secretTable);
 
-          if (participantCode == 'analyst') {
-            const privateCryptoKey = await importPemPrivateKey(privateKey);
-            const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
-            setTable(decTable);
-          }
+        if (participantCode == 'analyst') {
+          const privateCryptoKey = await importPemPrivateKey(privateKey);
+          const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
+          setTable(decTable);
         }
       }
     };
