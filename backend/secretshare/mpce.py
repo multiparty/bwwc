@@ -109,7 +109,7 @@ class MPCEngine(object):
         return d1
 
     def update_session_data(
-        self, session_id: str, participant_id: str, data: dict
+        self, session_id: str, participant_id: str, data: dict | str
     ) -> None:
         session_data = self.get_session(session_id)
 
@@ -121,6 +121,9 @@ class MPCEngine(object):
 
         if not session_data["participant_submissions"]:
             session_data["participant_submissions"] = {}
+
+        if type(data) == str:
+            data = json.loads(data)
         
         session_data["participant_submissions"][participant_id] = data
 
