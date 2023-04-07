@@ -13,8 +13,10 @@ import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
 import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
 import { useSelector } from 'react-redux';
 import { defaultData } from '@constants/default-data';
+import { useAuth } from '@context/auth.context';
 
 export const HomePage: FC = () => {
+  const { token } = useAuth();
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
@@ -27,18 +29,24 @@ export const HomePage: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (file) {
-        const csvData = await readCsv(file);
-        setData(csvData);
 
-        const publicKeyString = await getPublicKey(sessionId, authToken);
-        const publicCryptoKey = await importPemPublicKey(publicKeyString);
-        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
-        setTable(secretTable);
+        if (token === undefined) {
+          throw new Error('Token is undefined');
+          // TODO: redirect to login page
+        } else {
+          const csvData = await readCsv(file);
+          setData(csvData);
 
-        if (participantCode == 'analyst') {
-          const privateCryptoKey = await importPemPrivateKey(privateKey);
-          const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
-          setTable(decTable);
+          const publicKeyString = await getPublicKey(sessionId, token);
+          const publicCryptoKey = await importPemPublicKey(publicKeyString);
+          const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
+          setTable(secretTable);
+
+          if (participantCode == 'analyst') {
+            const privateCryptoKey = await importPemPrivateKey(privateKey);
+            const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
+            setTable(decTable);
+          }
         }
       }
     };
