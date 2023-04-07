@@ -3,18 +3,19 @@ import { Alert, AlertColor } from '@mui/material';
 
 interface SubmissionAlertProps {
   submitResp: AxiosResponse | undefined;
+  pressed: boolean;
 }
 
-export const SubmissionAlert = ({ submitResp }: SubmissionAlertProps) => {
+export const SubmissionAlert = ({ submitResp, pressed }: SubmissionAlertProps) => {
   let severity: AlertColor | undefined;
-  let message = '';
+  let message = 'You have not submitted yet';
+  severity = 'warning';
 
   if (submitResp === undefined) {
-    severity = 'warning';
-    message = 'Cannot submit data. Please contact an administrator.';
-  } else if (submitResp.status == 0) {
-    severity = 'warning';
-    message = 'You have not submitted yet';
+    if (pressed) {
+      severity = 'warning';
+      message = 'Cannot submit data. Please contact an administrator.';
+    }
   } else if (submitResp.status == 200) {
     severity = 'success';
     message = 'Your submission was successful — You can close the window. Thank you!';
