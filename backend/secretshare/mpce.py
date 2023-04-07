@@ -42,7 +42,7 @@ class MPCEngine(object):
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
         # self.redis_client.config_set('replica-read-only', 'no')
-    
+
         self.mongo_host = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
         self.mongo_client = pymongo.MongoClient(self.mongo_host)
         self.mongo_db = self.mongo_client["mpc_database"]
@@ -62,7 +62,7 @@ class MPCEngine(object):
             "public_key": public_key,
             "auth_token": auth_token,
             "state": "open",
-            "merged": {}
+            "merged": {},
         }
 
         self.save_session(session_id, session_data)
@@ -124,9 +124,8 @@ class MPCEngine(object):
 
         if type(data) == str:
             data = json.loads(data)
-        
-        session_data["participant_submissions"][participant_id] = data
 
+        session_data["participant_submissions"][participant_id] = data
         self.save_session(session_id, session_data)
 
     def close_submissions(self, session_id: str) -> None:
@@ -201,22 +200,22 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["state"]
-    
+
     def sum_unencrypted(self, session_id: str):
         session_data = self.get_session(session_id)
         data = {}
 
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
-        
+
         for _, table in session_data["participant_submissions"].items():
             data = self.merge_nested_dict(data, table)
-            
+
         # TODO: sum over the unencrypted shares
-            
+
         if "merged" not in session_data:
             session_data["merged"] = {}
-            
+
         session_data["merged"] = data
         print(session_data["merged"])
         self.save_session(session_id, session_data)

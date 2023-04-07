@@ -9,7 +9,7 @@ import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
 import { useSession } from '@context/session.context';
-import { setSessionId, setParticipantCode } from '../../redux/session';
+import { setSessionId, setParticipantCode, setIndustry, setCompanySize } from '../../redux/session';
 import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
@@ -37,7 +37,6 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const sessionId = urlParams.get('session_id') || '';
   const participantToken = urlParams.get('participant_code') || '';
 
-  const { setIndustry, setCompanySize } = useSession();
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId,
     participationCode: participantToken,
@@ -50,8 +49,8 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
     useEffect(() => {
       dispatch(setSessionId(values.submissionId));
       dispatch(setParticipantCode(values.participationCode));
-      setIndustry(values.industry);
-      setCompanySize(values.size);
+      dispatch(setIndustry(values.industry));
+      dispatch(setCompanySize(values.size));
     }, [values]);
     return null;
   };
