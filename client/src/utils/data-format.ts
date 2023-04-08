@@ -108,3 +108,9 @@ export function convertToRows(data?: TableData): TableRow[] {
 export interface StringDataFormatMap {
   [key: string]: DataFormat;
 }
+
+export interface ResultFormat {
+  0: DataFormat;
+  1: ResultFormat;
+  2: ResultFormat;
+}

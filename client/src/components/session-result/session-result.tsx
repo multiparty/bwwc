@@ -1,9 +1,10 @@
 import { FC, useState } from 'react';
-import { Box, Card, CardContent, Divider, Typography, Stack, Tabs, Tab } from '@mui/material';
+import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
 import { ToyResult } from '@constants/delete/toy-result';
 import { toyresultDataA } from '@constants/delete/toy-result-dataA';
 import { ResultTable } from './result-table';
+import { ResultFormat } from '@utils/data-format';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -27,7 +28,12 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
-export const SessionResult: FC = () => {
+
+function handleClick(result:ResultFormat) {
+  console.log(result)
+}
+
+export const SessionResult: FC = (result:ResultFormat) => {
   const [value, setValue] = useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -40,6 +46,17 @@ export const SessionResult: FC = () => {
             <Typography component="h1" variant="h4">
               Result Data
             </Typography>
+            <Grid container justifyContent="center">
+              <Button
+                variant="contained"
+                sx={{ width: 300 }}
+                onClick={() => {
+                  handleClick(result);
+                }}
+              >
+                DownLoad FIle
+              </Button>
+            </Grid>
             <Box>
               <Tabs value={value} onChange={handleChange}>
                 <Tab label="All" {...a11yProps(value)} />
