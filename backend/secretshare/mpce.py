@@ -1,7 +1,10 @@
 import os
 import sys
 import uuid
-from typing import Any, Dict, List, Optional, Tuple
+import numbers
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable
+from itertools import groupby
+from operator import itemgetter
 
 sys.path.append("../cryptography")
 
@@ -91,22 +94,46 @@ class MPCEngine(object):
             session_data["participants"][participant] = metadata
             self.save_session(session_id, session_data)
 
-    """
-    Recursively updates the nested dictionary d1 with the contents of the nested dictionary d2.
-    If a key exists in both dictionaries and the values are dictionaries, the function is called recursively.
-    If a key exists in both dictionaries and the values are lists, the lists in d1 are extended with the elements of the lists in d2.
-    Otherwise, the value in d1 is replaced with the value in d2.
-    """
+    def merge_tables(table1: Dict[str, Union[List, int]], table2: Dict[str, Union[List, int]], func: Callable[[Any, Any], Any]) -> Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]]:
+        def dfs_helper(key: str, dict1: Dict[str, Any], dict2: Dict[str, Any]) -> Union[List[Tuple[int, int]], Tuple[int, int]]:
+            if isinstance(dict1[key], numbers.Number) and isinstance(dict2[key], numbers.Number):
+                return func(dict1[key], dict2[key])
+            elif isinstance(dict1[key], str) and isinstance(dict2[key], str):
+                return func(dict1[key], dict2[key])
+            elif isinstance(dict1[key], list) and isinstance(dict2[key], list):
+                merged, summed = [], 0
 
-    def merge_nested_dict(self, d1: dict, d2: dict) -> dict:
-        for key, value in d2.items():
-            if key in d1 and isinstance(value, dict) and isinstance(d1[key], dict):
-                self.merge_nested_dict(d1[key], value)
-            elif key in d1 and isinstance(value, list) and isinstance(d1[key], list):
-                d1[key].extend(value)
+                combined_list = dict1[key] + dict2[key]
+                combined_list.sort(key=itemgetter(2))
+
+                for share_type, group in groupby(combined_list, key=itemgetter(2)):
+                    group_list = list(group)
+                    if share_type == 'enc-share':
+                        merged.extend(group_list)
+                    elif share_type == 'share':
+                        summed += sum(int(item[1]) for item in group_list)
+                    else:
+                        raise ValueError("Incompatible cell types.")
+
+                merged.append(['sum-share', str(summed), 'share'])
+                return merged
+            elif isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
+                if set(dict1[key].keys()) == set(dict2[key].keys()):
+                    return {k: dfs_helper(k, dict1[key], dict2[key]) for k in dict1[key].keys()}
+                else:
+                    raise ValueError("The given dictionaries do not have the same shape.")
             else:
-                d1[key] = value
-        return d1
+                raise ValueError("The given dictionaries do not have the same shape.")
+
+        if not set(table1.keys()) == set(table2.keys()):
+            raise ValueError("The given dictionaries do not have the same shape.")
+
+        result_table: Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]] = {}
+
+        for key in table1:
+            result_table[key] = dfs_helper(key, table1, table2)
+        return result_table
+
 
     def update_session_data(
         self, session_id: str, participant_id: str, data: dict | str
@@ -203,19 +230,18 @@ class MPCEngine(object):
 
     def sum_unencrypted(self, session_id: str):
         session_data = self.get_session(session_id)
-        data = {}
 
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
 
-        for _, table in session_data["participant_submissions"].items():
-            data = self.merge_nested_dict(data, table)
+        submissions = session_data["participant_submissions"].values()
+        data = submissions[0]
 
-        # TODO: sum over the unencrypted shares
+        for i in range(1, len(session_data["participant_submissions"])):
+            data = self.merge_tables(data, submissions[i], lambda x,y: float(x)+float(y))
 
         if "merged" not in session_data:
             session_data["merged"] = {}
 
         session_data["merged"] = data
-        print(session_data["merged"])
         self.save_session(session_id, session_data)
