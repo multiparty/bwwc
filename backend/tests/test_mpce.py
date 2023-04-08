@@ -92,3 +92,33 @@ def test_generate_urls():
         participant_key = f"participant_{i + 1}"
         assert participant_key in participant_urls
         assert url_pattern.match(participant_urls[participant_key])
+
+
+def test_same_shape():
+    table1 = {"A": [1, 2], "B": [3, 4]}
+    table2 = {"A": [5, 6], "B": [7, 8]}
+    expected = {"A": [(1, 5), (2, 6)], "B": [(3, 7), (4, 8)]}
+    assert engine.merge_tables(table1, table2) == expected
+
+
+def test_different_keys():
+    table1 = {"A": [1, 2], "B": [3, 4]}
+    table2 = {"A": [5, 6], "C": [7, 8]}
+    with pytest.raises(ValueError) as e_info:
+        engine.merge_tables(table1, table2)
+    assert str(e_info.value) == "The given dictionaries do not have the same shape."
+
+
+def test_different_list_lengths():
+    table1 = {"A": [1, 2], "B": [3, 4]}
+    table2 = {"A": [5, 6], "B": [7, 8, 9]}
+    with pytest.raises(ValueError) as e_info:
+        engine.merge_tables(table1, table2)
+    assert str(e_info.value) == "The given dictionaries do not have the same shape."
+
+
+def test_nested_structure():
+    table1 = {"A": [1, [2, 3]], "B": [4, 5]}
+    table2 = {"A": [6, [7, 8]], "B": [9, 10]}
+    expected = {"A": [(1, 6), [(2, 7), (3, 8)]], "B": [(4, 9), (5, 10)]}
+    assert engine.merge_tables(table1, table2) == expected

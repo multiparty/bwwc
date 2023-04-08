@@ -134,7 +134,6 @@ class MPCEngine(object):
             result_table[key] = dfs_helper(key, table1, table2)
         return result_table
 
-
     def update_session_data(
         self, session_id: str, participant_id: str, data: dict | str
     ) -> None:
@@ -238,7 +237,9 @@ class MPCEngine(object):
         data = submissions[0]
 
         for i in range(1, len(session_data["participant_submissions"])):
-            data = self.merge_tables(data, submissions[i], lambda x,y: float(x)+float(y))
+            data = self.merge_tables(
+                data, submissions[i], lambda x, y: float(x) + float(y)
+            )
 
         if "merged" not in session_data:
             session_data["merged"] = {}
