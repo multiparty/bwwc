@@ -162,6 +162,7 @@ class MPCEngine(object):
     """
 
     def merge_tables(
+        self,
         table1: Dict[str, Union[List, int]],
         table2: Dict[str, Union[List, int]],
         func: Callable[[Any, Any], Any],
@@ -411,11 +412,11 @@ class MPCEngine(object):
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
 
-        submissions = session_data["participant_submissions"].values()
-        data = submissions[0]
+        submissions = list(session_data["participant_submissions"].values())
+        data = submissions[0]["table"]
 
         for i in range(1, len(session_data["participant_submissions"])):
-            data = self.merge_tables(data, submissions[i], reduce)
+            data = self.merge_tables(data, submissions[i]["table"], reduce)
 
         if "merged" not in session_data:
             session_data["merged"] = {}
