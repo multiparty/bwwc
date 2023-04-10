@@ -13,8 +13,6 @@ sample_auth_token = "sample_auth_token"
 current_directory_path = os.path.dirname(os.path.abspath(__file__))
 
 dotenv.load_dotenv(os.path.join(current_directory_path, "../env/", ".env.dev"))
-print("BASE_URL:", os.environ.get("BASE_URL"))
-
 
 @pytest.fixture(autouse=True)
 def clear_redis():
