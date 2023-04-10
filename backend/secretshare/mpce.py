@@ -12,7 +12,6 @@ import json
 from collections import defaultdict
 from datetime import datetime
 
-import pymongo
 import redis
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
@@ -44,13 +43,7 @@ class MPCEngine(object):
 
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
-        # self.redis_client.config_set('replica-read-only', 'no')
-
-        self.mongo_host = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
-        self.mongo_client = pymongo.MongoClient(self.mongo_host)
-        self.mongo_db = self.mongo_client["mpc_database"]
-        self.mongo_collection = self.mongo_db["completed_sessions"]
-
+        
     def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
         self.redis_client.set(session_id, json.dumps(session_data))
 
@@ -169,7 +162,6 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        self.mongo_collection.insert_one(session_data)
         self.redis_client.delete(session_id)
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -194,14 +186,6 @@ class MPCEngine(object):
             participant_urls[f"participant_{i + 1}"] = participant_url
 
         return participant_urls
-
-    def get_encrypted_shares(self, session_id: str) -> dict:
-        session_data = self.get_session(session_id)
-
-        if not session_data:
-            raise ValueError("Invalid session ID")
-
-        return session_data["shares"]
 
     def get_public_key(self, session_id: str) -> str:
         session_data = self.get_session(session_id)

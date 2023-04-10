@@ -10,17 +10,9 @@ services:
     ports:
       - 8001:8000
     depends_on:
-      - bwwc-mongo
       - bwwc-redis
     env_file:
       - ../stack.env
-  bwwc-mongo:
-    container_name: bwwc-mongo-training
-    image: mongo:6.0
-    ports:
-      - 27018:27017
-    volumes:
-      - bwwc_data_training:/data/db
   bwwc-redis:
     image: redis:7.0-alpine
     container_name: bwwc-redis-training

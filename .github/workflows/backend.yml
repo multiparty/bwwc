@@ -15,7 +15,6 @@ on:
       - main
 
 env:
-  MONGO_URI: mongodb://localhost:27017
   REDIS_HOST: redis
 
 jobs:
@@ -26,10 +25,6 @@ jobs:
         image: redis
         ports:
           - 6379:6379
-      mongodb:
-        image: mongo
-        ports:
-          - 27017:27017
     defaults:
       run:
         working-directory: backend
