@@ -71,6 +71,16 @@ class MPCEngine(object):
     def session_exists(self, key):
         return self.redis_client.exists(key) == 1
 
+    '''
+    Add a participant to an existing session.
+
+    inputs:
+    session_id (str) - the unique identifier of the session to which the participant should be added
+    participant (str) - the identifier of the participant to be added
+
+    outputs:
+    This function has no return value but updates the session data with the new participant and their metadata
+    '''
     def add_participant(self, session_id: str, participant: str) -> None:
         session_data = self.get_session(session_id)
 
@@ -87,6 +97,17 @@ class MPCEngine(object):
             session_data["participants"][participant] = metadata
             self.save_session(session_id, session_data)
 
+    '''
+    Merge two tables by applying a custom function to their matching elements.
+
+    inputs:
+    table1 (Dict[str, Union[List, int]]) - the first table to be merged, where keys are strings and values can be lists or integers
+    table2 (Dict[str, Union[List, int]]) - the second table to be merged, where keys are strings and values can be lists or integers
+    func (Callable[[Any, Any], Any]) - a custom function to apply to the matching elements of table1 and table2
+
+    outputs:
+    result_table (Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]]) - the merged table, where keys are strings and values can be lists of tuples with integers or tuples with integers
+    '''
     def merge_tables(table1: Dict[str, Union[List, int]], table2: Dict[str, Union[List, int]], func: Callable[[Any, Any], Any]) -> Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]]:
         def dfs_helper(key: str, dict1: Dict[str, Any], dict2: Dict[str, Any]) -> Union[List[Tuple[int, int]], Tuple[int, int]]:
             if isinstance(dict1[key], numbers.Number) and isinstance(dict2[key], numbers.Number):
