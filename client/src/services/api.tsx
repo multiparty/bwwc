@@ -120,8 +120,8 @@ export async function createNewSubmissionUrls(count: number, sessionId: string, 
   return response.data;
 }
 
-export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS);
+export async function getSubmissions(sessionId: string, authToken: string): Promise<GetEncryptedSharesResponse> {
+  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS, { params: { session_id: sessionId, auth_token: authToken } });
   return response.data;
 }
 
