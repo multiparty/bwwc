@@ -153,7 +153,6 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        print(vars(req))
         session_id = req.GET.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
 
