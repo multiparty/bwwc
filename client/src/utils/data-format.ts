@@ -6,6 +6,8 @@ import BigNumber from 'bignumber.js';
 export interface AppState {
   session: {
     authToken: string;
+    companySize: string;
+    industry: string;
     participantCode: string;
     publicKey: string;
     privateKey: string;

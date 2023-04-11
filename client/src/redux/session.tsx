@@ -4,6 +4,8 @@ export const sessionSlice = createSlice({
   name: 'session',
   initialState: {
     authToken: '',
+    companySize: '',
+    industry: '',
     participantCode: '',
     publicKey: '',
     privateKey: '',
@@ -12,6 +14,12 @@ export const sessionSlice = createSlice({
   reducers: {
     setAuthToken: (state, action) => {
       state.authToken = action.payload;
+    },
+    setCompanySize: (state, action) => {
+      state.companySize = action.payload;
+    },
+    setIndustry: (state, action) => {
+      state.industry = action.payload;
     },
     setParticipantCode: (state, action) => {
       state.participantCode = action.payload;
@@ -28,5 +36,5 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { setAuthToken, setParticipantCode, setPublicKey, setPrivateKey, setSessionId } = sessionSlice.actions;
+export const { setAuthToken, setCompanySize, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId } = sessionSlice.actions;
 export default sessionSlice.reducer;

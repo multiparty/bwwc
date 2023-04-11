@@ -1,6 +1,5 @@
 Django==4.1.7
 django-cors-headers==3.14.0
-pymongo==4.3.3
 pytest==7.2.2
 python-dotenv==1.0.0
 redis==4.5.1

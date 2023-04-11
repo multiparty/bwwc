@@ -37,12 +37,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "199.94.60.152", # IP of the SAIL Proxy Server
+    "199.94.60.152",  # IP of the SAIL Proxy Server
     "mpc-api.sail.codes",
     "training-api.100talent.org",
     "api.100talent.org",
     "localhost",
-    '127.0.0.1'
+    "127.0.0.1",
 ]
 
 CORS_ALLOWED_ORIGINS = [

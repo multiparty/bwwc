@@ -61,7 +61,7 @@ export interface ApiContextProps {
   endSession: (sessionId: string, authToken: string) => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
   getPublicKey: (sessionId: string) => Promise<string>;
-  getSubmissions: () => Promise<GetEncryptedSharesResponse>;
+  getSubmissions: (sessionId: string, authToken: string) => Promise<GetEncryptedSharesResponse>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
 }
@@ -120,8 +120,8 @@ export async function createNewSubmissionUrls(count: number, sessionId: string, 
   return response.data;
 }
 
-export async function getSubmissions(): Promise<GetEncryptedSharesResponse> {
-  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS);
+export async function getSubmissions(sessionId: string, authToken: string): Promise<GetEncryptedSharesResponse> {
+  const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS, { params: { session_id: sessionId, auth_token: authToken } });
   return response.data;
 }
 
@@ -176,7 +176,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         endSession: (sessionId: string, authToken: string) => endSession(sessionId, authToken),
         createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
         getPublicKey: (session_id: string) => getPublicKey(session_id),
-        getSubmissions: () => getSubmissions(),
+        getSubmissions: (sessionId: string, authToken: string) => getSubmissions(sessionId, authToken),
         stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
         submitData: (data: NestedObject, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}

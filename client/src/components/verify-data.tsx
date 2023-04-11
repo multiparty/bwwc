@@ -17,6 +17,7 @@ export interface VerifyDataProps {
 export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
+  const [pressed, wasPressed] = useState(false);
 
   useEffect(() => {
     if (verifyTicked && data?.totalEmployees) {
@@ -32,6 +33,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
 
   const handleSubmit = async () => {
     submitDataHandler();
+    wasPressed(true);
   };
 
   return (
@@ -51,7 +53,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
           <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit}>
             Submit
           </LoadingButton>
-          <SubmissionAlert submitResp={submitResp} />
+          <SubmissionAlert submitResp={submitResp} pressed={pressed} />
         </Stack>
       </CardContent>
     </Card>

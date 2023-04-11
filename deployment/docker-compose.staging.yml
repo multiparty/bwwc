@@ -10,18 +10,9 @@ services:
     ports:
       - 8000:8000
     depends_on:
-    - bwwc-mongo
     - bwwc-redis
     env_file:
     - ../stack.env
-  bwwc-mongo:
-    restart: always
-    container_name: bwwc-mongo-staging
-    image: mongo:6.0
-    ports:
-    - 27025:27017
-    volumes:
-    - bwwc_data:/data/db
   bwwc-redis:
     restart: always
     image: redis:7.0-alpine

@@ -13,21 +13,10 @@ services:
       - DJANGO_ENV=development
       - REDIS_HOST=redis
     depends_on:
-      - mongo
       - redis
-
-  mongo:
-    image: mongo:6.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
 
   redis:
     image: redis:7.0-alpine
     container_name: "redis"
     ports:
       - "6379:6379"
-
-volumes:
-  mongo_data:

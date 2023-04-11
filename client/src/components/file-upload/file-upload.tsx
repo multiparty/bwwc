@@ -25,7 +25,7 @@ export const FileUpload: FC<FileUploadProps> = (props) => {
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop: handleDrop,
     multiple: props.multiple,
-    accept: ['.csv', '.xls', '.xlsx']
+    accept: ['.csv', '.xls', '.xlsx', '.pem']
   });
 
   useEffect(

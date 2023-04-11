@@ -24,7 +24,7 @@ export const HomePage: FC = () => {
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
   const [table, setTable] = useState<Record<string, any>>({});
-  const { authToken, participantCode, privateKey, sessionId } = useSelector((state: AppState) => state.session);
+  const { companySize, industry, participantCode, privateKey, sessionId } = useSelector((state: AppState) => state.session);
 
   useEffect(() => {
     const loadData = async () => {
@@ -57,7 +57,13 @@ export const HomePage: FC = () => {
     }
 
     try {
-      const resp = await submitData(table, sessionId, participantCode);
+      const data = {
+        table: table,
+        participantCode: participantCode,
+        industry: industry,
+        companySize: companySize
+      };
+      const resp = await submitData(data, sessionId, participantCode);
       setSubmitResp(resp);
     } catch (err) {
       console.error(err);
