@@ -80,11 +80,11 @@ export const createCSV = (result: ResultFormat): void => {
   for (const [key, value] of Object.entries(second)) {
     prefix = key;
     var longName = Industries.find((industry) => industry.value === key)?.label;
-    if(!longName){
-      longName=Sizes.find((size) => size.value === key)?.label;
+    if (!longName) {
+      longName = Sizes.find((size) => size.value === key)?.label;
     }
     const data = value;
-    map_xlsx(wb, data, prefix, longName||prefix);
+    map_xlsx(wb, data, prefix, longName || prefix);
   }
 
   // Export the workbook to a file to download
