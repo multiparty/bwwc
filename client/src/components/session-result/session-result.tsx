@@ -1,15 +1,17 @@
 import { FC, useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { ToyResult } from '@constants/delete/toy-result';
-import { toyresultDataA } from '@constants/delete/toy-result-dataA';
-import { ResultTable } from './result-table';
-import { ResultFormat } from '@utils/data-format';
+import { ResultFormat, TabSelection } from '@utils/data-format';
+import { createCSV } from './to-csv';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+}
+
+interface SessionResultProps {
+  result: ResultFormat;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -29,13 +31,13 @@ function a11yProps(index: number) {
   };
 }
 
-function handleClick(result:ResultFormat) {
-  console.log(result)
+function handleClick(result: ResultFormat) {
+  createCSV(result);
 }
 
-export const SessionResult: FC = (result:ResultFormat) => {
-  const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+export const SessionResult: FC<SessionResultProps> = ({ result }) => {
+  const [value, setValue] = useState<TabSelection>(0);
+  const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);
   };
   return (
@@ -54,7 +56,7 @@ export const SessionResult: FC = (result:ResultFormat) => {
                   handleClick(result);
                 }}
               >
-                DownLoad FIle
+                DownLoad File
               </Button>
             </Grid>
             <Box>
@@ -67,7 +69,10 @@ export const SessionResult: FC = (result:ResultFormat) => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            <Box>{value == 0 ? <ResultTable data={toyresultDataA} /> : <TableView tabSelection={value} data={ToyResult[value.toString()]} />}</Box>
+            <Box>
+              {' '}
+              <TableView tabSelection={value} data={result} />
+            </Box>
           </TabPanel>
         </CardContent>
       </Card>

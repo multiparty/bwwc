@@ -111,6 +111,8 @@ export interface StringDataFormatMap {
 
 export interface ResultFormat {
   0: DataFormat;
-  1: ResultFormat;
-  2: ResultFormat;
+  1: StringDataFormatMap;
+  2: StringDataFormatMap;
 }
+
+export type TabSelection = 0 | 1 | 2;
