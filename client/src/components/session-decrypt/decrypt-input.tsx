@@ -9,6 +9,10 @@ import { getSubmissions } from '@services/api';
 import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
+import { secretSharesToTable } from '@utils/shamirs';
+import { importPemPrivateKey } from '@utils/keypair';
+import { Point } from '@utils/data-format';
+import BigNumber from 'bignumber.js';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -41,9 +45,29 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     const file = files[0];
     props.onFileUpload(file);
 
-    if (token !== undefined && sessionId !== undefined) {
-      const data = await getSubmissions(sessionId, token);
-    }
+    const reader = new FileReader();
+
+    // Complete the MPC by summing all the shares together
+    // Can replace this function with any custom functionality to apply
+    // over unencrypted shares.
+    const reduce = async (data: Array<Point>) => {
+      let sum = new BigNumber(0);
+      for (let i = 0; i < data.length; i++) {
+        sum = sum.plus(new BigNumber(data[i][1]));
+      }
+      return sum;
+    };
+
+    reader.onload = async (event) => {
+      if (token !== undefined && sessionId !== undefined) {
+        const fileContent = event.target?.result as string;
+        const privateCryptoKey = await importPemPrivateKey(fileContent);
+        const data = await getSubmissions(sessionId, token);
+        const shares = await secretSharesToTable(data, privateCryptoKey, reduce);
+      }
+    };
+
+    reader.readAsText(file);
   };
 
   return (

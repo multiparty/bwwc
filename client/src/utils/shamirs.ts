@@ -235,18 +235,22 @@ Convert encrypted secret shares in a nested table structure back to the original
 inputs:
 obj (Record<string, any>) - The nested object containing encrypted secret shares in a table structure.
 privateKey (CryptoKey) - The private key used to decrypt the secret shares.
+reduce (function) - A function that reduces the unencrypted secret shares to a single value.
 
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
-export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
+export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, reduce: (value: any) => any): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
-        currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
+        const value = new Array();
+        value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
+        console.log(value)
+        currentObj[key] = value;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
