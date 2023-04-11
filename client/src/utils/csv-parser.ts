@@ -25,8 +25,8 @@ export const readCsv = async (file: CustomFile): Promise<DataFormat> => {
   data.performance = extractData(workbook.Sheets[PerformanceSheetName]);
   data.lengthOfService = extractData(workbook.Sheets[LengthSheetName]);
   data.totalEmployees = {
-    [Gender.Male]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'B6'),
-    [Gender.Female]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'C6'),
+    [Gender.Female]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'B6'),
+    [Gender.Male]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'C6'),
     [Gender.NonBinary]: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'D6'),
     all: FileUtils.readCell(workbook.Sheets[TotalSheetName], 'E6')
   };
