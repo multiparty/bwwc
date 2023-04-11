@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { gcd, power, modInverse, lagrangeConstantsForPoint } from '../utils/shamirs';
 
 describe('gcd', () => {
@@ -25,21 +26,23 @@ describe('modInverse', () => {
 });
 
 describe('lagrangeConstantsForPoint', () => {
-  const prime = 17;
+  const prime = new BigNumber(17);
 
   test('calculates the Lagrange constants for a given point', () => {
-    const points = [1, 2, 3];
-    const point = 0;
-    const expectedResult = [3, 14, 1];
+    const points = [new BigNumber(1), new BigNumber(2), new BigNumber(3)];
+    const point = new BigNumber(0);
+    const expectedResult = [new BigNumber(3), new BigNumber(14), new BigNumber(1)];
 
     expect(lagrangeConstantsForPoint(points, point, prime)).toEqual(expectedResult);
   });
 
   test('calculates the Lagrange constants for another point', () => {
-    const points = [2, 3, 4];
-    const point = 1;
-    const expectedResult = [3, 14, 1];
+    const points = [new BigNumber(2), new BigNumber(3), new BigNumber(4)];
+    const point = new BigNumber(1);
+    const expectedResult = [new BigNumber(3), new BigNumber(14), new BigNumber(1)];
+	const res = lagrangeConstantsForPoint(points, point, prime)
 
-    expect(lagrangeConstantsForPoint(points, point, prime)).toEqual(expectedResult);
+	console.log(res)
+    expect(res).toEqual(expectedResult);
   });
 });

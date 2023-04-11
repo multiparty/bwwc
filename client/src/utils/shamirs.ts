@@ -331,30 +331,30 @@ type List = number[];
 Calculate Lagrange constants for a given point using a list of points.
 
 inputs:
-points (number[]) - The list of points used to compute the Lagrange constants.
-point (number) - The point for which the Lagrange constants are to be calculated.
-prime (number) - The prime number used for modular arithmetic.
+points (BigNumber[]) - The list of points used to compute the Lagrange constants.
+point (BigNumber) - The point for which the Lagrange constants are to be calculated.
+prime (BigNumber) - The prime number used for modular arithmetic.
 
 outputs:
 number[] - Returns an array of Lagrange constants corresponding to the input points.
 */
 
-export function lagrangeConstantsForPoint(points: List, point: number, prime: number): List {
-  const constants: List = Array(points.length).fill(0);
+export function lagrangeConstantsForPoint(points: BigNumber[], point: BigNumber, prime: BigNumber): BigNumber[] {
+  const constants: BigNumber[] = Array(points.length);
 
   for (let i = 0; i < points.length; i++) {
-    const xi = points[i];
-    let num = 1;
-    let denum = 1;
+    const xi = new BigNumber(points[i]);
+    let num = new BigNumber(1);
+    let denum = new BigNumber(1);
 
     for (let j = 0; j < points.length; j++) {
       if (j !== i) {
-        const xj = points[j];
-        num = (num * (xj - point)) % prime;
-        denum = (denum * (xj - xi)) % prime;
+        const xj = new BigNumber(points[j]);
+        num = num.multipliedBy(xj.minus(point)).modulo(prime);
+        denum = denum.multipliedBy(xj.minus(xi)).modulo(prime);
       }
     }
-    constants[i] = (num * modInverse(denum, prime)) % prime;
+    constants[i] = num.multipliedBy(denum.exponentiatedBy(-1).modulo(prime)).modulo(prime);
   }
 
   return constants;
@@ -371,44 +371,14 @@ outputs:
 number - Returns the modular inverse of the input number with respect to the given modulus.
 */
 export function modInverse(a: number, m: number): number {
-  const gcdResult = gcd(a, m);
-
-  // If the GCD is not 1, then the numbers are not coprime and there is no modular multiplicative inverse.
-  if (gcdResult !== 1) {
-    return null;
+  let g = gcd(a, m);
+  if (g !== 1) {
+    console.log(g, a, m)
+    throw new Error("Inverse doesn't exist");
+  } else {
+    return power(a, m - 2, m);
   }
-
-  // Extended Euclidean Algorithm
-  let m0 = m;
-  let y = 0;
-  let x = 1;
-
-  if (m === 1) {
-    return 0;
-  }
-
-  while (a > 1) {
-    const q = Math.floor(a / m);
-    let t = m;
-
-    // Update m and a
-    m = a % m;
-    a = t;
-
-    // Update x and y
-    t = y;
-    y = x - q * y;
-    x = t;
-  }
-
-  // Ensure x is positive
-  if (x < 0) {
-    x += m0;
-  }
-
-  return x;
 }
-
 
 /*
 Calculate the greatest common divisor (GCD) of two numbers using the Euclidean algorithm.
