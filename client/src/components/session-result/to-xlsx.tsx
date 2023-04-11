@@ -3,6 +3,8 @@ import { WorkBook, WorkSheet } from 'xlsx';
 import * as fs from 'fs';
 import { convertToRows, ResultFormat, TableRow } from '@utils/data-format';
 import { EthnicityDisplayNames } from '@utils/ethnicity';
+import { Industries } from '@constants/industries';
+import { Sizes } from '@constants/sizes';
 
 XLSX.set_fs(fs);
 
@@ -48,7 +50,7 @@ function gridDataToJSON(rows: TableRow[]) {
 }
 
 // Generate a sheet for each data
-function map_xlsx(wb: WorkBook, data: any, prefix: string) {
+function map_xlsx(wb: WorkBook, data: any, prefix: string, longName: string) {
   const c = 0;
   const r = 4;
   const opt = { origin: { r: r, c: c } };
@@ -57,10 +59,9 @@ function map_xlsx(wb: WorkBook, data: any, prefix: string) {
     const rows = convertToRows(data[dataType]);
     const jsonData = gridDataToJSON(rows);
     const ws = XLSX.utils.json_to_sheet(jsonData, opt);
-
-    setValue(ws, dataLabel, 0, r); //Add a label at the corner
+    setValue(ws, longName + ' : ' + dataLabel, 0, 0); // Add a name of sheet at the top of the sheet
     parentHeader(ws, c + 1, r - 1); // Add a parent header of the nested header
-    XLSX.utils.book_append_sheet(wb, ws, prefix + dataType);
+    XLSX.utils.book_append_sheet(wb, ws, prefix + '_' + dataType);
   });
 }
 
@@ -71,15 +72,19 @@ export const createCSV = (result: ResultFormat): void => {
 
   // Generate sheets for All, aggregated numbers
   const data = result[0];
-  var prefix = 'All_';
-  map_xlsx(wb, data, prefix);
+  var prefix = 'All';
+  map_xlsx(wb, data, prefix, prefix);
 
   // Generate sheets for Industries and Sizes
   const second = result[1];
   for (const [key, value] of Object.entries(second)) {
     prefix = key;
+    var longName = Industries.find((industry) => industry.value === key)?.label;
+    if(!longName){
+      longName=Sizes.find((size) => size.value === key)?.label;
+    }
     const data = value;
-    map_xlsx(wb, data, prefix);
+    map_xlsx(wb, data, prefix, longName||prefix);
   }
 
   // Export the workbook to a file to download
