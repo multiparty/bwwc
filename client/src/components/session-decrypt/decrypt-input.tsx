@@ -37,15 +37,12 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     return null;
   };
 
-  const submitPrivateKeyHandler = async (file: CustomFile[]) => {
-    props.onFileUpload(file[0]);
+  const submitPrivateKeyHandler = async (files: CustomFile[]) => {
+    const file = files[0]
+    props.onFileUpload(file);
+    
     if (token !== undefined && sessionId !== undefined) {
       const data = await getSubmissions(sessionId, token);
-      console.log('data:')
-      console.log(data);
-      console.log('\n\nprivate key:')
-      console.log(privateKey);
-      console.log('------')
     }
   };
 
@@ -76,7 +73,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
               </Formik>
             </Grid>
             <Grid item xs={12} md={6}>
-              <FileUpload multiple={false} onChange={submitPrivateKeyHandler} title="Drag and drop your key file here" />
+              <FileUpload multiple={false} onChange={(files) => submitPrivateKeyHandler(files)} title="Drag and drop your key file here" />
             </Grid>
           </Grid>
         </Stack>
