@@ -38,9 +38,9 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   };
 
   const submitPrivateKeyHandler = async (files: CustomFile[]) => {
-    const file = files[0]
+    const file = files[0];
     props.onFileUpload(file);
-    
+
     if (token !== undefined && sessionId !== undefined) {
       const data = await getSubmissions(sessionId, token);
     }
