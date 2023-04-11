@@ -324,3 +324,126 @@ function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
   }
   return true;
 }
+
+type List = number[];
+
+/*
+Calculate Lagrange constants for a given point using a list of points.
+
+inputs:
+points (number[]) - The list of points used to compute the Lagrange constants.
+point (number) - The point for which the Lagrange constants are to be calculated.
+prime (number) - The prime number used for modular arithmetic.
+
+outputs:
+number[] - Returns an array of Lagrange constants corresponding to the input points.
+*/
+
+export function lagrangeConstantsForPoint(points: List, point: number, prime: number): List {
+  const constants: List = Array(points.length).fill(0);
+
+  for (let i = 0; i < points.length; i++) {
+    const xi = points[i];
+    let num = 1;
+    let denum = 1;
+
+    for (let j = 0; j < points.length; j++) {
+      if (j !== i) {
+        const xj = points[j];
+        num = (num * (xj - point)) % prime;
+        denum = (denum * (xj - xi)) % prime;
+      }
+    }
+    constants[i] = (num * modInverse(denum, prime)) % prime;
+  }
+
+  return constants;
+}
+
+/*
+Calculate the modular inverse of a given number with respect to a modulus.
+
+inputs:
+a (number) - The number for which the modular inverse is to be calculated.
+modulus (number) - The modulus with respect to which the modular inverse is to be calculated.
+
+outputs:
+number - Returns the modular inverse of the input number with respect to the given modulus.
+*/
+export function modInverse(a: number, m: number): number {
+  const gcdResult = gcd(a, m);
+
+  // If the GCD is not 1, then the numbers are not coprime and there is no modular multiplicative inverse.
+  if (gcdResult !== 1) {
+    return null;
+  }
+
+  // Extended Euclidean Algorithm
+  let m0 = m;
+  let y = 0;
+  let x = 1;
+
+  if (m === 1) {
+    return 0;
+  }
+
+  while (a > 1) {
+    const q = Math.floor(a / m);
+    let t = m;
+
+    // Update m and a
+    m = a % m;
+    a = t;
+
+    // Update x and y
+    t = y;
+    y = x - q * y;
+    x = t;
+  }
+
+  // Ensure x is positive
+  if (x < 0) {
+    x += m0;
+  }
+
+  return x;
+}
+
+
+/*
+Calculate the greatest common divisor (GCD) of two numbers using the Euclidean algorithm.
+
+inputs:
+a (number) - The first number for which the GCD is to be calculated.
+b (number) - The second number for which the GCD is to be calculated.
+
+outputs:
+number - Returns the greatest common divisor of the input numbers.
+*/
+export function gcd(a: number, b: number): number {
+  if (a === 0) {
+    return b;
+  }
+  return gcd(b % a, a);
+}
+
+/*
+Calculate the result of raising a number to a given power modulo a modulus using the exponentiation by squaring method.
+
+inputs:
+base (number) - The base number to be raised to the given power.
+exponent (number) - The power to which the base number is to be raised.
+modulus (number) - The modulus for the calculation.
+
+outputs:
+number - Returns the result of base raised to the power of exponent modulo modulus.
+*/
+export function power(x: number, y: number, m: number): number {
+  if (y === 0) {
+    return 1;
+  }
+  let p = power(x, Math.floor(y / 2), m) % m;
+  p = (p * p) % m;
+
+  return y % 2 === 0 ? p : (x * p) % m;
+}
