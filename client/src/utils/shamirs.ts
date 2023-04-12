@@ -350,11 +350,12 @@ export function lagrangeConstantsForPoint(points: BigNumber[], point: BigNumber,
     for (let j = 0; j < points.length; j++) {
       if (j !== i) {
         const xj = new BigNumber(points[j]);
-        num = num.multipliedBy(xj.minus(point)).modulo(prime);
-        denum = denum.multipliedBy(xj.minus(xi)).modulo(prime);
+        num = modulus(num.multipliedBy(xj.minus(point)), prime);
+        denum = modulus(denum.multipliedBy(xj.minus(xi)), prime);
       }
     }
-    constants[i] = num.multipliedBy(denum.exponentiatedBy(-1).modulo(prime)).modulo(prime);
+    
+    constants[i] = modulus(num.multipliedBy(modulus(denum.exponentiatedBy(-1), prime)), prime);
   }
 
   return constants;
@@ -416,4 +417,19 @@ export function power(x: number, y: number, m: number): number {
   p = (p * p) % m;
 
   return y % 2 === 0 ? p : (x * p) % m;
+}
+
+/*
+Calculate modulus overriding BigNumber.mod(), which will only return the sign if
+num is negative.
+
+inputs:
+num (BigNumber) - Dividend
+mod (BigNumber) - Divisor
+*/
+export function modulus(num: BigNumber, mod: BigNumber): BigNumber {
+  if (num.isLessThan(0)) {
+    return num.modulo(mod).plus(mod).modulo(mod);
+  }
+  return num.modulo(mod);
 }
