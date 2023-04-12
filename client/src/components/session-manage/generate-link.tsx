@@ -61,65 +61,67 @@ export const LinkGenerator: FC = () => {
             <Stack spacing={0}>
               <Typography variant="h5">Add Participants</Typography>
               <Stack spacing={2}>
-              <Typography variant="subtitle1">Generate more URLs for new participants.</Typography>
-              
-              <TextInput fullWidth name="count" label="New participants" type="number" />
-              <SubmitButton type="submit" variant="contained" fullWidth>
-                Submit
-              </SubmitButton>
+                <Typography variant="subtitle1">Generate more URLs for new participants.</Typography>
+
+                <TextInput fullWidth name="count" label="New participants" type="number" />
+                <SubmitButton type="submit" variant="contained" fullWidth>
+                  Submit
+                </SubmitButton>
               </Stack>
             </Stack>
           </Form>
         </Formik>
       </Box>
-      <Divider />
 
-      {generatedLinks.length != 0 &&(      <Stack spacing={0}>
-        <Typography variant="h5">Generated Links</Typography>
-        <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-          <Card>
-            <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
-              <Grid item sx={{ marginLeft: 'auto' }}>
-                 <CopyToClipboardButton links={generatedLinks} />
+      {generatedLinks.length != 0 && (
+        <Stack spacing={0}>
+          <Typography variant="h5">Generated Links</Typography>
+          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+            <Card>
+              <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
+                <Grid item sx={{ marginLeft: 'auto' }}>
+                  <CopyToClipboardButton links={generatedLinks} />
+                </Grid>
               </Grid>
-            </Grid>
-            <CardContent>
-              <Stack spacing={0}>
-                {generatedLinks.map((link, index) => (
-                  <Typography key={index} variant="subtitle1">
-                    {link}
-                  </Typography>
-                ))}
-              </Stack>
-            </CardContent>
-          </Card>
-        </Box>
-      </Stack>)}
-      <Divider />
+              <CardContent>
+                <Stack spacing={0}>
+                  {generatedLinks.map((link, index) => (
+                    <Typography key={index} variant="subtitle1">
+                      {link}
+                    </Typography>
+                  ))}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Box>
+        </Stack>
+      )}
 
-      {existingLinks.length != 0 && (<Stack spacing={0}>
-        <Typography variant="h5">Existing Participant Links</Typography>
-        <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-          <Card>
-            <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
-              <Grid item sx={{ marginLeft: 'auto' }}>
-                <CopyToClipboardButton links={existingLinks} />
+      {existingLinks.length != 0 && (
+        <Stack spacing={0}>
+          <Typography variant="h5">Existing Participant Links</Typography>
+          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+            <Card>
+              <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
+                <Grid item sx={{ marginLeft: 'auto' }}>
+                  <CopyToClipboardButton links={existingLinks} />
+                </Grid>
               </Grid>
-            </Grid>
-            <CardContent>
-              <Stack spacing={0}>
-                {existingLinks.map((link, index) => (
-                  <Typography key={index} variant="subtitle1">
-                    {link}
-                  </Typography>
-                ))}
-              </Stack>
-            </CardContent>
-          </Card>
-        </Box>
-      </Stack>)}
+              <CardContent>
+                <Stack spacing={0}>
+                  {existingLinks.map((link, index) => (
+                    <Typography key={index} variant="subtitle1">
+                      {link}
+                    </Typography>
+                  ))}
+                </Stack>
+              </CardContent>
+            </Card>
+          </Box>
+        </Stack>
+      )}
     </Stack>
   );
 };
