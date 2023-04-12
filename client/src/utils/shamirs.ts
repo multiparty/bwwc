@@ -249,7 +249,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        console.log(value)
+        console.log(value);
         currentObj[key] = value;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -354,12 +354,16 @@ export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: Big
       }
     }
 
-    constants[i] = modulus(num.multipliedBy(modulus(denum.exponentiatedBy(-1), prime)), prime);
+    const a = modularInverse(denum, prime);
+    if (a !== null) {
+      constants[i] = modulus(num.multipliedBy(a), prime);
+    } else {
+      throw new Error("Inverse doesn't exist");
+    }
   }
 
   return constants;
 }
-
 
 /*
 Calculate the modular inverse of a given number with respect to a modulus.
@@ -374,7 +378,7 @@ number - Returns the modular inverse of the input number with respect to the giv
 export function modInverse(a: number, m: number): number {
   let g = gcd(a, m);
   if (g !== 1) {
-    console.log(g, a, m)
+    console.log(g, a, m);
     throw new Error("Inverse doesn't exist");
   } else {
     return power(a, m - 2, m);
@@ -429,10 +433,31 @@ mod (BigNumber) - Divisor
 */
 export function modulus(num: BigNumber, mod: BigNumber): BigNumber {
   if (num.isLessThan(0)) {
-    console.log(num.modulo(mod))
-    console.log(num.modulo(mod).plus(mod))
-    console.log(num.modulo(mod).plus(mod).modulo(mod))
     return num.modulo(mod).plus(mod).modulo(mod);
   }
   return num.modulo(mod);
+}
+
+export function gcdExtended(a: BigNumber, b: BigNumber): [BigNumber, BigNumber, BigNumber] {
+  if (a.isEqualTo(0)) {
+    return [b, new BigNumber(0), new BigNumber(1)];
+  }
+
+  const [gcd, x1, y1] = gcdExtended(b.mod(a), a);
+  const x = y1.minus(b.idiv(a).times(x1));
+  const y = x1;
+
+  return [gcd, x, y];
+}
+
+export function modularInverse(a: BigNumber, m: BigNumber): BigNumber | null {
+  const [gcd, x, _] = gcdExtended(a, m);
+
+  if (!gcd.isEqualTo(1)) {
+    // Modular inverse does not exist if a and m are not coprime (gcd is not 1)
+    return null;
+  }
+
+  // Ensure the result is in the range [0, m)
+  return x.mod(m).plus(m).mod(m);
 }
