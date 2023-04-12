@@ -338,9 +338,8 @@ prime (BigNumber) - The prime number used for modular arithmetic.
 outputs:
 number[] - Returns an array of Lagrange constants corresponding to the input points.
 */
-
-export function lagrangeConstantsForPoint(points: BigNumber[], point: BigNumber, prime: BigNumber): BigNumber[] {
-  const constants: BigNumber[] = Array(points.length);
+export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: BigNumber, prime: BigNumber): BigNumber[] {
+  const constants: BigNumber[] = new Array(points.length).fill(new BigNumber(0));
 
   for (let i = 0; i < points.length; i++) {
     const xi = new BigNumber(points[i]);
@@ -350,16 +349,17 @@ export function lagrangeConstantsForPoint(points: BigNumber[], point: BigNumber,
     for (let j = 0; j < points.length; j++) {
       if (j !== i) {
         const xj = new BigNumber(points[j]);
-        num = modulus(num.multipliedBy(xj.minus(point)), prime);
+        num = modulus(num.multipliedBy(xj.minus(query_x_axis)), prime);
         denum = modulus(denum.multipliedBy(xj.minus(xi)), prime);
       }
     }
-    
+
     constants[i] = modulus(num.multipliedBy(modulus(denum.exponentiatedBy(-1), prime)), prime);
   }
 
   return constants;
 }
+
 
 /*
 Calculate the modular inverse of a given number with respect to a modulus.
@@ -420,7 +420,7 @@ export function power(x: number, y: number, m: number): number {
 }
 
 /*
-Calculate modulus overriding BigNumber.mod(), which will only return the sign if
+Calculate modulus overriding BigNumber.modulo(), which will only return the sign if
 num is negative.
 
 inputs:
@@ -429,6 +429,9 @@ mod (BigNumber) - Divisor
 */
 export function modulus(num: BigNumber, mod: BigNumber): BigNumber {
   if (num.isLessThan(0)) {
+    console.log(num.modulo(mod))
+    console.log(num.modulo(mod).plus(mod))
+    console.log(num.modulo(mod).plus(mod).modulo(mod))
     return num.modulo(mod).plus(mod).modulo(mod);
   }
   return num.modulo(mod);
