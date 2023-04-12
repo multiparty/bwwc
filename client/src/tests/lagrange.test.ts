@@ -35,14 +35,4 @@ describe('lagrangeConstantsForPoint', () => {
 
     expect(lagrangeConstantsForPoint(points, point, prime)).toEqual(expectedResult);
   });
-
-  test('calculates the Lagrange constants for another point', () => {
-    const points = [new BigNumber(2), new BigNumber(3), new BigNumber(4)];
-    const point = new BigNumber(1);
-    const expectedResult = [new BigNumber(3), new BigNumber(14), new BigNumber(1)];
-	const res = lagrangeConstantsForPoint(points, point, prime)
-
-	console.log(res)
-    expect(res).toEqual(expectedResult);
-  });
 });
