@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { Formik, Form, FormikHelpers } from 'formik';
-import { Grid, Box, Typography, Stack } from '@mui/material';
+import { Grid, Box, Typography, Stack, Divider } from '@mui/material';
 import * as Yup from 'yup';
 import { TextInput } from '@components/forms/text-input';
 import { SubmitButton } from '@components/forms/submit-button';
@@ -19,6 +19,9 @@ export const LinkGenerator: FC = () => {
   });
 
   const handleSubmit = (values: { count: number }, { setSubmitting }: FormikHelpers<any>) => {
+    if (generatedLinks.length != 0) {
+      setExistingLinks([...existingLinks, ...generatedLinks]);
+    }
     createNewSubmissionUrls(values.count, sessionId, authToken)
       .then((urls) => {
         setGeneratedLinks(Object.values(urls));
@@ -27,8 +30,8 @@ export const LinkGenerator: FC = () => {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={12} md={4} sx={{ p: 1 }}>
+    <Stack spacing={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <Box style={{ width: '50%' }}>
         <Formik validationSchema={validationSchema} initialValues={{ count: 0 }} onSubmit={handleSubmit}>
           <Form>
             <Stack spacing={2}>
@@ -41,37 +44,35 @@ export const LinkGenerator: FC = () => {
             </Stack>
           </Form>
         </Formik>
-      </Grid>
-      <Grid item xs={12} md={4} sx={{ p: 1 }}>
-        <Stack spacing={2}>
-          <Typography variant="h5">Generated Links</Typography>
-          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <Stack spacing={2}>
-              {generatedLinks.map((link, index) => (
-                <Typography key={index} variant="subtitle1">
-                  {link}
-                </Typography>
-              ))}
-            </Stack>
-          </Box>
-        </Stack>
-      </Grid>
-      <Grid item xs={12} md={4} sx={{ p: 1 }}>
-        <Stack spacing={2}>
-          <Typography variant="h5">Existing Participant Links</Typography>
-          <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <Stack spacing={2}>
-              {existingLinks.map((link, index) => (
-                <Typography key={index} variant="subtitle1">
-                  {link}
-                </Typography>
-              ))}
-            </Stack>
-          </Box>
-        </Stack>
-      </Grid>
-    </Grid>
+      </Box>
+      <Divider />
+      <Stack spacing={2}>
+        <Typography variant="h5">Generated Links</Typography>
+        <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+          <Stack spacing={2}>
+            {generatedLinks.map((link, index) => (
+              <Typography key={index} variant="subtitle1">
+                {link}
+              </Typography>
+            ))}
+          </Stack>
+        </Box>
+      </Stack>
+      <Divider />
+      <Stack spacing={2}>
+        <Typography variant="h5">Existing Participant Links</Typography>
+        <Typography variant="subtitle1">The following links can be sent to participants to join the session.</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+          <Stack spacing={2}>
+            {existingLinks.map((link, index) => (
+              <Typography key={index} variant="subtitle1">
+                {link}
+              </Typography>
+            ))}
+          </Stack>
+        </Box>
+      </Stack>
+    </Stack>
   );
 };
