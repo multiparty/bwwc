@@ -42,13 +42,13 @@ function getRandomBigNumber(min: BigNumber, max: BigNumber) {
 Check if a given number is an integer greater than zero.
 
 inputs:
-num (number) - The number to check.
+num (BigNumber) - The number to check.
 
 output:
 (boolean) - Whether the number is an integer greater than zero.
 */
-function isIntGreaterThanZero(num: number): boolean {
-  return Number.isInteger(num) && num > 0;
+function isIntGreaterThanZero(num: BigNumber): boolean {
+  return num.isInteger() && num.isGreaterThan(BigNumber(0));
 }
 
 /*
@@ -92,22 +92,26 @@ function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): B
 Split a secret into a list of shares.
 
 inputs:
-secret (number) - The secret to be shared.
+secret (BigNumber) - The secret to be shared.
 numShares (number) - The number of shares to generate.
 threshold (number) - The minimum number of shares required to reconstruct the secret.
 asString (boolean, optional) - Whether to return the shares as strings. Default: false.
-prime (number, optional) - The prime number to use for the polynomial modulus. Default: 180252380737439.
+prime (BigNumber, optional) - The prime number to use for the polynomial modulus. Default: BigNumber(180252380737439).
 
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean = false, prime: number = 180252380737439): Point[] {
+export function shamirShare(secret: BigNumber, numShares: number, threshold: number, asString: boolean = false, prime: BigNumber = new BigNumber(180252380737439)): Point[] {
   const bigPrime = new BigNumber(prime);
   const bigSecret = new BigNumber(secret);
   const bigThreshold = new BigNumber(threshold);
 
-  if (!isIntGreaterThanZero(secret) || !isIntGreaterThanZero(prime)) {
-    throw new Error('Secret must be a positive integer');
+  if (!isIntGreaterThanZero(secret)) {
+    throw new Error(`Secret ${secret} must be a positive integer`);
+  }
+
+  if (!isIntGreaterThanZero(prime)) {
+    throw new Error(`Prime ${prime} must be a positive integer`);
   }
 
   const polynomial = sampleShamirPolynomial(bigSecret, bigThreshold, bigPrime);
@@ -205,6 +209,7 @@ export async function tableToSecretShares(
   threshold: number,
   numEncryptWithKey: number,
   publicKey: CryptoKey,
+  prime: BigNumber,
   stringify: boolean = false
 ): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
@@ -213,7 +218,7 @@ export async function tableToSecretShares(
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(originalObj[key], numShares, threshold, stringify);
+        const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, prime=prime);
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
