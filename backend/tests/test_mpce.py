@@ -14,6 +14,7 @@ current_directory_path = os.path.dirname(os.path.abspath(__file__))
 
 dotenv.load_dotenv(os.path.join(current_directory_path, "../env/", ".env.dev"))
 
+
 @pytest.fixture(autouse=True)
 def clear_redis():
     # Connect to your Redis server

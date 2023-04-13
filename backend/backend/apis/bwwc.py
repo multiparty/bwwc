@@ -41,7 +41,9 @@ def stop_session(req: HttpRequest) -> HttpResponse:
 
         if engine.is_initiator(session_id, auth_token):
             engine.close_submissions(session_id)
-            engine.reduce_unencrypted(session_id, lambda x, y: (float(x) + float(y)) % engine.prime )
+            engine.reduce_unencrypted(
+                session_id, lambda x, y: (float(x) + float(y)) % engine.prime
+            )
             return JsonResponse({"status": 200})
         else:
             return HttpResponseBadRequest("Invalid auth token")
@@ -149,6 +151,7 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
 
+
 @csrf_exempt
 def get_prime(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
@@ -165,6 +168,7 @@ def get_prime(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"prime": prime})
     else:
         return HttpResponseBadRequest("Invalid request method")
+
 
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
