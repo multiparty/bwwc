@@ -24,6 +24,7 @@ type NestedObject = {
 
 interface StartSessionResponse {
   session_id: string;
+  prime: string;
 }
 
 interface StopSessionResponse {
@@ -54,6 +55,7 @@ export interface CreateSessionResponse {
   privateKey: string;
   publicKey: string;
   sessionId: string;
+  prime: string;
 }
 
 export interface ApiContextProps {
@@ -82,7 +84,8 @@ export async function startSession(): Promise<CreateSessionResponse> {
   return {
     privateKey,
     publicKey,
-    sessionId: response.data.session_id
+    sessionId: response.data.session_id,
+    prime: response.data.prime
   };
 }
 

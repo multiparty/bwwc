@@ -7,7 +7,7 @@ import { Form, Formik } from 'formik';
 import { LoadingButton } from '@mui/lab';
 import { LockOpenTwoTone, LockTwoTone, DownloadTwoTone } from '@mui/icons-material';
 import { useApi } from '@services/api';
-import { setPublicKey, setPrivateKey, setSessionId } from '../../redux/session';
+import { setPublicKey, setPrivateKey, setSessionId, setPrime } from '../../redux/session';
 import { useSelector, useDispatch } from 'react-redux';
 
 export const SessionCreateForm: FC = (props) => {
@@ -28,10 +28,11 @@ export const SessionCreateForm: FC = (props) => {
 
   const handleClick = async () => {
     setLoading(true);
-    const { privateKey, publicKey, sessionId } = await startSession();
+    const { privateKey, publicKey, sessionId, prime } = await startSession();
 
     dispatch(setSessionId(sessionId));
     dispatch(setPrivateKey(privateKey));
+    dispatch(setPrime(prime));
     setPublicKey(publicKey);
     dispatch(setPublicKey(publicKey));
     setLoading(false);

@@ -25,7 +25,7 @@ def start_session(req: HttpRequest) -> HttpResponse:
 
         session_id = engine.create_session(auth_token, public_key)
 
-        return JsonResponse({"session_id": session_id, "auth_token": auth_token})
+        return JsonResponse({"session_id": session_id, "prime": str(engine.prime)})
     else:
         return HttpResponseBadRequest("Invalid request method")
 

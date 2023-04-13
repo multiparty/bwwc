@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { createSlice } from '@reduxjs/toolkit';
 
 export const sessionSlice = createSlice({
@@ -8,6 +9,7 @@ export const sessionSlice = createSlice({
     industry: '',
     participantCode: '',
     publicKey: '',
+    prime: new BigNumber(2),
     privateKey: '',
     sessionId: ''
   },
@@ -24,6 +26,9 @@ export const sessionSlice = createSlice({
     setParticipantCode: (state, action) => {
       state.participantCode = action.payload;
     },
+    setPrime: (state, action) => {
+      state.prime = action.payload;
+    },
     setPublicKey: (state, action) => {
       state.publicKey = action.payload;
     },
@@ -36,5 +41,5 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { setAuthToken, setCompanySize, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId } = sessionSlice.actions;
+export const { setAuthToken, setCompanySize, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId, setPrime } = sessionSlice.actions;
 export default sessionSlice.reducer;

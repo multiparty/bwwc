@@ -63,7 +63,8 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
         const data = await getSubmissions(sessionId, token);
-        const shares = await secretSharesToTable(data, privateCryptoKey, reduce);
+        const decodedTable = await secretSharesToTable(data, privateCryptoKey, reduce);
+        console.log(decodedTable);
       }
     };
 

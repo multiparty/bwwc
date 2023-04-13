@@ -36,12 +36,6 @@ export const HomePage: FC = () => {
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
         setTable(secretTable);
-
-        if (participantCode == 'analyst') {
-          const privateCryptoKey = await importPemPrivateKey(privateKey);
-          const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
-          setTable(decTable);
-        }
       }
     };
     loadData();

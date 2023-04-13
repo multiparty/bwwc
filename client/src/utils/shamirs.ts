@@ -249,7 +249,6 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        console.log(value);
         currentObj[key] = value;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -378,7 +377,6 @@ number - Returns the modular inverse of the input number with respect to the giv
 export function modInverse(a: number, m: number): number {
   let g = gcd(a, m);
   if (g !== 1) {
-    console.log(g, a, m);
     throw new Error("Inverse doesn't exist");
   } else {
     return power(a, m - 2, m);
