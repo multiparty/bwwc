@@ -30,7 +30,7 @@ interface valueProps {
 export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
-  const { sessionId } = useSelector((state: AppState) => state.session);
+  const { prime, sessionId } = useSelector((state: AppState) => state.session);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -55,7 +55,8 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
       for (let i = 0; i < data.length; i++) {
         sum = sum.plus(new BigNumber(data[i][1]));
       }
-      return sum;
+      console.log(`here prime: ${prime}`)
+      return sum.modulo(new BigNumber(prime));
     };
 
     reader.onload = async (event) => {
