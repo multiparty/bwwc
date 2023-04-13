@@ -218,7 +218,7 @@ export async function tableToSecretShares(
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, prime=prime);
+        const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, (prime = prime));
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
