@@ -70,7 +70,6 @@ export const SessionResult: FC<SessionResultProps> = ({ result }) => {
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
             <Box>
-              {' '}
               <TableView tabSelection={value} data={result} />
             </Box>
           </TabPanel>

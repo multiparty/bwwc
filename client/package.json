@@ -30,7 +30,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.2",
     "redux": "^4.2.1",
-    "xlsx": "file:vendor/xlsx-0.19.2.tgz",
+    "xlsx": "^0.18.5",
     "yup": "^1.0.2"
   },
   "devDependencies": {
