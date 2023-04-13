@@ -358,6 +358,24 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["public_key"]
+    
+    
+    """
+    Get prime number for a session
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which the prime number should be retrieved
+    
+    outputs:
+    prime (str) - the prime number for the session as a string
+    """
+    def get_prime(self, session_id: str) -> str:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return str(session_data["prime"])
 
     """
     Get the merged data for a session

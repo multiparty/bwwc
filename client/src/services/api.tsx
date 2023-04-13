@@ -13,6 +13,8 @@ const API_ENDPOINTS = {
   START_SESSION: 'start_session/',
   STOP_SESSION: 'stop_session/',
   END_SESSION: 'end_session/',
+  GET_PRIME: 'get_prime/',
+  GET_PUBLIC_KEY: 'get_public_key/',
   GET_SUBMISSION_URLS: 'get_submission_urls/',
   GET_SUBMISSIONS: 'get_submitted_data/',
   SUBMIT_DATA: 'submit_data/'
@@ -140,8 +142,13 @@ export async function submitData(data: NestedObject, sessionId: string, particip
   return response;
 }
 
+export async function getPrime(sessionId: string): Promise<string> {
+  const response = await axios.get(API_ENDPOINTS.GET_PRIME, { params: { session_id: sessionId } });
+  return response.data.prime;
+}
+
 export async function getPublicKey(session_id: string): Promise<string> {
-  const response = await axios.get(`get_public_key/`, { params: { session_id: session_id } });
+  const response = await axios.get(API_ENDPOINTS.GET_PUBLIC_KEY, { params: { session_id: session_id } });
   return response.data.public_key;
 }
 

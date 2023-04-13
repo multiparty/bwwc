@@ -32,9 +32,9 @@ export const SessionCreateForm: FC = (props) => {
 
     dispatch(setSessionId(sessionId));
     dispatch(setPrivateKey(privateKey));
+    dispatch(setPublicKey(publicKey));
     dispatch(setPrime(prime));
     setPublicKey(publicKey);
-    dispatch(setPublicKey(publicKey));
     setLoading(false);
   };
 

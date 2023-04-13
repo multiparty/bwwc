@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js';
 import { createSlice } from '@reduxjs/toolkit';
 
 export const sessionSlice = createSlice({
@@ -9,7 +8,7 @@ export const sessionSlice = createSlice({
     industry: '',
     participantCode: '',
     publicKey: '',
-    prime: new BigNumber(2),
+    prime: '',
     privateKey: '',
     sessionId: ''
   },

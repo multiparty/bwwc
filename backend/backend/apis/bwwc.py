@@ -149,6 +149,22 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
 
+@csrf_exempt
+def get_prime(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        session_id = req.GET.get("session_id")
+
+        if not session_id:
+            return HttpResponseBadRequest("Invalid request body")
+
+        if not engine.session_exists(session_id):
+            return HttpResponseBadRequest("Invalid session ID")
+
+        prime = engine.get_prime(session_id)
+
+        return JsonResponse({"prime": prime})
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 @csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
@@ -179,4 +195,5 @@ def get_urlpatterns():
         path("api/bwwc/submit_data/", submit_data),
         path("api/bwwc/get_public_key/", get_public_key),
         path("api/bwwc/get_submitted_data/", get_submitted_data),
+        path("api/bwwc/get_prime/", get_prime),
     ]
