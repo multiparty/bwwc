@@ -9,6 +9,7 @@ import { getSubmissions } from '@services/api';
 import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
+import { LinearWithValueLabel } from '@components/session-decrypt/progress-bar';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -76,6 +77,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
               <FileUpload multiple={false} onChange={(files) => submitPrivateKeyHandler(files)} title="Drag and drop your key file here" />
             </Grid>
           </Grid>
+          <LinearWithValueLabel />
         </Stack>
       </CardContent>
     </Card>
