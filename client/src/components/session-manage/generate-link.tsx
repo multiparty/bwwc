@@ -17,7 +17,7 @@ function CopyToClipboardButton(props: CopyToClipboardButtonProps) {
   const [open, setOpen] = useState(false);
   const handleClick = () => {
     setOpen(true);
-    const linksToCopy = props.links.join('; ');
+    const linksToCopy = props.links.join('\r\n');
     navigator.clipboard.writeText(linksToCopy);
   };
 
