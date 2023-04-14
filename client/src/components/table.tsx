@@ -9,11 +9,11 @@ const POSITION_WIDTH = 200;
 const COLUMN_WIDTH = 90;
 const HEIGHT = 400;
 
-type CustomGridColDef = GridColDef & {
+export type CustomGridColDef = GridColDef & {
   headerAlign?: GridAlignment;
 };
 
-const columns: CustomGridColDef[] = [
+export const columns: CustomGridColDef[] = [
   {
     field: 'position',
     width: POSITION_WIDTH,

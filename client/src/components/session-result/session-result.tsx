@@ -1,14 +1,17 @@
 import { FC, useState } from 'react';
-import { Box, Card, CardContent, Divider, Typography, Stack, Tabs, Tab } from '@mui/material';
+import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { ToyResult } from '@constants/delete/toy-result';
-import { toyresultDataA } from '@constants/delete/toy-result-dataA';
-import { ResultTable } from './result-table';
+import { ResultFormat, TabSelection } from '@utils/data-format';
+import { createCSV } from './to-xlsx';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+}
+
+interface SessionResultProps {
+  result: ResultFormat;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -27,9 +30,14 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
-export const SessionResult: FC = () => {
-  const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+
+function handleClick(result: ResultFormat) {
+  createCSV(result);
+}
+
+export const SessionResult: FC<SessionResultProps> = ({ result }) => {
+  const [value, setValue] = useState<TabSelection>(0);
+  const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);
   };
   return (
@@ -40,6 +48,17 @@ export const SessionResult: FC = () => {
             <Typography component="h1" variant="h4">
               Result Data
             </Typography>
+            <Grid container justifyContent="center">
+              <Button
+                variant="contained"
+                sx={{ width: 300 }}
+                onClick={() => {
+                  handleClick(result);
+                }}
+              >
+                DownLoad File
+              </Button>
+            </Grid>
             <Box>
               <Tabs value={value} onChange={handleChange}>
                 <Tab label="All" {...a11yProps(value)} />
@@ -50,7 +69,9 @@ export const SessionResult: FC = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            <Box>{value == 0 ? <ResultTable data={toyresultDataA} /> : <TableView tabSelection={value} data={ToyResult[value.toString()]} />}</Box>
+            <Box>
+              <TableView tabSelection={value} data={result} />
+            </Box>
           </TabPanel>
         </CardContent>
       </Card>

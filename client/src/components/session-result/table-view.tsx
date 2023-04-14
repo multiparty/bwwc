@@ -6,11 +6,11 @@ import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { ResultTable } from './result-table';
 import { Form, Formik, useFormikContext } from 'formik';
-import { StringDataFormatMap } from '@utils/data-format';
+import { ResultFormat, TabSelection } from '@utils/data-format';
 
 export interface ViewResultProps {
-  tabSelection: number;
-  data?: StringDataFormatMap;
+  tabSelection: TabSelection;
+  data?: ResultFormat;
 }
 
 interface valueProps {
@@ -58,7 +58,7 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
             ''
           )}
         </Grid>
-        {data != undefined ? <ResultTable data={data[ddSelection?.toString()]} /> : ''}
+        {data != undefined ? tabSelection == 0 ? <ResultTable data={data[tabSelection]} /> : <ResultTable data={data[tabSelection]?.[ddSelection?.toString()]} /> : ''}
       </Stack>
     </Box>
   );
