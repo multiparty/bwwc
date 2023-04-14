@@ -111,3 +111,11 @@ export function convertToRows(data?: TableData): TableRow[] {
 export interface StringDataFormatMap {
   [key: string]: DataFormat;
 }
+
+export interface ResultFormat {
+  0: DataFormat;
+  1: StringDataFormatMap;
+  2: StringDataFormatMap;
+}
+
+export type TabSelection = 0 | 1 | 2;
