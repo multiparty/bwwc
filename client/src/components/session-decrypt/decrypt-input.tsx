@@ -31,7 +31,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   const [privateKey, setPrivateKey] = useState<string>('');
   const { sessionId } = useSelector((state: AppState) => state.session);
   const [progress, setProgress] = useState<number>(0);
-  const [table, setTable] = useState<Record<string, any>>({}); // Todo: Use the setter to store fetched pre-decryption table
+  const [encTable, setEncTable] = useState<Record<string, any>>({}); // Todo: Use the setter to store fetched pre-decryption table
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -45,7 +45,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   useEffect(() => {
     const setDecTable = async () => {
       const privateCryptoKey = await importPemPrivateKey(privateKey);
-      const decTable = await secretSharesToTable(table, privateCryptoKey, setProgress);
+      const decTable = await secretSharesToTable(encTable, privateCryptoKey, setProgress);
       // Todo: Set decTable to show in the result page
     };
     setDecTable();
