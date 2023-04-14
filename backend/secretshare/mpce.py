@@ -187,7 +187,7 @@ class MPCEngine(object):
                 for x_axis, group in groupby(combined_list, key=itemgetter(0)):
                     group_list = list(group)
                     share_type = group_list[0][2]
-                    
+
                     if share_type == "enc-share":
                         merged.extend(group_list)
                     elif share_type == "share":
@@ -195,7 +195,7 @@ class MPCEngine(object):
                         merged.append([x_axis, summed, "share"])
                     else:
                         raise ValueError("Incompatible cell types.")
-                    
+
                 return merged
             elif isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
                 if set(dict1[key].keys()) == set(dict2[key].keys()):

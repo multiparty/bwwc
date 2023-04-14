@@ -349,8 +349,8 @@ outputs:
 result (BigNumber) - interpolated value at the given x-coordinate
 */
 export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNumber, prime: BigNumber): BigNumber {
-  const xVals = pointsValues.map(([x, _]) => typeof x === "string" ? new BigNumber(x) : x);
-  const yVals = pointsValues.map(([_, y]) => typeof y === "string" ? new BigNumber(y) : y);
+  const xVals = pointsValues.map(([x, _]) => (typeof x === 'string' ? new BigNumber(x) : x));
+  const yVals = pointsValues.map(([_, y]) => (typeof y === 'string' ? new BigNumber(y) : y));
 
   const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
   const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));

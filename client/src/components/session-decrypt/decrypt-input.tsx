@@ -53,28 +53,26 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     type InputElement = string | BigNumber;
     type InputList = Array<Array<InputElement>>;
     const bigPrime = new BigNumber(prime);
-    
+
     const reduce = async (input: Array<Point>) => {
       const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
-    
+
       for (const [type, value] of input) {
         if (!resultMap.has(type)) {
           resultMap.set(type, [type, new BigNumber(0)]);
         }
-    
+
         const currentValue: Array<InputElement> | undefined = resultMap.get(type);
         if (currentValue) {
-          currentValue[1] = new BigNumber(currentValue[1] as BigNumber)
-            .plus(new BigNumber(value))
-            .mod(bigPrime);
+          currentValue[1] = new BigNumber(currentValue[1] as BigNumber).plus(new BigNumber(value)).mod(bigPrime);
         }
       }
-    
+
       // Convert BigNumber back to string in the result
       const result: InputList = Array.from(resultMap.values()).map(([type, value]) => [type, (value as BigNumber).toString()]);
-    
+
       return result;
-    }
+    };
 
     reader.onload = async (event) => {
       if (token !== undefined && sessionId !== undefined) {
