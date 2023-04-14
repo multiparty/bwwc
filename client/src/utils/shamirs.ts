@@ -259,8 +259,8 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        shamirReconstruct(value, new BigNumber(0), prime);
-        currentObj[key] = value;
+        const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
+        currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
