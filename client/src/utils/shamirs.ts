@@ -254,6 +254,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
+        shamirReconstruct(value, 0);
         currentObj[key] = value;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -330,6 +331,44 @@ function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
 }
 
 type List = number[];
+
+/*
+Calculate the interpolated value at a given point using Lagrange's interpolation formula
+
+inputs:
+pointsValues (Array<Point>) - array of (x, y) coordinates of the points
+queryXAxis (BigNumber) - x-coordinate of the point to interpolate
+prime (BigNumber) - prime number used for modular arithmetic
+
+outputs:
+result (BigNumber) - interpolated value at the given x-coordinate
+*/
+export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNumber, prime: BigNumber): BigNumber {
+  const xVals = pointsValues.map(([x, _]) => x);
+  const yVals = pointsValues.map(([_, y]) => y);
+  const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
+  const result = constants.reduce((acc, ci, i) => (acc + ci * yVals[i]) % prime, 0);
+
+  return result;
+}
+
+/*
+Calculate the Lagrange constants for a given point
+
+inputs:
+points (Array<Point>) - array of x-coordinates of the points
+queryXAxis (BigNumber) - x-coordinate of the point to interpolate
+prime (BigNumber) - prime number used for modular arithmetic
+
+outputs:
+constants (Array<BigNumber>) - array of Lagrange constants
+*/
+export function shamirReconstruct(shares: Array<Point>, queryXAxis: BigNumber = new BigNumber(0), prime: BigNumber): BigNumber {
+  const polynomial = shares;
+  const secret = interpolateAtPoint(polynomial, queryXAxis, prime);
+
+  return secret;
+}
 
 /*
 Calculate Lagrange constants for a given point using a list of points.

@@ -50,20 +50,40 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     // Complete the MPC by summing all the shares together
     // Can replace this function with any custom functionality to apply
     // over unencrypted shares.
-    const reduce = async (data: Array<Point>) => {
-      let sum = new BigNumber(0);
-      for (let i = 0; i < data.length; i++) {
-        sum = sum.plus(new BigNumber(data[i][1]));
+    type InputElement = string | BigNumber;
+    type InputList = Array<Array<InputElement>>;
+    const bigPrime = new BigNumber(prime);
+    
+    const reduce = async (input: Array<Point>) => {
+      const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
+    
+      for (const [type, value] of input) {
+        if (!resultMap.has(type)) {
+          resultMap.set(type, [type, new BigNumber(0)]);
+        }
+    
+        const currentValue: Array<InputElement> | undefined = resultMap.get(type);
+        if (currentValue) {
+          currentValue[1] = new BigNumber(currentValue[1] as BigNumber)
+            .plus(new BigNumber(value))
+            .mod(bigPrime);
+        }
       }
-      console.log(`here prime: ${prime}`)
-      return sum.modulo(new BigNumber(prime));
-    };
+    
+      // Convert BigNumber back to string in the result
+      const result: InputList = Array.from(resultMap.values()).map(([type, value]) => [type, (value as BigNumber).toString()]);
+    
+      return result;
+    }
 
     reader.onload = async (event) => {
       if (token !== undefined && sessionId !== undefined) {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
         const data = await getSubmissions(sessionId, token);
+
+        console.log(data)
+
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, reduce);
         console.log(decodedTable);
       }
