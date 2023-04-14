@@ -1,3 +1,7 @@
+/*
+This file contains functions for performing Shamir's Secret Sharing.
+*/
+
 import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
 import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from './keypair';
@@ -240,12 +244,13 @@ Convert encrypted secret shares in a nested table structure back to the original
 inputs:
 obj (Record<string, any>) - The nested object containing encrypted secret shares in a table structure.
 privateKey (CryptoKey) - The private key used to decrypt the secret shares.
+prime (BigNumber) - The prime used to generate the secret shares.
 reduce (function) - A function that reduces the unencrypted secret shares to a single value.
 
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
-export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, reduce: (value: any) => any): Promise<Record<string, any>> {
+export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, prime: BigNumber, reduce: (value: any) => any): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
@@ -254,7 +259,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        shamirReconstruct(value, 0);
+        shamirReconstruct(value, new BigNumber(0), prime);
         currentObj[key] = value;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -344,10 +349,11 @@ outputs:
 result (BigNumber) - interpolated value at the given x-coordinate
 */
 export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNumber, prime: BigNumber): BigNumber {
-  const xVals = pointsValues.map(([x, _]) => x);
-  const yVals = pointsValues.map(([_, y]) => y);
+  const xVals = pointsValues.map(([x, _]) => typeof x === "string" ? new BigNumber(x) : x);
+  const yVals = pointsValues.map(([_, y]) => typeof y === "string" ? new BigNumber(y) : y);
+
   const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
-  const result = constants.reduce((acc, ci, i) => (acc + ci * yVals[i]) % prime, 0);
+  const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
 
   return result;
 }
@@ -480,6 +486,22 @@ export function modulus(num: BigNumber, mod: BigNumber): BigNumber {
   return num.modulo(mod);
 }
 
+/*
+This function calculates the Extended Euclidean Algorithm to find the greatest common divisor (gcd) of two given 
+numbers, a and b, as well as the coefficients of Bézout's identity (x, y), which are integers such that ax + by = gcd(a, b).
+
+inputs:
+a (BigNumber) - The first number for which the gcd and Bézout's coefficients are to be calculated.
+b (BigNumber) - The second number for which the gcd and Bézout's coefficients are to be calculated.
+
+outputs:
+[gcd, x, y] (Array of BigNumber) - An array containing three BigNumber elements:
+
+gcd: The greatest common divisor of a and b.
+x: The first coefficient of Bézout's identity (ax + by = gcd(a, b)).
+y: The second coefficient of Bézout's identity (ax + by = gcd(a, b)).
+"""
+*/
 export function gcdExtended(a: BigNumber, b: BigNumber): [BigNumber, BigNumber, BigNumber] {
   if (a.isEqualTo(0)) {
     return [b, new BigNumber(0), new BigNumber(1)];
@@ -492,6 +514,18 @@ export function gcdExtended(a: BigNumber, b: BigNumber): [BigNumber, BigNumber, 
   return [gcd, x, y];
 }
 
+/*
+This function calculates the modular inverse of a given number 'a' under modulo 'm'. The modular inverse 
+exists only if 'a' and 'm' are coprime (i.e., their gcd is 1). The function returns the modular inverse if it 
+exists, otherwise it returns null.
+
+inputs:
+a (BigNumber) - The number for which the modular inverse is to be calculated.
+m (BigNumber) - The modulo value under which the inverse is to be calculated.
+
+outputs:
+modularInverse (BigNumber | null) - The modular inverse of 'a' under modulo 'm' if it exists, otherwise null.
+*/
 export function modularInverse(a: BigNumber, m: BigNumber): BigNumber | null {
   const [gcd, x, _] = gcdExtended(a, m);
 
