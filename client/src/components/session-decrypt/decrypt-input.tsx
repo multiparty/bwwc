@@ -10,6 +10,8 @@ import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
 import { LinearWithValueLabel } from '@components/session-decrypt/progress-bar';
+import { importPemPrivateKey } from '@utils/keypair';
+import { secretSharesToTable } from '@utils/shamirs';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -28,6 +30,8 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
   const { sessionId } = useSelector((state: AppState) => state.session);
+  const [progress, setProgress] = useState<number>(0);
+  const [table, setTable] = useState<Record<string, any>>({}); // Todo: Use the setter to store fetched pre-decryption table
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -37,6 +41,15 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     }, [values]);
     return null;
   };
+
+  useEffect(() => {
+    const setDecTable = async () => {
+      const privateCryptoKey = await importPemPrivateKey(privateKey);
+      const decTable = await secretSharesToTable(table, privateCryptoKey, setProgress);
+      // Todo: Set decTable to show in the result page
+    };
+    setDecTable();
+  }, [privateKey]);
 
   const submitPrivateKeyHandler = async (files: CustomFile[]) => {
     const file = files[0];
@@ -77,7 +90,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
               <FileUpload multiple={false} onChange={(files) => submitPrivateKeyHandler(files)} title="Drag and drop your key file here" />
             </Grid>
           </Grid>
-          <LinearWithValueLabel />
+          <LinearWithValueLabel progress={progress} />
         </Stack>
       </CardContent>
     </Card>
