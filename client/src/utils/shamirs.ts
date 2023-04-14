@@ -260,6 +260,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
         const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
+        console.log(reconstructed);
         currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -353,6 +354,7 @@ export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNu
   const yVals = pointsValues.map(([_, y]) => (typeof y === 'string' ? new BigNumber(y) : y));
 
   const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
+  console.log(`constants: ${constants}`)
   const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
 
   return result;
