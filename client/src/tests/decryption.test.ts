@@ -14,12 +14,16 @@ describe('shamirReconstruct', () => {
       ['7', '7070874'],
       ['8', '699435'],
       ['9', '6703412'],
-      ['10', '10114232'],
+      ['10', '10114232']
     ];
 
     const expectedSecret = new BigNumber(8888);
     const prime = new BigNumber(15485867);
-    const reconstructedSecret = shamirReconstruct(shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]), prime, new BigNumber(0));
+    const reconstructedSecret = shamirReconstruct(
+      shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
+      prime,
+      new BigNumber(0)
+    );
 
     expect(reconstructedSecret).toEqual(expectedSecret);
   });
