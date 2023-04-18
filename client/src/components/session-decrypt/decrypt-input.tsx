@@ -13,6 +13,8 @@ import { secretSharesToTable } from '@utils/shamirs';
 import { importPemPrivateKey } from '@utils/keypair';
 import { Point } from '@utils/data-format';
 import BigNumber from 'bignumber.js';
+import { setDecodedTable } from '../../redux/session';
+import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -28,6 +30,7 @@ interface valueProps {
 }
 
 export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
+  const dispatch = useDispatch();
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
   const { prime, sessionId } = useSelector((state: AppState) => state.session);
@@ -81,6 +84,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
         const data = await getSubmissions(sessionId, token);
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce);
         console.log(decodedTable);
+        dispatch(setDecodedTable(decodedTable));
       }
     };
 
