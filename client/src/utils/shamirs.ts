@@ -239,7 +239,7 @@ privateKey (CryptoKey) - The private key used to decrypt the secret shares.
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
-export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, updateProgress: (progress: number) => void): Promise<Record<string, any>> {
+export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, setProgress: (progress: number) => void): Promise<Record<string, any>> {
   var counter = 0;
   const totalSteps = countSteps(obj);
 
@@ -261,7 +261,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
       if (Array.isArray(originalObj[key])) {
         currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
         counter++;
-        updateProgress((counter / totalSteps) * 100);
+        setProgress((counter / totalSteps) * 100);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};

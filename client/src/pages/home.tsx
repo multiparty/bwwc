@@ -36,7 +36,7 @@ export const HomePage: FC = () => {
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
         setTable(secretTable);
-        
+
         // Do we need this here?
         // if (participantCode == 'analyst') {
         //   const privateCryptoKey = await importPemPrivateKey(privateKey);
