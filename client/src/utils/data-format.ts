@@ -10,6 +10,7 @@ export interface AppState {
     industry: string;
     participantCode: string;
     publicKey: string;
+    prime: BigNumber;
     privateKey: string;
     sessionId: string;
   };

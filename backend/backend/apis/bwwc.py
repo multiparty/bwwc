@@ -25,7 +25,7 @@ def start_session(req: HttpRequest) -> HttpResponse:
 
         session_id = engine.create_session(auth_token, public_key)
 
-        return JsonResponse({"session_id": session_id, "auth_token": auth_token})
+        return JsonResponse({"session_id": session_id, "prime": str(engine.prime)})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -41,7 +41,9 @@ def stop_session(req: HttpRequest) -> HttpResponse:
 
         if engine.is_initiator(session_id, auth_token):
             engine.close_submissions(session_id)
-            engine.reduce_unencrypted(session_id, lambda x, y: float(x) + float(y))
+            engine.reduce_unencrypted(
+                session_id, lambda x, y: (float(x) + float(y)) % engine.prime
+            )
             return JsonResponse({"status": 200})
         else:
             return HttpResponseBadRequest("Invalid auth token")
@@ -151,6 +153,24 @@ def get_public_key(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
+def get_prime(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        session_id = req.GET.get("session_id")
+
+        if not session_id:
+            return HttpResponseBadRequest("Invalid request body")
+
+        if not engine.session_exists(session_id):
+            return HttpResponseBadRequest("Invalid session ID")
+
+        prime = engine.get_prime(session_id)
+
+        return JsonResponse({"prime": prime})
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+
+
+@csrf_exempt
 def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
@@ -179,4 +199,5 @@ def get_urlpatterns():
         path("api/bwwc/submit_data/", submit_data),
         path("api/bwwc/get_public_key/", get_public_key),
         path("api/bwwc/get_submitted_data/", get_submitted_data),
+        path("api/bwwc/get_prime/", get_prime),
     ]

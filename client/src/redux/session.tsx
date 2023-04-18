@@ -5,9 +5,11 @@ export const sessionSlice = createSlice({
   initialState: {
     authToken: '',
     companySize: '',
+    decodedTable: null,
     industry: '',
     participantCode: '',
     publicKey: '',
+    prime: '',
     privateKey: '',
     sessionId: ''
   },
@@ -18,11 +20,17 @@ export const sessionSlice = createSlice({
     setCompanySize: (state, action) => {
       state.companySize = action.payload;
     },
+    setDecodedTable: (state, action) => {
+      state.decodedTable = action.payload;
+    },
     setIndustry: (state, action) => {
       state.industry = action.payload;
     },
     setParticipantCode: (state, action) => {
       state.participantCode = action.payload;
+    },
+    setPrime: (state, action) => {
+      state.prime = action.payload;
     },
     setPublicKey: (state, action) => {
       state.publicKey = action.payload;
@@ -36,5 +44,5 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { setAuthToken, setCompanySize, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId } = sessionSlice.actions;
+export const { setAuthToken, setCompanySize, setDecodedTable, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId, setPrime } = sessionSlice.actions;
 export default sessionSlice.reducer;
