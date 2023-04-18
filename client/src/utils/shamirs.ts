@@ -260,7 +260,6 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
         const value = new Array();
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
         const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
-        console.log(reconstructed);
         currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -354,7 +353,6 @@ export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNu
   const yVals = pointsValues.map(([_, y]) => (typeof y === 'string' ? new BigNumber(y) : y));
 
   const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
-  console.log(`constants: ${constants}`)
   const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
 
   return result;
@@ -365,13 +363,13 @@ Calculate the Lagrange constants for a given point
 
 inputs:
 points (Array<Point>) - array of x-coordinates of the points
-queryXAxis (BigNumber) - x-coordinate of the point to interpolate
 prime (BigNumber) - prime number used for modular arithmetic
+queryXAxis (BigNumber) - x-coordinate of the point to interpolate
 
 outputs:
 constants (Array<BigNumber>) - array of Lagrange constants
 */
-export function shamirReconstruct(shares: Array<Point>, queryXAxis: BigNumber = new BigNumber(0), prime: BigNumber): BigNumber {
+export function shamirReconstruct(shares: Array<Point>, prime: BigNumber, queryXAxis: BigNumber = new BigNumber(0)): BigNumber {
   const polynomial = shares;
   const secret = interpolateAtPoint(polynomial, queryXAxis, prime);
 
@@ -406,6 +404,7 @@ export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: Big
     }
 
     const a = modularInverse(denum, prime);
+
     if (a !== null) {
       constants[i] = modulus(num.multipliedBy(a), prime);
     } else {
@@ -414,25 +413,6 @@ export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: Big
   }
 
   return constants;
-}
-
-/*
-Calculate the modular inverse of a given number with respect to a modulus.
-
-inputs:
-a (number) - The number for which the modular inverse is to be calculated.
-modulus (number) - The modulus with respect to which the modular inverse is to be calculated.
-
-outputs:
-number - Returns the modular inverse of the input number with respect to the given modulus.
-*/
-export function modInverse(a: number, m: number): number {
-  let g = gcd(a, m);
-  if (g !== 1) {
-    throw new Error("Inverse doesn't exist");
-  } else {
-    return power(a, m - 2, m);
-  }
 }
 
 /*
@@ -537,5 +517,5 @@ export function modularInverse(a: BigNumber, m: BigNumber): BigNumber | null {
   }
 
   // Ensure the result is in the range [0, m)
-  return x.mod(m).plus(m).mod(m);
+  return x.modulo(m).plus(m).modulo(m);
 }

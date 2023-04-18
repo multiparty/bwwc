@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { gcd, power, modInverse, lagrangeConstantsForPoint } from '../utils/shamirs';
+import { gcd, power, modularInverse, lagrangeConstantsForPoint } from '../utils/shamirs';
 
 describe('gcd', () => {
   test('calculates the greatest common divisor of two numbers', () => {
@@ -17,11 +17,11 @@ describe('power', () => {
   });
 });
 
-describe('modInverse', () => {
+describe('modularInverse', () => {
   test('calculates the modular multiplicative inverse of a number', () => {
-    expect(modInverse(3, 11)).toEqual(4);
-    expect(modInverse(7, 17)).toEqual(5);
-    expect(modInverse(5, 13)).toEqual(8);
+    expect(modularInverse(BigNumber(3), BigNumber(11))?.toNumber()).toEqual(4);
+    expect(modularInverse(BigNumber(7), BigNumber(17))?.toNumber()).toEqual(5);
+    expect(modularInverse(BigNumber(5), BigNumber(13))?.toNumber()).toEqual(8);
   });
 });
 
