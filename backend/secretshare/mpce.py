@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
 
+from pprint import pprint
+
 
 class MPCEngine(object):
     """
@@ -177,21 +179,23 @@ class MPCEngine(object):
             elif isinstance(dict1[key], str) and isinstance(dict2[key], str):
                 return func(dict1[key], dict2[key])
             elif isinstance(dict1[key], list) and isinstance(dict2[key], list):
-                merged, summed = [], 0
+                merged = []
 
                 combined_list = dict1[key] + dict2[key]
-                combined_list.sort(key=itemgetter(2))
+                combined_list.sort(key=itemgetter(0))
 
-                for share_type, group in groupby(combined_list, key=itemgetter(2)):
+                for x_axis, group in groupby(combined_list, key=itemgetter(0)):
                     group_list = list(group)
+                    share_type = group_list[0][2]
+
                     if share_type == "enc-share":
                         merged.extend(group_list)
                     elif share_type == "share":
-                        summed += sum(int(item[1]) for item in group_list)
+                        summed = sum(int(item[1]) for item in group_list) % self.prime
+                        merged.append([x_axis, summed, "share"])
                     else:
                         raise ValueError("Incompatible cell types.")
 
-                merged.append(["sum-share", str(summed), "share"])
                 return merged
             elif isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
                 if set(dict1[key].keys()) == set(dict2[key].keys()):
@@ -358,6 +362,24 @@ class MPCEngine(object):
             raise ValueError("Invalid session ID")
 
         return session_data["public_key"]
+
+    """
+    Get prime number for a session
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which the prime number should be retrieved
+    
+    outputs:
+    prime (str) - the prime number for the session as a string
+    """
+
+    def get_prime(self, session_id: str) -> str:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return str(session_data["prime"])
 
     """
     Get the merged data for a session

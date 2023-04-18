@@ -9,6 +9,12 @@ import { getSubmissions } from '@services/api';
 import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
+import { secretSharesToTable } from '@utils/shamirs';
+import { importPemPrivateKey } from '@utils/keypair';
+import { Point } from '@utils/data-format';
+import BigNumber from 'bignumber.js';
+import { setDecodedTable } from '../../redux/session';
+import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -24,9 +30,10 @@ interface valueProps {
 }
 
 export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
+  const dispatch = useDispatch();
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
-  const { sessionId } = useSelector((state: AppState) => state.session);
+  const { prime, sessionId } = useSelector((state: AppState) => state.session);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -41,9 +48,46 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
     const file = files[0];
     props.onFileUpload(file);
 
-    if (token !== undefined && sessionId !== undefined) {
-      const data = await getSubmissions(sessionId, token);
-    }
+    const reader = new FileReader();
+
+    // Complete the MPC by summing all the shares together
+    // Can replace this function with any custom functionality to apply
+    // over unencrypted shares.
+    type InputElement = string | BigNumber;
+    type InputList = Array<Array<InputElement>>;
+    const bigPrime = new BigNumber(prime);
+
+    const reduce = async (input: Array<Point>) => {
+      const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
+
+      for (const [type, value] of input) {
+        if (!resultMap.has(type)) {
+          resultMap.set(type, [type, new BigNumber(0)]);
+        }
+
+        const currentValue: Array<InputElement> | undefined = resultMap.get(type);
+        if (currentValue) {
+          currentValue[1] = new BigNumber(currentValue[1] as BigNumber).plus(new BigNumber(value)).mod(bigPrime);
+        }
+      }
+
+      // Convert BigNumber back to string in the result
+      const result: InputList = Array.from(resultMap.values()).map(([type, value]) => [type, (value as BigNumber).toString()]);
+
+      return result;
+    };
+
+    reader.onload = async (event) => {
+      if (token !== undefined && sessionId !== undefined) {
+        const fileContent = event.target?.result as string;
+        const privateCryptoKey = await importPemPrivateKey(fileContent);
+        const data = await getSubmissions(sessionId, token);
+        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce);
+        dispatch(setDecodedTable(decodedTable));
+      }
+    };
+
+    reader.readAsText(file);
   };
 
   return (

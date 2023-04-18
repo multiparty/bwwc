@@ -1,5 +1,4 @@
 import { deepEqual } from '../utils/shamirs';
-import { stringToArrayBuffer, encryptString, decryptString } from '../utils/keypair';
 
 describe('deepEqual', () => {
   it('should return true for deeply equal objects', () => {

@@ -1,3 +1,7 @@
+/*
+This file contains functions for performing Shamir's Secret Sharing.
+*/
+
 import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
 import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from './keypair';
@@ -42,13 +46,13 @@ function getRandomBigNumber(min: BigNumber, max: BigNumber) {
 Check if a given number is an integer greater than zero.
 
 inputs:
-num (number) - The number to check.
+num (BigNumber) - The number to check.
 
 output:
 (boolean) - Whether the number is an integer greater than zero.
 */
-function isIntGreaterThanZero(num: number): boolean {
-  return Number.isInteger(num) && num > 0;
+function isIntGreaterThanZero(num: BigNumber): boolean {
+  return num.isInteger() && num.isGreaterThan(BigNumber(0));
 }
 
 /*
@@ -92,22 +96,26 @@ function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): B
 Split a secret into a list of shares.
 
 inputs:
-secret (number) - The secret to be shared.
+secret (BigNumber) - The secret to be shared.
 numShares (number) - The number of shares to generate.
 threshold (number) - The minimum number of shares required to reconstruct the secret.
 asString (boolean, optional) - Whether to return the shares as strings. Default: false.
-prime (number, optional) - The prime number to use for the polynomial modulus. Default: 180252380737439.
+prime (BigNumber, optional) - The prime number to use for the polynomial modulus. Default: BigNumber(180252380737439).
 
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: number, numShares: number, threshold: number, asString: boolean = false, prime: number = 180252380737439): Point[] {
+export function shamirShare(secret: BigNumber, numShares: number, threshold: number, asString: boolean = false, prime: BigNumber = new BigNumber(180252380737439)): Point[] {
   const bigPrime = new BigNumber(prime);
   const bigSecret = new BigNumber(secret);
   const bigThreshold = new BigNumber(threshold);
 
-  if (!isIntGreaterThanZero(secret) || !isIntGreaterThanZero(prime)) {
-    throw new Error('Secret must be a positive integer');
+  if (!isIntGreaterThanZero(secret)) {
+    throw new Error(`Secret ${secret} must be a positive integer`);
+  }
+
+  if (!isIntGreaterThanZero(prime)) {
+    throw new Error(`Prime ${prime} must be a positive integer`);
   }
 
   const polynomial = sampleShamirPolynomial(bigSecret, bigThreshold, bigPrime);
@@ -205,6 +213,7 @@ export async function tableToSecretShares(
   threshold: number,
   numEncryptWithKey: number,
   publicKey: CryptoKey,
+  prime: BigNumber,
   stringify: boolean = false
 ): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
@@ -213,7 +222,7 @@ export async function tableToSecretShares(
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(originalObj[key], numShares, threshold, stringify);
+        const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, (prime = prime));
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -235,18 +244,23 @@ Convert encrypted secret shares in a nested table structure back to the original
 inputs:
 obj (Record<string, any>) - The nested object containing encrypted secret shares in a table structure.
 privateKey (CryptoKey) - The private key used to decrypt the secret shares.
+prime (BigNumber) - The prime used to generate the secret shares.
+reduce (function) - A function that reduces the unencrypted secret shares to a single value.
 
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
-export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey): Promise<Record<string, any>> {
+export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, prime: BigNumber, reduce: (value: any) => any): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
-        currentObj[key] = await decryptSecretShares(originalObj[key], privateKey);
+        const value = new Array();
+        value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
+        const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
+        currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -319,4 +333,189 @@ function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
     }
   }
   return true;
+}
+
+type List = number[];
+
+/*
+Calculate the interpolated value at a given point using Lagrange's interpolation formula
+
+inputs:
+pointsValues (Array<Point>) - array of (x, y) coordinates of the points
+queryXAxis (BigNumber) - x-coordinate of the point to interpolate
+prime (BigNumber) - prime number used for modular arithmetic
+
+outputs:
+result (BigNumber) - interpolated value at the given x-coordinate
+*/
+export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNumber, prime: BigNumber): BigNumber {
+  const xVals = pointsValues.map(([x, _]) => (typeof x === 'string' ? new BigNumber(x) : x));
+  const yVals = pointsValues.map(([_, y]) => (typeof y === 'string' ? new BigNumber(y) : y));
+
+  const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
+  const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
+
+  return result;
+}
+
+/*
+Calculate the Lagrange constants for a given point
+
+inputs:
+points (Array<Point>) - array of x-coordinates of the points
+prime (BigNumber) - prime number used for modular arithmetic
+queryXAxis (BigNumber) - x-coordinate of the point to interpolate
+
+outputs:
+constants (Array<BigNumber>) - array of Lagrange constants
+*/
+export function shamirReconstruct(shares: Array<Point>, prime: BigNumber, queryXAxis: BigNumber = new BigNumber(0)): BigNumber {
+  const polynomial = shares;
+  const secret = interpolateAtPoint(polynomial, queryXAxis, prime);
+
+  return secret;
+}
+
+/*
+Calculate Lagrange constants for a given point using a list of points.
+
+inputs:
+points (BigNumber[]) - The list of points used to compute the Lagrange constants.
+point (BigNumber) - The point for which the Lagrange constants are to be calculated.
+prime (BigNumber) - The prime number used for modular arithmetic.
+
+outputs:
+number[] - Returns an array of Lagrange constants corresponding to the input points.
+*/
+export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: BigNumber, prime: BigNumber): BigNumber[] {
+  const constants: BigNumber[] = new Array(points.length).fill(new BigNumber(0));
+
+  for (let i = 0; i < points.length; i++) {
+    const xi = new BigNumber(points[i]);
+    let num = new BigNumber(1);
+    let denum = new BigNumber(1);
+
+    for (let j = 0; j < points.length; j++) {
+      if (j !== i) {
+        const xj = new BigNumber(points[j]);
+        num = modulus(num.multipliedBy(xj.minus(query_x_axis)), prime);
+        denum = modulus(denum.multipliedBy(xj.minus(xi)), prime);
+      }
+    }
+
+    const a = modularInverse(denum, prime);
+
+    if (a !== null) {
+      constants[i] = modulus(num.multipliedBy(a), prime);
+    } else {
+      throw new Error("Inverse doesn't exist");
+    }
+  }
+
+  return constants;
+}
+
+/*
+Calculate the greatest common divisor (GCD) of two numbers using the Euclidean algorithm.
+
+inputs:
+a (number) - The first number for which the GCD is to be calculated.
+b (number) - The second number for which the GCD is to be calculated.
+
+outputs:
+number - Returns the greatest common divisor of the input numbers.
+*/
+export function gcd(a: number, b: number): number {
+  if (a === 0) {
+    return b;
+  }
+  return gcd(b % a, a);
+}
+
+/*
+Calculate the result of raising a number to a given power modulo a modulus using the exponentiation by squaring method.
+
+inputs:
+base (number) - The base number to be raised to the given power.
+exponent (number) - The power to which the base number is to be raised.
+modulus (number) - The modulus for the calculation.
+
+outputs:
+number - Returns the result of base raised to the power of exponent modulo modulus.
+*/
+export function power(x: number, y: number, m: number): number {
+  if (y === 0) {
+    return 1;
+  }
+  let p = power(x, Math.floor(y / 2), m) % m;
+  p = (p * p) % m;
+
+  return y % 2 === 0 ? p : (x * p) % m;
+}
+
+/*
+Calculate modulus overriding BigNumber.modulo(), which will only return the sign if
+num is negative.
+
+inputs:
+num (BigNumber) - Dividend
+mod (BigNumber) - Divisor
+*/
+export function modulus(num: BigNumber, mod: BigNumber): BigNumber {
+  if (num.isLessThan(0)) {
+    return num.modulo(mod).plus(mod).modulo(mod);
+  }
+  return num.modulo(mod);
+}
+
+/*
+This function calculates the Extended Euclidean Algorithm to find the greatest common divisor (gcd) of two given 
+numbers, a and b, as well as the coefficients of Bézout's identity (x, y), which are integers such that ax + by = gcd(a, b).
+
+inputs:
+a (BigNumber) - The first number for which the gcd and Bézout's coefficients are to be calculated.
+b (BigNumber) - The second number for which the gcd and Bézout's coefficients are to be calculated.
+
+outputs:
+[gcd, x, y] (Array of BigNumber) - An array containing three BigNumber elements:
+
+gcd: The greatest common divisor of a and b.
+x: The first coefficient of Bézout's identity (ax + by = gcd(a, b)).
+y: The second coefficient of Bézout's identity (ax + by = gcd(a, b)).
+"""
+*/
+export function gcdExtended(a: BigNumber, b: BigNumber): [BigNumber, BigNumber, BigNumber] {
+  if (a.isEqualTo(0)) {
+    return [b, new BigNumber(0), new BigNumber(1)];
+  }
+
+  const [gcd, x1, y1] = gcdExtended(b.mod(a), a);
+  const x = y1.minus(b.idiv(a).times(x1));
+  const y = x1;
+
+  return [gcd, x, y];
+}
+
+/*
+This function calculates the modular inverse of a given number 'a' under modulo 'm'. The modular inverse 
+exists only if 'a' and 'm' are coprime (i.e., their gcd is 1). The function returns the modular inverse if it 
+exists, otherwise it returns null.
+
+inputs:
+a (BigNumber) - The number for which the modular inverse is to be calculated.
+m (BigNumber) - The modulo value under which the inverse is to be calculated.
+
+outputs:
+modularInverse (BigNumber | null) - The modular inverse of 'a' under modulo 'm' if it exists, otherwise null.
+*/
+export function modularInverse(a: BigNumber, m: BigNumber): BigNumber | null {
+  const [gcd, x, _] = gcdExtended(a, m);
+
+  if (!gcd.isEqualTo(1)) {
+    // Modular inverse does not exist if a and m are not coprime (gcd is not 1)
+    return null;
+  }
+
+  // Ensure the result is in the range [0, m)
+  return x.modulo(m).plus(m).modulo(m);
 }

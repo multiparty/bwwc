@@ -8,12 +8,13 @@ import { readCsv } from '@utils/csv-parser';
 import { ViewData } from '@components/view-data/view-data';
 import { VerifyData } from '@components/verify-data';
 import { Layout } from '@layouts/layout';
-import { getPublicKey, submitData } from '@services/api';
-import { importPemPublicKey, importPemPrivateKey } from '@utils/keypair';
-import { tableToSecretShares, secretSharesToTable } from '@utils/shamirs';
+import { getPrime, getPublicKey, submitData } from '@services/api';
+import { importPemPublicKey } from '@utils/keypair';
+import { tableToSecretShares } from '@utils/shamirs';
 import { useSelector } from 'react-redux';
 import { defaultData } from '@constants/default-data';
 import { useAuth } from '@context/auth.context';
+import BigNumber from 'bignumber.js';
 
 export const HomePage: FC = () => {
   const { token } = useAuth();
@@ -24,7 +25,7 @@ export const HomePage: FC = () => {
   const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
   const [table, setTable] = useState<Record<string, any>>({});
-  const { companySize, industry, participantCode, privateKey, sessionId } = useSelector((state: AppState) => state.session);
+  const { companySize, industry, participantCode, sessionId } = useSelector((state: AppState) => state.session);
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,16 +33,11 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
+        const prime = await getPrime(sessionId);
         const publicKeyString = await getPublicKey(sessionId);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
-        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, true);
+        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, new BigNumber(prime), true);
         setTable(secretTable);
-
-        if (participantCode == 'analyst') {
-          const privateCryptoKey = await importPemPrivateKey(privateKey);
-          const decTable = await secretSharesToTable(secretTable, privateCryptoKey);
-          setTable(decTable);
-        }
       }
     };
     loadData();
