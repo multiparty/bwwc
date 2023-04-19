@@ -1,4 +1,5 @@
-import { dataGenerator,dataObjectToCSV } from '../support/custom/generate-input';
+import { dataGenerator,dataObjectToXlsx } from '../support/custom/generate-input';
+import 'cypress-file-upload';
 import { startSession } from '../support/custom/session-create';
 import crypto from 'crypto';
 
@@ -10,12 +11,11 @@ describe('data generation', () => {
 it('create and encrypt user input', () => {
 
   const dataObj = dataGenerator()
-  cy.log(dataObj.toString())
-  const csvData = dataObjectToCSV(dataObj);
-  cy.log(csvData)
-  const csvBlob = new Blob([csvData], { type: 'text/csv' });
   const fileName = 'testData.csv';
-  cy.get('[data-cy="dropzone"]').attachFile({ fileContent: csvBlob, fileName: fileName, mimeType: 'text/csv', encoding: 'utf8', lastModified: new Date().getTime() });
+  const xlsxData = dataObjectToXlsx(dataObj, fileName);
+
+  cy.get('[data-cy="dropzone"]', { timeout: 10000 })
+  .attachFile({ fileContent: xlsxData, fileName: fileName, mimeType: 'text/csv', encoding: 'utf8', lastModified: new Date().getTime() }).trigger('change');
 
   // input id, code, industry, size
   // drop the csv

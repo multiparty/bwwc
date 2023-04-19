@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 import { Ethnicity } from '../../../src/utils/ethnicity';
 import { Positions } from '../../../src/utils/positions';
 import { Gender } from '../../../src/utils/gender';
@@ -30,7 +32,7 @@ function genRandomInt(max:number){
 
 
 export function dataGenerator() {
-  return dataTypes.map((value) => {
+  const res = dataTypes.map((value) => {
     const obj: DataObject = {};
 
     const pos: PositionMap = Object.keys(Positions).reduce((acc, p) => {
@@ -56,22 +58,45 @@ export function dataGenerator() {
     obj[value as keyof DataObject] = pos;
     return obj;
   });
+  console.log(res)
+  return res
 }
 
-export function dataObjectToCSV(dataObj: DataObject[]): string {
-  const header = ['Data Type', 'Position', 'Ethnicity', 'Gender', 'Value'];
-  const rows: string[] = [header.join(',')];
+const tabMapping: { [key in keyof DataObject]: string } = {
+  numberOfEmployees: '1.Number of Employees',
+  wages: '2.Compensation',
+  performance: '3.Performance Pay',
+  lengthOfService: '4.Tenure',
+};
 
-  dataObj.forEach((data, dataIndex) => {
-    const dataType = dataTypes[dataIndex];
-    Object.entries(data[dataType as keyof DataObject]!).forEach(([position, ethnicities]: [string, EthnicityMap]) => {
-      Object.entries(ethnicities).forEach(([ethnicity, genders]: [string, GenderMap]) => {
-        Object.entries(genders).forEach(([gender, value]: [string, number]) => {
-          rows.push([`"${dataType}"`, `"${position}"`, `"${ethnicity}"`, `"${gender}"`, value.toString()].join(','));
+export function dataObjectToXlsx(dataObjects: DataObject[], filename: string): void {
+  const wb = XLSX.utils.book_new();
+
+  dataObjects.forEach((dataObject) => {
+    Object.keys(dataObject).forEach((dataType) => {
+      const wsData = [['Position', 'Ethnicity', 'Gender', tabMapping[dataType as keyof DataObject]]];
+      const positionMap = dataObject[dataType as keyof DataObject];
+
+      if (positionMap) {
+        Object.keys(positionMap).forEach((position) => {
+          const ethnicityMap = positionMap[position];
+
+          Object.keys(ethnicityMap).forEach((ethnicity) => {
+            const genderMap = ethnicityMap[ethnicity];
+
+            Object.keys(genderMap).forEach((gender) => {
+              const value = genderMap[gender];
+              wsData.push([position, ethnicity, gender, value.toString()]);
+            });
+          });
         });
-      });
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const tabName = tabMapping[dataType as keyof DataObject];
+      XLSX.utils.book_append_sheet(wb, ws, tabName);
     });
   });
 
-  return rows.join('\n');
+  XLSX.writeFile(wb, filename);
 }
