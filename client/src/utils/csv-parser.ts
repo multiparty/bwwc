@@ -20,6 +20,7 @@ export const readCsv = async (file: CustomFile): Promise<DataFormat> => {
   const PerformanceSheetName = workbook.SheetNames[3];
   const LengthSheetName = workbook.SheetNames[4];
   const TotalSheetName = workbook.SheetNames[6];
+  console.log(workbook)
   data.numberOfEmployees = extractData(workbook.Sheets[EmployeeSheetName]);
   data.wages = extractData(workbook.Sheets[WagesSheetName]);
   data.performance = extractData(workbook.Sheets[PerformanceSheetName]);

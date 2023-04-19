@@ -14,7 +14,7 @@ interface PositionMap {
   [key: string]: EthnicityMap;
 }
 
-interface DataObject {
+export interface DataObject {
   numberOfEmployees?: PositionMap;
   wages?: PositionMap;
   performance?: PositionMap;
@@ -23,6 +23,11 @@ interface DataObject {
 }
 
 const dataTypes = ['numberOfEmployees', 'wages', 'performance', 'lengthOfService'];
+
+function genRandomInt(max:number){
+  return Math.floor(Math.random() * max);
+}
+
 
 export function dataGenerator() {
   return dataTypes.map((value) => {
@@ -36,7 +41,7 @@ export function dataGenerator() {
 
         const gender: GenderMap = Object.keys(Gender).reduce((acc, g) => {
           const gen = Gender[g as keyof typeof Gender];
-          acc[gen] = Math.random();
+          acc[gen] =genRandomInt(10000);
           return acc;
         }, {} as GenderMap);
 
@@ -51,4 +56,22 @@ export function dataGenerator() {
     obj[value as keyof DataObject] = pos;
     return obj;
   });
+}
+
+export function dataObjectToCSV(dataObj: DataObject[]): string {
+  const header = ['Data Type', 'Position', 'Ethnicity', 'Gender', 'Value'];
+  const rows: string[] = [header.join(',')];
+
+  dataObj.forEach((data, dataIndex) => {
+    const dataType = dataTypes[dataIndex];
+    Object.entries(data[dataType as keyof DataObject]!).forEach(([position, ethnicities]: [string, EthnicityMap]) => {
+      Object.entries(ethnicities).forEach(([ethnicity, genders]: [string, GenderMap]) => {
+        Object.entries(genders).forEach(([gender, value]: [string, number]) => {
+          rows.push([`"${dataType}"`, `"${position}"`, `"${ethnicity}"`, `"${gender}"`, value.toString()].join(','));
+        });
+      });
+    });
+  });
+
+  return rows.join('\n');
 }
