@@ -1,4 +1,4 @@
-import { dataGenerator, dataObjectToXlsx } from '../support/custom/generate-input';
+import { dataObjectToXlsx } from '../support/custom/generate-input';
 import 'cypress-file-upload';
 
 describe('data generation', () => {
@@ -7,9 +7,8 @@ describe('data generation', () => {
   });
 
   it('create and encrypt user input', () => {
-    const dataObj = dataGenerator();
     const fileName = 'testData.xlsx';
-    const xlsxData = dataObjectToXlsx(dataObj, fileName);
+    const xlsxData = dataObjectToXlsx(fileName);
     cy.get('[data-cy="dropzone"]', { timeout: 10000 })
       .attachFile({
         fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),

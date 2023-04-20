@@ -2,7 +2,12 @@ import * as XLSX from 'xlsx';
 import { convertToRows, TableData, DataFormat, TableRow } from '../../../src/utils/data-format';
 import { Ethnicity } from '../../../src/utils/ethnicity';
 import { Positions } from '../../../src/utils/positions';
-import { Gender } from '../../../src/utils/gender';
+
+enum Gender {
+  Female = 'F',
+  Male = 'M',
+  NonBinary = 'NB'
+}
 
 interface GenderMap {
   [key: string]: number;
@@ -44,6 +49,7 @@ function gridDataToJSON(rows: TableRow[]) {
   });
   return res;
 }
+
 type ExtendedDataFormat = DataFormat & { [key: string]: PositionMap };
 
 export function dataGenerator() {
@@ -55,7 +61,6 @@ export function dataGenerator() {
 
       const ethnicity: EthnicityMap = Object.keys(Ethnicity).reduce((acc, e) => {
         const ethn = Ethnicity[e as keyof typeof Ethnicity];
-
         const gender: GenderMap = Object.keys(Gender).reduce((acc, g) => {
           const gen = Gender[g as keyof typeof Gender];
           const randVal = genRandomInt(10000);
@@ -83,7 +88,8 @@ export function dataGenerator() {
   }, {} as ExtendedDataFormat);
 }
 
-export function dataObjectToXlsx(dataObjects: DataFormat, filename: string): ArrayBuffer {
+export function dataObjectToXlsx(filename: string): ArrayBuffer {
+  const dataObjects = dataGenerator();
   const wb = XLSX.utils.book_new();
   // Adding an empty, first sheet
   const empty_sheet: any[] = [];
@@ -116,7 +122,6 @@ export function dataObjectToXlsx(dataObjects: DataFormat, filename: string): Arr
       return acc;
     }, {} as KeyedObject)
   ];
-  console.log(totalEmployeesArray);
   const origin = { r: 4, c: 1 };
   XLSX.utils.sheet_add_json(ws, totalEmployeesArray, { origin });
   const last_sheet = 'Totals Check';
