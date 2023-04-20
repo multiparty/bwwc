@@ -54,9 +54,6 @@ CORS_ALLOWED_ORIGINS = [
     # Add other origins if needed
 ]
 
-# Temporary fix for CORS
-CORS_ALLOW_ALL_ORIGINS = True
-
 # Application definition
 
 INSTALLED_APPS = [
