@@ -250,7 +250,25 @@ reduce (function) - A function that reduces the unencrypted secret shares to a s
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
 */
-export async function secretSharesToTable(obj: Record<string, any>, privateKey: CryptoKey, prime: BigNumber, reduce: (value: any) => any): Promise<Record<string, any>> {
+export async function secretSharesToTable(
+  obj: Record<string, any>,
+  privateKey: CryptoKey,
+  prime: BigNumber,
+  reduce: (value: any) => any,
+  setProgress: (progress: number) => void
+): Promise<Record<string, any>> {
+  var counter = 0;
+  const totalSteps = countSteps(obj);
+
+  function countSteps(currentObj: Record<string, any>): number {
+    var steps = 0;
+    for (const key in currentObj) {
+      if (Array.isArray(currentObj) || typeof currentObj[key] === 'object') {
+        steps += countSteps(currentObj[key]);
+      }
+    }
+    return steps + 1;
+  }
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
@@ -261,6 +279,8 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
         value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
         const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
         currentObj[key] = reconstructed;
+        counter++;
+        setProgress((counter / totalSteps) * 100);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
