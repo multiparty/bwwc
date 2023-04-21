@@ -1,5 +1,3 @@
-import crypto from "crypto";
-
 export function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
   const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
   const matches = base64.match(/.{1,64}/g);
