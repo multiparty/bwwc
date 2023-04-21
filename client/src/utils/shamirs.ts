@@ -6,6 +6,10 @@ import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
 import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from './keypair';
 
+import { AppState } from '@utils/data-format';
+import { useSelector } from 'react-redux';
+import { arrayBufferToPem, importPemPrivateKey } from './keypair';
+
 /*
 This function generates a random BigNumber within the range of min and max (inclusive), using the browser's crypto.getRandomValues() function.
 
@@ -174,7 +178,7 @@ privateKey (CryptoKey) - The private key used for decryption.
 outputs:
 Promise<Array<Point>> - A Promise that resolves to an array of decrypted secret shares, each represented by a tuple with x and y values.
 */
-async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
+export async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
   const decryptedShares = new Array();
 
   for (let i = 0; i < encryptedShares.length; i++) {
@@ -223,7 +227,11 @@ export async function tableToSecretShares(
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
         const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, (prime = prime));
+
+        console.log(`points: ${points}\n`)
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
+        console.log(`shares: ${JSON.stringify(currentObj[key])}`);
+        console.log('----------------------------------------------------------------\n')
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
@@ -257,10 +265,16 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
-        const value = new Array();
-        value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        console.log(`value: ${value}`);
-        const reconstructed = shamirReconstruct(value, prime, new BigNumber(0));
+        const shares = new Array();
+        shares.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
+        console.log(`shares: ${shares}`);
+        const reconstructed = shamirReconstruct(
+          shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]), 
+          prime, 
+          new BigNumber(0)
+        );
+        console.log(`reconstructed: ${reconstructed}`);
+        console.log('----------------------------------------------------------------\n')
         currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
