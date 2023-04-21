@@ -126,5 +126,12 @@ export function dataObjectToXlsx(filename: string): ArrayBuffer {
   XLSX.utils.sheet_add_json(ws, totalEmployeesArray, { origin });
   const last_sheet = 'Totals Check';
   XLSX.utils.book_append_sheet(wb, ws, last_sheet);
-  return XLSX.writeFile(wb, filename);
+  const xlsxData = XLSX.write(wb, { type: 'binary', bookType: 'xlsx' });
+  const buf = new ArrayBuffer(xlsxData.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < xlsxData.length; i++) {
+    view[i] = xlsxData.charCodeAt(i) & 0xff;
+  }
+  cy.writeFile(`cypress/fixtures/${filename}`, buf, { encoding: 'binary' });
+  return XLSX.writeFile(wb, `${filename}`);
 }

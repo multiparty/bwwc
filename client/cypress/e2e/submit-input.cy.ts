@@ -1,5 +1,4 @@
 import { dataObjectToXlsx } from '../support/custom/generate-input';
-import 'cypress-file-upload';
 
 describe('data generation', () => {
   beforeEach(() => {
@@ -7,12 +6,18 @@ describe('data generation', () => {
   });
 
   it('create and encrypt user input', () => {
-    const fileName = 'testData.xlsx';
-    const xlsxData = dataObjectToXlsx(fileName);
-    cy.get('[data-cy="dropzone"]', { timeout: 10000 })
+    const filename = 'testData.xlsx';
+    const xlsxData = dataObjectToXlsx(filename);
+
+    const selector = '[data-cy="dropzone"]';
+    cy.fixture(filename, 'base64').then(content => {
+      cy.get(selector).upload(content, filename)
+  })
+    // cy.uploadFile(selector, filename);
+    cy.get(selector, { timeout: 10000 })
       .attachFile({
         fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-        fileName: fileName,
+        fileName: filename,
         mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         encoding: 'utf8',
         lastModified: new Date().getTime()
