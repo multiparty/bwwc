@@ -265,11 +265,10 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
-        const shares = new Array();
-        shares.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        console.log(`shares: ${shares}`);
+        const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
+        console.log(`shares: ${shares}`);;
         const reconstructed = shamirReconstruct(
-          shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]), 
+          shares, 
           prime, 
           new BigNumber(0)
         );
@@ -368,6 +367,10 @@ export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNu
   const yVals = pointsValues.map(([_, y]) => (typeof y === 'string' ? new BigNumber(y) : y));
 
   const constants = lagrangeConstantsForPoint(xVals, queryXAxis, prime);
+  console.log(`lagrange constants: ${JSON.stringify(constants)}`);
+  console.log(`lagrange point values: ${JSON.stringify(pointsValues)}`);
+  console.log(`lagrange xVals: ${JSON.stringify(xVals)}`);
+  console.log(`lagrange yVals: ${JSON.stringify(yVals)}`);
   const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
 
   return result;
@@ -406,6 +409,7 @@ export function lagrangeConstantsForPoint(points: BigNumber[], query_x_axis: Big
   const constants: BigNumber[] = new Array(points.length).fill(new BigNumber(0));
 
   for (let i = 0; i < points.length; i++) {
+    console.log(`points[i]: ${points[i]}`);
     const xi = new BigNumber(points[i]);
     let num = new BigNumber(1);
     let denum = new BigNumber(1);
