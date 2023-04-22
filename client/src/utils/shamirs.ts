@@ -87,7 +87,7 @@ prime (BigNumber) - The prime number to use for the polynomial modulus.
 output:
 result (BigNumber) - The result of the polynomial evaluation at the specified point, modulo the prime.
 */
-function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
+export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
   let result = BigNumber(0);
   const bigIntPoint = BigNumber(point); // Convert point to a BigInt
   for (const coef of coefs.reverse()) {

@@ -1,4 +1,71 @@
-import { deepEqual } from '../utils/shamirs';
+import BigNumber from 'bignumber.js';
+import { Point } from '@utils/data-format';
+import { deepEqual, evaluateAtPoint } from '../utils/shamirs';
+
+describe('shamir - evaluate at point', () => {
+  const prime = new BigNumber(15485867);
+  const coefficients = [100, 5083274, 13697430, 601383, 10660686].map(x => new BigNumber(x));
+
+  it('generate secret shares', () => {
+    const point = 1;
+    const result = new BigNumber(14557006);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 2;
+    const result = new BigNumber(8050403);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 3;
+    const result = new BigNumber(11698344);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 4;
+    const result = new BigNumber(2858006);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 5;
+    const result = new BigNumber(13426759);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 6;
+    const result = new BigNumber(5955230);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 7;
+    const result = new BigNumber(13020106);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 8;
+    const result = new BigNumber(13337198);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 9;
+    const result = new BigNumber(9190776);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+
+  it('generate secret shares', () => {
+    const point = 10;
+    const result = new BigNumber(10947702);
+    expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+});
 
 describe('deepEqual', () => {
   it('should return true for deeply equal objects', () => {
