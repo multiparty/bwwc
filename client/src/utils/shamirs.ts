@@ -372,6 +372,7 @@ export function interpolateAtPoint(pointsValues: Array<Point>, queryXAxis: BigNu
   console.log(`lagrange xVals: ${JSON.stringify(xVals)}`);
   console.log(`lagrange yVals: ${JSON.stringify(yVals)}`);
   const result = constants.reduce((acc, ci, i) => acc.plus(ci.times(yVals[i])).mod(prime), new BigNumber(0));
+  console.log(`lagrange result: ${result.toString()}`);
 
   return result;
 }
