@@ -27,12 +27,66 @@ describe('modularInverse', () => {
 });
 
 describe('lagrangeConstantsForPoint', () => {
-  const prime = new BigNumber(17);
+  const prime = new BigNumber(15485867);
+  const xVals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(x => new BigNumber(x));
 
   test('calculates the Lagrange constants for a given point', () => {
-    const xVals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(x => new BigNumber(x));
     const queryXAxis = new BigNumber(1);
     const constants = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(2);
+    const constants = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(3);
+    const constants = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(4);
+    const constants = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(5);
+    const constants = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(6);
+    const constants = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(7);
+    const constants = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(8);
+    const constants = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(9);
+    const constants = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0].map(x => new BigNumber(x));
+    expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
+  });
+
+  test('calculates the Lagrange constants for a given point', () => {
+    const queryXAxis = new BigNumber(10);
+    const constants = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1].map(x => new BigNumber(x));
     expect(lagrangeConstantsForPoint(xVals, queryXAxis, prime)).toEqual(constants);
   });
 });
