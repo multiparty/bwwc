@@ -73,10 +73,10 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>
-                    <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" />
-                    <PasswordInput fullWidth name="participationCode" label="Participation code" />
-                    <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" />
-                    <AutoCompleteInput fullWidth name="size" options={Sizes} label="Size" />
+                    <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" data-cy="submissionID"/>
+                    <PasswordInput fullWidth name="participationCode" label="Participation code" data-cy="sessionCode"/>
+                    <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" data-cy="industry"/>
+                    <AutoCompleteInput fullWidth name="size" options={Sizes} label="Size"  data-cy="size"/>
                   </Stack>
                 </Form>
               </Formik>

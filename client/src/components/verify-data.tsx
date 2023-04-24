@@ -49,8 +49,8 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
           </Stack>
           <Typography variant="subtitle1">Totals Check</Typography>
           <TotalEmployeeCheck data={data?.totalEmployees} />
-          <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} onChange={handleCheckboxChange} />} label="I verified all data is correct." />
-          <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit}>
+          <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} onChange={handleCheckboxChange} data-cy="data-verify"/>} label="I verified all data is correct."/>
+          <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit}  data-cy="submit">
             Submit
           </LoadingButton>
           <SubmissionAlert submitResp={submitResp} pressed={pressed} />
