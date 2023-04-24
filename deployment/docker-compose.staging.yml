@@ -17,6 +17,7 @@ services:
     restart: always
     image: redis:7.0-alpine
     container_name: bwwc-redis-staging
+    command: redis-server --appendonly yes --replica-read-only no
     environment:
       - redis_read_only=0
     ports:
