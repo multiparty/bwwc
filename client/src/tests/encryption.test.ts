@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { Point } from '@utils/data-format';
-import { deepEqual, evaluateAtPoint } from '../utils/shamirs';
+import { deepEqual, evaluateAtPoint, shamirShare, sampleShamirPolynomial } from '../utils/shamirs';
 
-describe('shamir - evaluate at point', () => {
+describe('evaluateAtPoint', () => {
   let prime: BigNumber;
   let coefficients: BigNumber[];
 
@@ -70,6 +70,20 @@ describe('shamir - evaluate at point', () => {
     const point = 10;
     const result = new BigNumber(10947702);
     expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
+  });
+});
+
+describe('sampleShamirPolynomial', () => {
+  it('should generate coefficients from the secret value', () => {
+    const secret = BigNumber(1234);
+    const threshold = BigNumber(5);
+    const prime = BigNumber(15485867);
+    const coefficients = sampleShamirPolynomial(secret, threshold, prime);
+    for (const number of coefficients) {
+      expect(number.toNumber()).toBeLessThan(prime.toNumber());
+      expect(number.toNumber()).toBeGreaterThanOrEqual(0);
+    }
+    expect(coefficients.length).toEqual(threshold.toNumber());
   });
 });
 

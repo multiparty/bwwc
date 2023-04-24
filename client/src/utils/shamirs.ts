@@ -70,7 +70,7 @@ prime (BigNumber) - The prime number to use for the polynomial modulus.
 output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
-function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
+export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
   const length = threshold.minus(BigNumber(1)).toNumber();
   const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
   return coefs;
@@ -94,8 +94,6 @@ export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNum
     const a = bigIntPoint.multipliedBy(result)
     const b = BigNumber(coef).plus(a)
     result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
-
-    console.log(`a: ${a}\tb: ${b}\tresult: ${result}`)
   }
   return result;
 }
@@ -227,6 +225,8 @@ export async function tableToSecretShares(
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
+
+    console.log(`prime: ${prime}`)
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
