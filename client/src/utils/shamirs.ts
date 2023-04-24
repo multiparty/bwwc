@@ -91,7 +91,11 @@ export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNum
   let result = BigNumber(0);
   const bigIntPoint = BigNumber(point); // Convert point to a BigInt
   for (const coef of coefs.reverse()) {
+    const a = bigIntPoint.multipliedBy(result)
+    const b = BigNumber(coef).plus(a)
     result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
+
+    console.log(`a: ${a}\tb: ${b}\tresult: ${result}`)
   }
   return result;
 }

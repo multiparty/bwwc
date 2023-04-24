@@ -3,16 +3,22 @@ import { Point } from '@utils/data-format';
 import { deepEqual, evaluateAtPoint } from '../utils/shamirs';
 
 describe('shamir - evaluate at point', () => {
-  const prime = new BigNumber(15485867);
-  const coefficients = [100, 5083274, 13697430, 601383, 10660686].map(x => new BigNumber(x));
+  let prime: BigNumber;
+  let coefficients: BigNumber[];
 
-  it('generate secret shares', () => {
+  beforeEach(() => {
+    // Initialize global variable
+    prime = new BigNumber(15485867);
+    coefficients = [100, 5083274, 13697430, 601383, 10660686].map(x => new BigNumber(x));
+  });
+
+  test('generate secret shares', () => {
     const point = 1;
     const result = new BigNumber(14557006);
     expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
   });
 
-  it('generate secret shares', () => {
+  test('generate secret shares', () => {
     const point = 2;
     const result = new BigNumber(8050403);
     expect(evaluateAtPoint(coefficients, point, prime)).toEqual(result);
