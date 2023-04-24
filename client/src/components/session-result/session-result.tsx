@@ -1,17 +1,13 @@
 import { FC, useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { ResultFormat, TabSelection } from '@utils/data-format';
+import { ResultFormat, TabSelection, SessionResultProps } from '@utils/data-format';
 import { createCSV } from './to-xlsx';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
-
-interface SessionResultProps {
-  result: ResultFormat;
 }
 
 function TabPanel(props: TabPanelProps) {

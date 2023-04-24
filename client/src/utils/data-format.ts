@@ -7,6 +7,7 @@ export interface AppState {
   session: {
     authToken: string;
     companySize: string;
+    decodedTable: SessionResultProps,
     industry: string;
     participantCode: string;
     publicKey: string;
@@ -116,6 +117,10 @@ export interface ResultFormat {
   0: DataFormat;
   1: StringDataFormatMap;
   2: StringDataFormatMap;
+}
+
+export interface SessionResultProps {
+  result: ResultFormat;
 }
 
 export type TabSelection = 0 | 1 | 2;
