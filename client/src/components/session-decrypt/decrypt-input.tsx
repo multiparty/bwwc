@@ -84,8 +84,8 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
         const data = await getSubmissions(sessionId, token);
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce);
         dispatch(setDecodedTable(decodedTable));
-        console.log(`decodedTable:`)
-        console.log(decodedTable)
+        console.log(`decodedTable:`);
+        console.log(decodedTable);
       }
     };
 

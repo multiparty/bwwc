@@ -9,7 +9,7 @@ describe('evaluateAtPoint', () => {
   beforeEach(() => {
     // Initialize global variable
     prime = new BigNumber(15485867);
-    coefficients = [100, 5083274, 13697430, 601383, 10660686].map(x => new BigNumber(x));
+    coefficients = [100, 5083274, 13697430, 601383, 10660686].map((x) => new BigNumber(x));
   });
 
   test('generate secret shares', () => {
@@ -78,11 +78,16 @@ describe('sampleShamirPolynomial', () => {
     const secret = BigNumber(1234);
     const threshold = BigNumber(5);
     const prime = BigNumber(15485867);
+
+    expect(secret.toNumber()).toBeLessThan(prime.toNumber());
+
     const coefficients = sampleShamirPolynomial(secret, threshold, prime);
+
     for (const number of coefficients) {
       expect(number.toNumber()).toBeLessThan(prime.toNumber());
       expect(number.toNumber()).toBeGreaterThanOrEqual(0);
     }
+
     expect(coefficients.length).toEqual(threshold.toNumber());
   });
 });

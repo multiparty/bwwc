@@ -91,8 +91,8 @@ export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNum
   let result = BigNumber(0);
   const bigIntPoint = BigNumber(point); // Convert point to a BigInt
   for (const coef of coefs.reverse()) {
-    const a = bigIntPoint.multipliedBy(result)
-    const b = BigNumber(coef).plus(a)
+    const a = bigIntPoint.multipliedBy(result);
+    const b = BigNumber(coef).plus(a);
     result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
   }
   return result;
@@ -226,7 +226,7 @@ export async function tableToSecretShares(
     const keys = Object.keys(originalObj);
     const encoder = new TextEncoder();
 
-    console.log(`prime: ${prime}`)
+    console.log(`prime: ${prime}`);
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
@@ -266,11 +266,7 @@ export async function secretSharesToTable(obj: Record<string, any>, privateKey: 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
         const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
-        const reconstructed = shamirReconstruct(
-          shares, 
-          prime, 
-          new BigNumber(0)
-        );
+        const reconstructed = shamirReconstruct(shares, prime, new BigNumber(0));
         currentObj[key] = reconstructed;
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
