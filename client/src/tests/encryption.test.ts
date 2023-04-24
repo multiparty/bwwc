@@ -92,6 +92,16 @@ describe('sampleShamirPolynomial', () => {
   });
 });
 
+describe('shamirShare', () => {
+  it('should generate secret shares', () => {
+    const secret = BigNumber(1234);
+    const numShares = 10;
+    const threshold = BigNumber(5);
+    const prime = BigNumber(15485867);
+    const points = shamirShare(secret, numShares, threshold, false, prime);
+  });
+});
+
 describe('deepEqual', () => {
   it('should return true for deeply equal objects', () => {
     const obj1 = {
