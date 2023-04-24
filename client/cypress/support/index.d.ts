@@ -7,6 +7,6 @@ declare namespace Cypress {
      * @example cy.uploadFIle()
      */
     uploadFile(selector: string, fileName: string): Chainable<null>;
-    upload(file:any, fileName: string): Chainable<null>;
+    upload(file: any, fileName: string): Chainable<null>;
   }
 }

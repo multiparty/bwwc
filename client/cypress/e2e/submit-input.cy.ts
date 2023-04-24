@@ -10,9 +10,9 @@ describe('data generation', () => {
     const xlsxData = dataObjectToXlsx(filename);
 
     const selector = '[data-cy="dropzone"]';
-    cy.fixture(filename, 'base64').then(content => {
-      cy.get(selector).upload(content, filename)
-  })
+    cy.fixture(filename, 'base64').then((content) => {
+      cy.get(selector).upload(content, filename);
+    });
     // cy.uploadFile(selector, filename);
     cy.get(selector, { timeout: 10000 })
       .attachFile({
