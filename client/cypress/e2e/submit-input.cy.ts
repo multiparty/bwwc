@@ -3,7 +3,6 @@ import { Industries } from '../../src/constants/industries';
 import { Sizes } from '../../src/constants/sizes';
 
 describe('User submission', () => {
-
   it('user input and submit', () => {
     cy.visit('http://127.0.0.1:5173/');
     const selector_ID = '[data-cy="submissionID"]';
@@ -25,23 +24,23 @@ describe('User submission', () => {
     const selected_size = Sizes[idx].label;
     cy.get(selector_size).type(selected_size);
     cy.contains(selected_size).click();
-  //   const filename = 'testData.xlsx';
-  //   const xlsxData = dataObjectToXlsx(filename);
+    //   const filename = 'testData.xlsx';
+    //   const xlsxData = dataObjectToXlsx(filename);
 
-  //   const selector = '[data-cy="dropzone"]';
-  //   cy.fixture(filename, 'base64').then((content) => {
-  //     cy.get(selector).upload(content, filename);
-  //   });
-  //   // cy.uploadFile(selector, filename);
-  //   cy.get(selector, { timeout: 10000 })
-  //     .attachFile({
-  //       fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-  //       fileName: filename,
-  //       mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  //       encoding: 'utf8',
-  //       lastModified: new Date().getTime()
-  //     })
-  //     .trigger('change');
+    //   const selector = '[data-cy="dropzone"]';
+    //   cy.fixture(filename, 'base64').then((content) => {
+    //     cy.get(selector).upload(content, filename);
+    //   });
+    //   // cy.uploadFile(selector, filename);
+    //   cy.get(selector, { timeout: 10000 })
+    //     .attachFile({
+    //       fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+    //       fileName: filename,
+    //       mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    //       encoding: 'utf8',
+    //       lastModified: new Date().getTime()
+    //     })
+    //     .trigger('change');
 
     const verify_data = '[data-cy="data-verify"]';
     cy.get(verify_data).click();
@@ -50,5 +49,5 @@ describe('User submission', () => {
     cy.get(submit).click();
 
     // Check if successful
-  })
+  });
 });
