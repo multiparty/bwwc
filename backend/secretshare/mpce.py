@@ -253,6 +253,33 @@ class MPCEngine(object):
         self.save_session(session_id, session_data)
 
     """
+    Get the current session data
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which submissions should be closed
+    
+    outputs:
+    participant_submissions (dict) - the current session data history
+    """
+
+    def get_submission_history(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return [
+            {
+                "participantCode": participant_code,
+                "industry": data["industry"],
+                "companySize": data["companySize"],
+            }
+            for participant_code, data in session_data[
+                "participant_submissions"
+            ].items()
+        ]
+
+    """
     Close submissions for a session
 
     inputs:
