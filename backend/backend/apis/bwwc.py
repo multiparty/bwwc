@@ -193,11 +193,11 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
 def get_submission_history(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
-        # auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
 
-        # if not engine.is_initiator(session_id, auth_token):
-        #     return HttpResponseBadRequest("Invalid request body")
-        print(f"session_id: {session_id}")
+        if not engine.is_initiator(session_id, auth_token):
+            return HttpResponseBadRequest("Invalid request body")
+
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
 
