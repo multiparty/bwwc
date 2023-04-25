@@ -73,6 +73,7 @@ export interface ApiContextProps {
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
   getPublicKey: (sessionId: string) => Promise<string>;
   getSubmissions: (sessionId: string, authToken: string) => Promise<GetEncryptedSharesResponse>;
+  getSubmissionHistory: (sessionId: string, authToken: string) => Promise<Submission[]>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
 }
@@ -159,8 +160,8 @@ export async function getPublicKey(session_id: string): Promise<string> {
   return response.data.public_key;
 }
 
-export async function getSubmissionHistory(session_id: string): Promise<Submission[]> {
-  const response = await axios.get(API_ENDPOINTS.GET_SUBMISSION_HISTORY, { params: { session_id: session_id } });
+export async function getSubmissionHistory(sessionId: string, authToken: string): Promise<Submission[]> {
+  const response = await axios.get(API_ENDPOINTS.GET_SUBMISSION_HISTORY, { params: { session_id: sessionId, auth_token: authToken } });
   return response.data;
 }
 
@@ -206,6 +207,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
         getPublicKey: (session_id: string) => getPublicKey(session_id),
         getSubmissions: (sessionId: string, authToken: string) => getSubmissions(sessionId, authToken),
+        getSubmissionHistory: (sessionId: string, authToken: string) => getSubmissionHistory(sessionId, authToken),
         stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
         submitData: (data: NestedObject, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}
