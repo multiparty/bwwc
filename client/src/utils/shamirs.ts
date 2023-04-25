@@ -66,23 +66,24 @@ inputs:
 zeroValue (BigNumber) - The secret value to be shared.
 threshold (BigNumber) - The minimum number of shares required to reconstruct the secret.
 prime (BigNumber) - The prime number to use for the polynomial modulus.
+deterministic (boolean, optional) - whether to generate a deterministic polynomial (all coefficients are prime - 1) or a random polynomial.
 
 output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
-// export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
-//   const length = threshold.minus(BigNumber(1)).toNumber();
-//   const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
-//   return coefs;
-// }
-
-export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
-  const length = threshold.minus(BigNumber(1)).toNumber();
-  const coefs = [];
-  for (let i = 0; i < length; i++) {
-    coefs.push(prime.minus(BigNumber(1)));
+export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber, deterministic: boolean = true): BigNumber[] {
+  if(deterministic) {
+    const length = threshold.minus(BigNumber(1)).toNumber();
+    const coefs = [];
+    for (let i = 0; i < length; i++) {
+      coefs.push(prime.minus(BigNumber(1)));
+    }
+    coefs.unshift(zeroValue);
+    return coefs;
   }
-  coefs.unshift(zeroValue);
+
+  const length = threshold.minus(BigNumber(1)).toNumber();
+  const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
   return coefs;
 }
 
