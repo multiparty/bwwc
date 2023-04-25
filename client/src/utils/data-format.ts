@@ -7,7 +7,7 @@ export interface AppState {
   session: {
     authToken: string;
     companySize: string;
-    decodedTable: SessionResultProps,
+    decodedTable: SessionResultProps;
     industry: string;
     participantCode: string;
     publicKey: string;

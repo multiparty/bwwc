@@ -1,34 +1,38 @@
+import { useState, useEffect } from 'react';
 import { Box, useTheme } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { getSubmissionHistory } from '@services/api';
+import { useSelector } from 'react-redux';
+import { AppState } from '@utils/data-format';
 
 ////// Example usage STARTS //////
-var data: Submission[] = [];
+// let data: Submission[] = [];
 
-const newSubmission: Submission = {
-  industry: 'Information Technology',
-  participationID: '12345678912345678912345678',
-  size: 'Medium (50-199 employees)',
-  hist: '2022-02-12 12:34'
-};
-data.push(newSubmission);
+// const newSubmission: Submission = {
+//   industry: 'Information Technology',
+//   participationID: '12345678912345678912345678',
+//   size: 'Medium (50-199 employees)',
+//   hist: '2022-02-12 12:34'
+// };
+// data.push(newSubmission);
 
-const newSubmission2: Submission = {
-  industry: 'Information Technology',
-  participationID: '1234567891ddd5678912345678',
-  size: 'Medium (50-199 employees)',
-  hist: '2022-03-12 12:34'
-};
-data.push(newSubmission2);
+// const newSubmission2: Submission = {
+//   industry: 'Information Technology',
+//   participationID: '1234567891ddd5678912345678',
+//   size: 'Medium (50-199 employees)',
+//   hist: '2022-03-12 12:34'
+// };
+// data.push(newSubmission2);
 
-const newSubmission3: Submission = {
-  industry: 'Biotech/Pharmaceuticals',
-  participationID: '12345678912345678912345578',
-  size: 'Medium (50-199 employees)',
-  hist: '2022-03-12 15:34'
-};
-data.push(newSubmission3);
+// const newSubmission3: Submission = {
+//   industry: 'Biotech/Pharmaceuticals',
+//   participationID: '12345678912345678912345578',
+//   size: 'Medium (50-199 employees)',
+//   hist: '2022-03-12 15:34'
+// };
+// data.push(newSubmission3);
 
-////// ^Example usage ENDS //////
+// ////// ^Example usage ENDS //////
 
 const COLUMN_WIDTH = 250;
 const HEIGHT = 400;
@@ -74,6 +78,28 @@ const columns: GridColDef[] = [
 
 export const SessionManageTable = () => {
   const { palette } = useTheme();
+  const { sessionId } = useSelector((state: AppState) => state.session);
+  const data: Submission[] = [];
+  const [histData, setHistData] = useState(data);
+  
+  useEffect(() => {
+    async function updateSubmissionHistory() {
+      const SubmissionHistory = await getSubmissionHistory(sessionId);
+      console.log(SubmissionHistory);
+      Object.values(SubmissionHistory).forEach((key, val: any) => {
+        let d = {
+          industry: val.industry,
+          participationID: val.participantCode,
+          size: val.companySize,
+          hist: Date.now().toString()
+        };
+        data.push(d);
+      });
+      setHistData(data);
+    }
+    updateSubmissionHistory();
+  }, []);
+
   return (
     <Box
       sx={{
@@ -95,7 +121,7 @@ export const SessionManageTable = () => {
         hideFooter={true}
         hideFooterPagination={true}
         hideFooterSelectedRowCount={true}
-        rows={data}
+        rows={histData}
         columns={columns}
         getRowId={(row) => row.participationID}
         getRowHeight={() => 'auto'}
