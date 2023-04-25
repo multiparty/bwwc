@@ -6,71 +6,75 @@ describe('User submission', () => {
   it('user input and submit', () => {
     cy.visit('http://127.0.0.1:5173/');
 
-    // Submitter's input (ID, PW, industry and compny-size)
-    const selector_ID = '[data-cy="submissionID"]';
-    const ID = 'bffaa2ed-6bbd-448d-8853-78f6bcde23db';
-    cy.get(selector_ID).type(ID);
+    // // Submitter's input (ID, PW, industry and compny-size)
+    // const selector_ID = '[data-cy="submissionID"]';
+    // const ID = 'bffaa2ed-6bbd-448d-8853-78f6bcde23db';
+    // cy.get(selector_ID).type(ID);
 
-    const selector_code = '[data-cy="sessionCode"]';
-    const code = '2dd6df1c-f8f7-41b2-9c16-68f7227cc6b9';
-    cy.get(selector_code).type(code);
+    // const selector_code = '[data-cy="sessionCode"]';
+    // const code = '2dd6df1c-f8f7-41b2-9c16-68f7227cc6b9';
+    // cy.get(selector_code).type(code);
 
-    const selector_industry = '[data-cy="industry"]';
-    let idx = Math.floor(Math.random() * Industries.length);
-    const selected_industry = Industries[idx].label;
-    cy.get(selector_industry).type(selected_industry);
-    cy.contains(selected_industry).click();
+    // const selector_industry = '[data-cy="industry"]';
+    // let idx = Math.floor(Math.random() * Industries.length);
+    // const selected_industry = Industries[idx].label;
+    // cy.get(selector_industry).type(selected_industry);
+    // cy.contains(selected_industry).click();
 
-    const selector_size = '[data-cy="size"]';
-    idx = Math.floor(Math.random() * Sizes.length);
-    const selected_size = Sizes[idx].label;
-    cy.get(selector_size).type(selected_size);
-    cy.contains(selected_size).click();
+    // const selector_size = '[data-cy="size"]';
+    // idx = Math.floor(Math.random() * Sizes.length);
+    // const selected_size = Sizes[idx].label;
+    // cy.get(selector_size).type(selected_size);
+    // cy.contains(selected_size).click();
 
     // WIP: drag and drop a randomly generated xlsx workbook
     const filename = 'testData.xlsx';
     const xlsxData = dataObjectToXlsx(filename);
     const selector = '[data-cy="dropzone"]';
 
-    cy.fixture('testData.xlsx', 'binary').then((fileContent: string) => {
-      // Convert the binary data to a Blob
-      const blob = Cypress.Blob.binaryStringToBlob(fileContent);
+    // cy.fixture(filename, 'binary').then((fileContent: string) => {
+    //   // Convert the binary data to a Blob
+    //   const blob = Cypress.Blob.binaryStringToBlob(fileContent, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-      // Create a File object
-      const file = new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    //   // Create a File object
+    //   const file = new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-      // Create a DataTransfer object
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
+    //   // Create a DataTransfer object
+    //   const dataTransfer = new DataTransfer();
+    //   dataTransfer.items.add(file);
 
-      // Get the dropzone element and simulate the drag and drop events
-      cy.get(selector).then(($dropzone: JQuery<HTMLElement>) => {
-        const el = $dropzone[0];
-        el.ondragover = (event: DragEvent) => event.preventDefault();
-        el.ondragenter = (event: DragEvent) => event.preventDefault();
-        el.ondrop = (event: DragEvent) => {
-          event.preventDefault();
-          event.stopPropagation();
-        };
+    //   // Get the dropzone element and simulate the drag and drop events
+    //   cy.get(selector).then(($dropzone: JQuery<HTMLElement>) => {
+    //     const el = $dropzone[0];
+    //     el.ondragover = (event: DragEvent) => event.preventDefault();
+    //     el.ondragenter = (event: DragEvent) => event.preventDefault();
+    //     el.ondrop = (event: DragEvent) => {
+    //       event.preventDefault();
+    //       event.stopPropagation();
+    //     };
 
-        // Simulate the drag events
-        cy.wrap($dropzone).trigger('dragenter', { dataTransfer }).trigger('dragover', { dataTransfer }).trigger('drop', { dataTransfer }).trigger('dragleave', { dataTransfer });
-      });
-    });
-
-    // cy.fixture(filename, 'base64').then((content) => {
-    //   cy.get(selector).upload(content, filename);
+    //     // Simulate the drag events
+    //     cy.wrap($dropzone).trigger('dragenter', { dataTransfer }).trigger('dragover', { dataTransfer }).trigger('drop', { dataTransfer }).trigger('dragleave', { dataTransfer });
+    //   });
+    //   // cy.get('[data-cy="dropzone"]').then((element) => {
+    //   //   // Dispatch the 'drop' event and set the dataTransfer object
+    //   //   element[0].dispatchEvent(new DragEvent('drop', { dataTransfer }));
+    //   // });
     // });
-    // cy.uploadFile(selector, filename);
-    // cy.get(selector, { timeout: 10000 })
-    //   .attachFile({
-    //     fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-    //     fileName: filename,
-    //     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    //     encoding: 'utf8',
-    //     lastModified: new Date().getTime()
-    //   })
-    //   .trigger('change');
+
+    cy.fixture(filename, 'base64').then((content) => {
+      cy.get(selector).upload(content, filename);
+    });
+    cy.uploadFile(selector, filename);
+    cy.get(selector, { timeout: 10000 })
+      .attachFile({
+        fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+        fileName: filename,
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        encoding: 'utf8',
+        lastModified: new Date().getTime()
+      })
+      .trigger('change');
 
     // Check the radio box
     const verify_data = '[data-cy="data-verify"]';
