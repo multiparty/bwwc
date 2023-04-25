@@ -70,11 +70,22 @@ prime (BigNumber) - The prime number to use for the polynomial modulus.
 output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
+// export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
+//   const length = threshold.minus(BigNumber(1)).toNumber();
+//   const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
+//   return coefs;
+// }
+
 export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
   const length = threshold.minus(BigNumber(1)).toNumber();
-  const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
+  const coefs = [];
+  for (let i = 0; i < length; i++) {
+    coefs.push(prime.minus(BigNumber(1)));
+  }
+  coefs.unshift(zeroValue);
   return coefs;
 }
+
 
 /*
 Evaluate the polynomial at a given point using the provided coefficients.
