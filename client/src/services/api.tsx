@@ -17,6 +17,7 @@ const API_ENDPOINTS = {
   GET_PUBLIC_KEY: 'get_public_key/',
   GET_SUBMISSION_URLS: 'get_submission_urls/',
   GET_SUBMISSIONS: 'get_submitted_data/',
+  GET_SUBMISSION_HISTORY: 'get_submission_history/',
   SUBMIT_DATA: 'submit_data/'
 };
 
@@ -39,6 +40,12 @@ interface EndSessionResponse {
   status: {
     [code: number]: any;
   };
+}
+
+interface Submission {
+  participantCode: string;
+  industry: string;
+  companySize: string;
 }
 
 export interface GetSubmissionUrlsResponse {
@@ -150,6 +157,11 @@ export async function getPrime(sessionId: string): Promise<string> {
 export async function getPublicKey(session_id: string): Promise<string> {
   const response = await axios.get(API_ENDPOINTS.GET_PUBLIC_KEY, { params: { session_id: session_id } });
   return response.data.public_key;
+}
+
+export async function getSubmissionHistory(session_id: string): Promise<Submission[]> {
+  const response = await axios.get(API_ENDPOINTS.GET_SUBMISSION_HISTORY, { params: { session_id: session_id } });
+  return response.data;
 }
 
 const convertToFormData = (data: any): FormData => {

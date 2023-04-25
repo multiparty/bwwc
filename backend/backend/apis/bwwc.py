@@ -189,6 +189,25 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
         return HttpResponseBadRequest("Invalid request method")
 
 
+@csrf_exempt
+def get_submission_history(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        session_id = req.GET.get("session_id")
+        # auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+
+        # if not engine.is_initiator(session_id, auth_token):
+        #     return HttpResponseBadRequest("Invalid request body")
+        print(f"session_id: {session_id}")
+        if not engine.session_exists(session_id):
+            return HttpResponseBadRequest("Invalid session ID")
+
+        data = engine.get_submission_history(session_id)
+
+        return JsonResponse({"data": data})
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+
+
 def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
@@ -200,4 +219,5 @@ def get_urlpatterns():
         path("api/bwwc/get_public_key/", get_public_key),
         path("api/bwwc/get_submitted_data/", get_submitted_data),
         path("api/bwwc/get_prime/", get_prime),
+        path("api/bwwc/get_submission_history/", get_submission_history),
     ]

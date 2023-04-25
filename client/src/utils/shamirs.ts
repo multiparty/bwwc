@@ -6,6 +6,10 @@ import BigNumber from 'bignumber.js';
 import { Point, PointWithEncryptedState } from '@utils/data-format';
 import { encryptString, arrayBufferToBase64, base64ToArrayBuffer, decryptString } from './keypair';
 
+import { AppState } from '@utils/data-format';
+import { useSelector } from 'react-redux';
+import { arrayBufferToPem, importPemPrivateKey } from './keypair';
+
 /*
 This function generates a random BigNumber within the range of min and max (inclusive), using the browser's crypto.getRandomValues() function.
 
@@ -66,7 +70,7 @@ prime (BigNumber) - The prime number to use for the polynomial modulus.
 output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
-function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
+export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
   const length = threshold.minus(BigNumber(1)).toNumber();
   const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
   return coefs;
@@ -83,10 +87,12 @@ prime (BigNumber) - The prime number to use for the polynomial modulus.
 output:
 result (BigNumber) - The result of the polynomial evaluation at the specified point, modulo the prime.
 */
-function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
+export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
   let result = BigNumber(0);
   const bigIntPoint = BigNumber(point); // Convert point to a BigInt
   for (const coef of coefs.reverse()) {
+    const a = bigIntPoint.multipliedBy(result);
+    const b = BigNumber(coef).plus(a);
     result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
   }
   return result;
@@ -98,18 +104,14 @@ Split a secret into a list of shares.
 inputs:
 secret (BigNumber) - The secret to be shared.
 numShares (number) - The number of shares to generate.
-threshold (number) - The minimum number of shares required to reconstruct the secret.
+threshold (BigNumber) - The minimum number of shares required to reconstruct the secret.
 asString (boolean, optional) - Whether to return the shares as strings. Default: false.
 prime (BigNumber, optional) - The prime number to use for the polynomial modulus. Default: BigNumber(180252380737439).
 
 output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
-export function shamirShare(secret: BigNumber, numShares: number, threshold: number, asString: boolean = false, prime: BigNumber = new BigNumber(180252380737439)): Point[] {
-  const bigPrime = new BigNumber(prime);
-  const bigSecret = new BigNumber(secret);
-  const bigThreshold = new BigNumber(threshold);
-
+export function shamirShare(secret: BigNumber, numShares: number, threshold: BigNumber, asString: boolean = false, prime: BigNumber = BigNumber(180252380737439)): Point[] {
   if (!isIntGreaterThanZero(secret)) {
     throw new Error(`Secret ${secret} must be a positive integer`);
   }
@@ -118,10 +120,10 @@ export function shamirShare(secret: BigNumber, numShares: number, threshold: num
     throw new Error(`Prime ${prime} must be a positive integer`);
   }
 
-  const polynomial = sampleShamirPolynomial(bigSecret, bigThreshold, bigPrime);
+  const polynomial = sampleShamirPolynomial(secret, threshold, prime);
 
   return Array.from({ length: numShares }, (_, i) => {
-    const point: Point = [new BigNumber(i + 1), evaluateAtPoint(polynomial, i + 1, bigPrime)];
+    const point: Point = [new BigNumber(i + 1), evaluateAtPoint(polynomial, i + 1, prime)];
 
     if (asString) {
       const x = point[0].toString();
@@ -174,7 +176,7 @@ privateKey (CryptoKey) - The private key used for decryption.
 outputs:
 Promise<Array<Point>> - A Promise that resolves to an array of decrypted secret shares, each represented by a tuple with x and y values.
 */
-async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
+export async function decryptSecretShares(encryptedShares: Array<PointWithEncryptedState>, privateKey: CryptoKey): Promise<Array<Point>> {
   const decryptedShares = new Array();
 
   for (let i = 0; i < encryptedShares.length; i++) {
@@ -222,7 +224,7 @@ export async function tableToSecretShares(
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(new BigNumber(originalObj[key]), numShares, threshold, stringify, (prime = prime));
+        const points = shamirShare(BigNumber(originalObj[key]), numShares, BigNumber(threshold), stringify, (prime = prime));
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -275,9 +277,8 @@ export async function secretSharesToTable(
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
-        const value = new Array();
-        value.push(await reduce(await decryptSecretShares(originalObj[key], privateKey)));
-        const reconstructed = shamirReconstruct(value, new BigNumber(0), prime);
+        const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
+        const reconstructed = shamirReconstruct(shares, prime, new BigNumber(0));
         currentObj[key] = reconstructed;
         counter++;
         setProgress((counter / totalSteps) * 100);

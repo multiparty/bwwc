@@ -1,4 +1,4 @@
-function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
+export function arrayBufferToPem(buffer: ArrayBuffer, publicKey = true): string {
   const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
   const matches = base64.match(/.{1,64}/g);
 
@@ -141,7 +141,7 @@ export async function decryptString(privateKey: CryptoKey, encryptedData: ArrayB
 
     return arrayBufferToString(decryptedData);
   } catch (error) {
-    console.error('Error decrypting the string:', error);
+    console.error('Error decrypting the string: ', encryptedData);
     throw error;
   }
 }
