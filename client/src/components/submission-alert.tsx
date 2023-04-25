@@ -24,5 +24,5 @@ export const SubmissionAlert = ({ submitResp, pressed }: SubmissionAlertProps) =
     message = submitResp.data;
   }
 
-  return <Alert severity={severity}>{message}</Alert>;
+  return <Alert severity={severity} data-cy="alert">{message}</Alert>;
 };
