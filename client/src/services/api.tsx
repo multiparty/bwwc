@@ -191,6 +191,13 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
     axios.defaults.baseURL = VITE_API_BASE_URL;
   }, [token, VITE_API_BASE_URL]);
 
+  useEffect(() => {
+    // Set Default
+    axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+    axios.defaults.headers.common['Access-Control-Request-Headers'] = 'content-type';
+    axios.defaults.headers.common['Access-Control-Request-Method'] = 'POST';
+  }, []);
+
   return (
     <ApiContext.Provider
       value={{

@@ -9,6 +9,7 @@ import { getSubmissions } from '@services/api';
 import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
+import { LinearWithValueLabel } from '@components/session-decrypt/progress-bar';
 import { secretSharesToTable } from '@utils/shamirs';
 import { importPemPrivateKey } from '@utils/keypair';
 import { Point } from '@utils/data-format';
@@ -34,6 +35,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
   const { prime, sessionId } = useSelector((state: AppState) => state.session);
+  const [progress, setProgress] = useState<number>(0);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -82,7 +84,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
         const data = await getSubmissions(sessionId, token);
-        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce);
+        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, setProgress);
         dispatch(setDecodedTable(decodedTable));
         console.log(`decodedTable:`);
         console.log(decodedTable);
@@ -122,6 +124,7 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
               <FileUpload multiple={false} onChange={(files) => submitPrivateKeyHandler(files)} title="Drag and drop your key file here" />
             </Grid>
           </Grid>
+          <LinearWithValueLabel progress={progress} />
         </Stack>
       </CardContent>
     </Card>

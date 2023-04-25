@@ -32,6 +32,6 @@
       "@utils/*": ["utils/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "cypress/e2e/generate-input.test.ts", "cypress/support/custom/session-create.ts", "cypress/support/custom/generate-input.ts", "cypress/support/custom/csv-create.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
