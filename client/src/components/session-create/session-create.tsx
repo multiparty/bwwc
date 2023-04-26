@@ -30,11 +30,6 @@ export const SessionCreateForm: FC = (props) => {
     setLoading(true);
     const { privateKey, publicKey, sessionId, prime } = await startSession();
 
-    console.log('\n----------------------------------------------------------------');
-    console.log(`PUBICKEY: ${publicKey}`);
-    console.log(`PRIVATEKEY: ${privateKey}`);
-    console.log('----------------------------------------------------------------\n');
-
     dispatch(setSessionId(sessionId));
     dispatch(setPrivateKey(privateKey));
     dispatch(setPublicKey(publicKey));

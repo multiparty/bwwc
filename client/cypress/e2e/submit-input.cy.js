@@ -5,7 +5,6 @@ describe('data generation', () => {
 it('create and encrypt user input', () => {
   // create csv
   const input = dataGenerator();
-  console.log(input);
   // input id, code, industry, size
   // drop the csv
   // click box
