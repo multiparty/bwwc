@@ -81,15 +81,16 @@ class MPCEngine(object):
     def create_session(self, auth_token: str, public_key: str) -> str:
         session_id = str(uuid.uuid4())[:26]
         session_data = {
-            "session_id": session_id,
+            "auth_token": auth_token,
+            "merged": {},
+            "num_cells": 0,
             "participants": {},
             "participant_submissions": {},
-            "protocol": self.protocol,
             "prime": self.prime,
+            "protocol": self.protocol,
             "public_key": public_key,
-            "auth_token": auth_token,
-            "state": "open",
-            "merged": {},
+            "session_id": session_id,
+            "state": "open"
         }
 
         self.save_session(session_id, session_data)
@@ -228,6 +229,7 @@ class MPCEngine(object):
     outputs:
     count (int) - the number of cells in the table.
     """
+    
     def count_cells(self, table: Dict[str, Union[List, int]]) -> int:
         count = 0
 
@@ -245,6 +247,26 @@ class MPCEngine(object):
             dfs_helper(key, table)
 
         return count
+    
+    """
+    Get the number of cells in the final merged table.
+    
+    inputs:
+    session_id (str) - the unique identifier of the session.
+    
+    outputs:
+    count (int) - the number of cells in the final merged table.
+    """
+    def get_cell_count(self, session_id: str):
+        session_data = self.get_session(session_id)
+        
+        if session_data["state"] != "closed":
+            raise ValueError("Session is still open")
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+        
+        return session_data["num_cells"]
 
     """
     Update session data with new data submitted by a participant
@@ -498,4 +520,5 @@ class MPCEngine(object):
             session_data["merged"] = {}
 
         session_data["merged"] = data
+        session_data["num_cells"] = self.count_cells(session_data["merged"])
         self.save_session(session_id, session_data)

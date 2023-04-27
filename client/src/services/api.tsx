@@ -54,6 +54,11 @@ export interface GetSubmissionUrlsResponse {
 
 interface GetEncryptedSharesResponse extends NestedObject {}
 
+interface GetSubmissionData {
+  data: GetEncryptedSharesResponse;
+  total_cells: number;
+}
+
 interface SubmitDataResponse {
   status: {
     [code: number]: any;
@@ -72,7 +77,7 @@ export interface ApiContextProps {
   endSession: (sessionId: string, authToken: string) => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
   getPublicKey: (sessionId: string) => Promise<string>;
-  getSubmissions: (sessionId: string, authToken: string) => Promise<GetEncryptedSharesResponse>;
+  getSubmissions: (sessionId: string, authToken: string) => Promise<GetSubmissionData>;
   getSubmissionHistory: (sessionId: string, authToken: string) => Promise<Submission[]>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
@@ -133,9 +138,12 @@ export async function createNewSubmissionUrls(count: number, sessionId: string, 
   return response.data;
 }
 
-export async function getSubmissions(sessionId: string, authToken: string): Promise<GetEncryptedSharesResponse> {
+export async function getSubmissions(sessionId: string, authToken: string): Promise<GetSubmissionData> {
   const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS, { params: { session_id: sessionId, auth_token: authToken } });
-  return response.data;
+  return {
+    data: response.data,
+    total_cells: response.data.total_cells
+  }
 }
 
 export async function submitData(data: NestedObject, sessionId: string, participantCode: string): Promise<AxiosResponse> {
