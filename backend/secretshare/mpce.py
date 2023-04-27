@@ -218,6 +218,33 @@ class MPCEngine(object):
         for key in table1:
             result_table[key] = dfs_helper(key, table1, table2)
         return result_table
+    
+    """
+    Count the number of cells in a table.
+    
+    inputs:
+    table (Dict[str, Union[List, int]]) - the table to be counted, cells can be lists, strings or integers.
+    
+    outputs:
+    count (int) - the number of cells in the table.
+    """
+    def count_cells(self, table: Dict[str, Union[List, int]]) -> int:
+        count = 0
+
+        def dfs_helper(key: str, table: Dict[str, Any]):
+            nonlocal count
+            if isinstance(table[key], numbers.Number) or isinstance(table[key], str) or isinstance(table[key], list):
+                count += 1
+            elif isinstance(table[key], dict):
+                for k in table[key].keys():
+                    dfs_helper(k, table[key])
+            else:
+                raise Exception("Invalid table")
+
+        for key in table:
+            dfs_helper(key, table)
+
+        return count
 
     """
     Update session data with new data submitted by a participant
