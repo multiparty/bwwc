@@ -268,7 +268,7 @@ export async function secretSharesToTable(
   privateKey: CryptoKey,
   prime: BigNumber,
   reduce: (value: any) => any,
-  setProgress: (progress: number) => void
+  progressBar: (value: any) => any
 ): Promise<Record<string, any>> {
   var counter = 0;
   const totalSteps = countSteps(obj);
@@ -291,8 +291,7 @@ export async function secretSharesToTable(
         const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
         const reconstructed = shamirReconstruct(shares, prime, new BigNumber(0));
         currentObj[key] = reconstructed;
-        counter++;
-        setProgress((counter / totalSteps) * 100);
+        progressBar(counter++);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};
