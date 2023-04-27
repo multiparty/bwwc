@@ -66,11 +66,21 @@ inputs:
 zeroValue (BigNumber) - The secret value to be shared.
 threshold (BigNumber) - The minimum number of shares required to reconstruct the secret.
 prime (BigNumber) - The prime number to use for the polynomial modulus.
+deterministic (boolean, optional) - whether to generate a deterministic polynomial (all coefficients are prime - 1) or a random polynomial. Default: false.
 
 output:
 coefs (BigNumber[]) - A list of coefficients representing the polynomial.
 */
-export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber): BigNumber[] {
+export function sampleShamirPolynomial(zeroValue: BigNumber, threshold: BigNumber, prime: BigNumber, deterministic: boolean = false): BigNumber[] {
+  if (deterministic) {
+    const length = threshold.minus(BigNumber(1)).toNumber();
+    let coefs = [zeroValue];
+    for (let i = 0; i < length; i++) {
+      coefs.push(prime.minus(BigNumber(1)));
+    }
+    return coefs;
+  }
+
   const length = threshold.minus(BigNumber(1)).toNumber();
   const coefs = [zeroValue, ...Array.from({ length: length }, () => getRandomBigNumber(BigNumber(1), prime))];
   return coefs;
@@ -89,12 +99,13 @@ result (BigNumber) - The result of the polynomial evaluation at the specified po
 */
 export function evaluateAtPoint(coefs: BigNumber[], point: number, prime: BigNumber): BigNumber {
   let result = BigNumber(0);
-  const bigIntPoint = BigNumber(point); // Convert point to a BigInt
-  for (const coef of coefs.reverse()) {
-    const a = bigIntPoint.multipliedBy(result);
-    const b = BigNumber(coef).plus(a);
-    result = BigNumber(coef).plus(bigIntPoint.multipliedBy(result)).modulo(prime);
+  const bigIntPoint = BigNumber(point);
+  const reversedCoefs = [...coefs].reverse();
+
+  for (const coef of reversedCoefs) {
+    result = coef.plus(bigIntPoint.multipliedBy(result)).modulo(prime);
   }
+
   return result;
 }
 
@@ -257,7 +268,7 @@ export async function secretSharesToTable(
   privateKey: CryptoKey,
   prime: BigNumber,
   reduce: (value: any) => any,
-  setProgress: (progress: number) => void
+  progressBar: (value: any) => any
 ): Promise<Record<string, any>> {
   var counter = 0;
   const totalSteps = countSteps(obj);
@@ -280,8 +291,7 @@ export async function secretSharesToTable(
         const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
         const reconstructed = shamirReconstruct(shares, prime, new BigNumber(0));
         currentObj[key] = reconstructed;
-        counter++;
-        setProgress((counter / totalSteps) * 100);
+        progressBar(counter++);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
           currentObj[key] = {};

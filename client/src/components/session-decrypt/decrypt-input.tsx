@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { LockTwoTone } from '@mui/icons-material';
 import { PasswordInput } from '@components/forms/password-input';
 import { CustomFile, FileUpload } from '@components/file-upload/file-upload';
-import { getSubmissionHistory } from '@services/api';
+import { getSubmissions } from '@services/api';
 import { useAuth } from '@context/auth.context';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
@@ -83,11 +83,14 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
       if (token !== undefined && sessionId !== undefined) {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
-        const data = await getSubmissionHistory(sessionId);
-        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, setProgress);
+        const { data, total_cells } = await getSubmissions(sessionId, token);
+
+        const recordProgress = (progress: number) => {
+          setProgress((progress / total_cells) * 100);
+        };
+
+        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress);
         dispatch(setDecodedTable(decodedTable));
-        console.log(`decodedTable:`);
-        console.log(decodedTable);
       }
     };
 

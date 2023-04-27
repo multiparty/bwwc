@@ -183,8 +183,9 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest("Invalid session ID")
 
         data = engine.get_submitted_data(session_id)
+        total_cells = engine.get_cell_count(session_id)
 
-        return JsonResponse({"data": data})
+        return JsonResponse({"data": data, "total_cells": total_cells})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -206,7 +207,7 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"data": data})
     else:
         return HttpResponseBadRequest("Invalid request method")
-
+    
 
 def get_urlpatterns():
     return [
