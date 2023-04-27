@@ -129,17 +129,8 @@ def test_count_cells():
         "b": {
             "c": "foo",
             "d": [1, 2, 3],
-            "e": {
-                "f": "bar",
-                "g": [4, 5, 6],
-                "h": {
-                    "i": "wow",
-                    "j": {
-                        "k": [7,8,9]
-                    }
-                }
-            }
-        }
+            "e": {"f": "bar", "g": [4, 5, 6], "h": {"i": "wow", "j": {"k": [7, 8, 9]}}},
+        },
     }
     expected = 7
     assert engine.count_cells(table) == expected

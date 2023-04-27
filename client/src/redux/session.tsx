@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 export const sessionSlice = createSlice({
   name: 'session',
   initialState: {
+    aggregatedCompanySize: 0,
+    aggregatedIndustry: 0,
     authToken: '',
     companySize: '',
     decodedTable: null,
@@ -26,6 +28,10 @@ export const sessionSlice = createSlice({
     setIndustry: (state, action) => {
       state.industry = action.payload;
     },
+    setMetadata: (state, action) => {
+      state.aggregatedCompanySize = action.payload.companySize;
+      state.aggregatedIndustry = action.payload.industry;
+    },
     setParticipantCode: (state, action) => {
       state.participantCode = action.payload;
     },
@@ -44,5 +50,6 @@ export const sessionSlice = createSlice({
   }
 });
 
-export const { setAuthToken, setCompanySize, setDecodedTable, setIndustry, setParticipantCode, setPublicKey, setPrivateKey, setSessionId, setPrime } = sessionSlice.actions;
+export const { setAuthToken, setCompanySize, setDecodedTable, setIndustry, setMetadata, setParticipantCode, setPublicKey, setPrivateKey, setSessionId, setPrime } =
+  sessionSlice.actions;
 export default sessionSlice.reducer;
