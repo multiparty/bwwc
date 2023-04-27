@@ -17,7 +17,7 @@ describe('shamirReconstruct', () => {
       ['10', '10114232']
     ];
 
-    const expectedSecret = new BigNumber(8888);
+    const expectedSecret = '8888';
     const prime = new BigNumber(15485867);
     const reconstructedSecret = shamirReconstruct(
       shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
@@ -42,7 +42,7 @@ describe('shamirReconstruct', () => {
       ['10', '10878174']
     ];
 
-    const expectedSecret = new BigNumber(300);
+    const expectedSecret = '300';
     const prime = new BigNumber(15485867);
     const reconstructedSecret = shamirReconstruct(
       shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
@@ -66,7 +66,7 @@ describe('shamirReconstruct', () => {
       ['9', '1397823'],
       ['10', '5568793']
     ];
-    const expectedSecret = new BigNumber(300);
+    const expectedSecret = '300';
     const prime = new BigNumber(15485867);
     const reconstructedSecret = shamirReconstruct(
       shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
