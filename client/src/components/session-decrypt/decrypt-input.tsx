@@ -83,10 +83,10 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
       if (token !== undefined && sessionId !== undefined) {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
-        const {data, total_cells} = await getSubmissions(sessionId, token);
+        const { data, total_cells } = await getSubmissions(sessionId, token);
 
         const recordProgress = (progress: number) => {
-          setProgress(progress / total_cells * 100);
+          setProgress((progress / total_cells) * 100);
         };
 
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress);

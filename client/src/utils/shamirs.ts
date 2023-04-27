@@ -268,7 +268,7 @@ export async function secretSharesToTable(
   privateKey: CryptoKey,
   prime: BigNumber,
   reduce: (value: any) => any,
-  progressBar: (value: any) => any,
+  progressBar: (value: any) => any
 ): Promise<Record<string, any>> {
   var counter = 0;
   const totalSteps = countSteps(obj);
