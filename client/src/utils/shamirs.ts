@@ -398,13 +398,13 @@ prime (BigNumber) - prime number used for modular arithmetic
 queryXAxis (BigNumber) - x-coordinate of the point to interpolate
 
 outputs:
-constants (Array<BigNumber>) - array of Lagrange constants
+constants (string) - String representation of the Lagrange constant
 */
-export function shamirReconstruct(shares: Array<Point>, prime: BigNumber, queryXAxis: BigNumber = new BigNumber(0)): BigNumber {
+export function shamirReconstruct(shares: Array<Point>, prime: BigNumber, queryXAxis: BigNumber = new BigNumber(0)): string {
   const polynomial = shares;
   const secret = interpolateAtPoint(polynomial, queryXAxis, prime);
 
-  return secret;
+  return secret.toString();
 }
 
 /*
