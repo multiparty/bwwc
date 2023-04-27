@@ -141,7 +141,7 @@ export async function getSubmissions(sessionId: string, authToken: string): Prom
   return {
     data: response.data,
     total_cells: response.data.total_cells
-  }
+  };
 }
 
 export async function submitData(data: NestedObject, sessionId: string, participantCode: string): Promise<AxiosResponse> {
