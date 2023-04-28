@@ -52,7 +52,7 @@ export const SessionResult: FC<SessionResultProps> = ({ result }) => {
                   handleClick(result);
                 }}
               >
-                DownLoad File
+                Download File
               </Button>
             </Grid>
             <Box>

@@ -517,30 +517,64 @@ class MPCEngine(object):
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
 
+        def reduce_tables(elements: List[Dict], key: str) -> Dict:
+            data = elements[0][key]
+
+            for i in range(1, len(elements)):
+                data = self.merge_tables(data, elements[i][key], reduce)
+
+            return data
+
         submissions = list(session_data["participant_submissions"].values())
-        data = submissions[0]["table"]
-        num_submissions = len(submissions)
+        company_size_tables = defaultdict(list)
+        industry_tables = defaultdict(list)
 
-        for i in range(1, num_submissions):
-            data = self.merge_tables(data, submissions[i]["table"], reduce)
+        # extract tables by categories
+        for data in submissions:
+            company_size_tables[data["companySize"]].append(data)
+            industry_tables[data["industry"]].append(data)
 
-        metadata = {"companySize": defaultdict(int), "industry": defaultdict(int)}
+        # reduce tables by categories
+        for key, value in company_size_tables.items():
+            company_size_tables[key] = reduce_tables(value, "table")
 
-        for i in range(num_submissions):
-            companySizeType = submissions[i]["companySize"]
-            industryType = submissions[i]["industry"]
-            metadata["companySize"][companySizeType] += 1
-            metadata["industry"][industryType] += 1
+        for key, value in industry_tables.items():
+            industry_tables[key] = reduce_tables(value, "table")
+
+        merged_tables = reduce_tables(submissions, "table")
+        metadata = self.compute_metadata(submissions)
+        metadata["companySize"] = company_size_tables
+        metadata["industry"] = industry_tables
 
         if "merged" not in session_data:
             session_data["merged"] = {}
 
-        print(f"metadata: {metadata}")
-
-        session_data["merged"] = data
+        session_data["merged"] = merged_tables
         session_data["metadata"] = metadata
         session_data["num_cells"] = self.count_cells(session_data["merged"])
+
         self.save_session(session_id, session_data)
+
+    """
+    Compute summary of metadata
+    
+    inputs:
+    data (list) - the list of submission dictionaries
+    
+    outputs:
+    metadata (dict) - the metadata for the session
+    """
+
+    def compute_metadata(self, data: List[dict]) -> dict:
+        metadata = {"companySize": defaultdict(int), "industry": defaultdict(int)}
+
+        for i in range(len(data)):
+            companySizeType = data[i]["companySize"]
+            industryType = data[i]["industry"]
+            metadata["companySize"][companySizeType] += 1
+            metadata["industry"][industryType] += 1
+
+        return metadata
 
     """
     Get metadata for a session
@@ -560,7 +594,5 @@ class MPCEngine(object):
 
         if not session_data:
             raise ValueError("Invalid session ID")
-
-        print(f'here2: {session_data["metadata"]}')
 
         return session_data["metadata"]
