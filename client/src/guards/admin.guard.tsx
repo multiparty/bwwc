@@ -15,7 +15,7 @@ export const AdminGuard: FC = () => {
     }
 
     if (initialized && decodedToken && decodedToken.role !== 1) {
-    navigate(Paths.PERMISSION_REQUIRED, { replace: true });
+      navigate(Paths.PERMISSION_REQUIRED, { replace: true });
     }
   }, [token, decodedToken, initialized, VITE_SAIL_PROJECT_ID, VITE_SAIL_AUTH_CLIENT]);
 
