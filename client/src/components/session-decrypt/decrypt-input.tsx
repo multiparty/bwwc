@@ -14,7 +14,7 @@ import { secretSharesToTable } from '@utils/shamirs';
 import { importPemPrivateKey } from '@utils/keypair';
 import { Point } from '@utils/data-format';
 import BigNumber from 'bignumber.js';
-import { setDecodedTable } from '../../redux/session';
+import { setDecodedTable, setMetadata } from '../../redux/session';
 import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
@@ -83,14 +83,15 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
       if (token !== undefined && sessionId !== undefined) {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
-        const { data, total_cells } = await getSubmissions(sessionId, token);
+        const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
 
         const recordProgress = (progress: number) => {
-          setProgress((progress / total_cells - 1) * 100);
+          setProgress((progress / (total_cells - 1)) * 100);
         };
 
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress);
         dispatch(setDecodedTable(decodedTable));
+        dispatch(setMetadata(metadata));
       }
     };
 

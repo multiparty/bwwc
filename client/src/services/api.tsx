@@ -54,9 +54,15 @@ export interface GetSubmissionUrlsResponse {
 
 interface GetEncryptedSharesResponse extends NestedObject {}
 
+interface Metadata {
+  companySize: number;
+  industry: number;
+}
+
 interface GetSubmissionData {
   data: GetEncryptedSharesResponse;
   total_cells: number;
+  metadata: Metadata;
 }
 
 interface SubmitDataResponse {
@@ -140,7 +146,8 @@ export async function getSubmissions(sessionId: string, authToken: string): Prom
   const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS, { params: { session_id: sessionId, auth_token: authToken } });
   return {
     data: response.data,
-    total_cells: response.data.total_cells
+    total_cells: response.data.total_cells,
+    metadata: response.data.metadata
   };
 }
 

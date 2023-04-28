@@ -5,6 +5,7 @@ import numbers
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 from itertools import groupby
 from operator import itemgetter
+from collections import defaultdict
 
 sys.path.append("../cryptography")
 
@@ -83,6 +84,7 @@ class MPCEngine(object):
         session_data = {
             "auth_token": auth_token,
             "merged": {},
+            "metadata": {},
             "num_cells": 0,
             "participants": {},
             "participant_submissions": {},
@@ -90,7 +92,7 @@ class MPCEngine(object):
             "protocol": self.protocol,
             "public_key": public_key,
             "session_id": session_id,
-            "state": "open"
+            "state": "open",
         }
 
         self.save_session(session_id, session_data)
@@ -219,7 +221,7 @@ class MPCEngine(object):
         for key in table1:
             result_table[key] = dfs_helper(key, table1, table2)
         return result_table
-    
+
     """
     Count the number of cells in a table.
     
@@ -229,13 +231,17 @@ class MPCEngine(object):
     outputs:
     count (int) - the number of cells in the table.
     """
-    
+
     def count_cells(self, table: Dict[str, Union[List, int]]) -> int:
         count = 0
 
         def dfs_helper(key: str, table: Dict[str, Any]):
             nonlocal count
-            if isinstance(table[key], numbers.Number) or isinstance(table[key], str) or isinstance(table[key], list):
+            if (
+                isinstance(table[key], numbers.Number)
+                or isinstance(table[key], str)
+                or isinstance(table[key], list)
+            ):
                 count += 1
             elif isinstance(table[key], dict):
                 for k in table[key].keys():
@@ -247,7 +253,7 @@ class MPCEngine(object):
             dfs_helper(key, table)
 
         return count
-    
+
     """
     Get the number of cells in the final merged table.
     
@@ -257,15 +263,16 @@ class MPCEngine(object):
     outputs:
     count (int) - the number of cells in the final merged table.
     """
+
     def get_cell_count(self, session_id: str):
         session_data = self.get_session(session_id)
-        
+
         if session_data["state"] != "closed":
             raise ValueError("Session is still open")
 
         if not session_data:
             raise ValueError("Invalid session ID")
-        
+
         return session_data["num_cells"]
 
     """
@@ -512,13 +519,48 @@ class MPCEngine(object):
 
         submissions = list(session_data["participant_submissions"].values())
         data = submissions[0]["table"]
+        num_submissions = len(submissions)
 
-        for i in range(1, len(session_data["participant_submissions"])):
+        for i in range(1, num_submissions):
             data = self.merge_tables(data, submissions[i]["table"], reduce)
+
+        metadata = {"companySize": defaultdict(int), "industry": defaultdict(int)}
+
+        for i in range(num_submissions):
+            companySizeType = submissions[i]["companySize"]
+            industryType = submissions[i]["industry"]
+            metadata["companySize"][companySizeType] += 1
+            metadata["industry"][industryType] += 1
 
         if "merged" not in session_data:
             session_data["merged"] = {}
 
+        print(f"metadata: {metadata}")
+
         session_data["merged"] = data
+        session_data["metadata"] = metadata
         session_data["num_cells"] = self.count_cells(session_data["merged"])
         self.save_session(session_id, session_data)
+
+    """
+    Get metadata for a session
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which the metadata should be retrieved
+    
+    outputs:
+    metadata (dict) - the metadata for the session
+    """
+
+    def get_metadata(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if session_data["state"] != "closed":
+            raise ValueError("Session is not closed")
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        print(f'here2: {session_data["metadata"]}')
+
+        return session_data["metadata"]
