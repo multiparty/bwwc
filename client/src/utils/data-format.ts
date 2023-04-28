@@ -5,6 +5,8 @@ import BigNumber from 'bignumber.js';
 
 export interface AppState {
   session: {
+    aggregatedCompanySize: any;
+    aggregatedIndustry: any;
     authToken: string;
     companySize: string;
     decodedTable: SessionResultProps;

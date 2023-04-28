@@ -1,9 +1,9 @@
 import { FC, useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { ResultFormat, TabSelection, SessionResultProps } from '@utils/data-format';
+import { ResultFormat, TabSelection } from '@utils/data-format';
 import { createCSV } from './to-xlsx';
-
+import { DataFormat } from '@utils/data-format';
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -30,8 +30,11 @@ function a11yProps(index: number) {
 function handleClick(result: ResultFormat) {
   createCSV(result);
 }
-
-export const SessionResult: FC<SessionResultProps> = ({ result }) => {
+export interface ViewResultProps {
+  result?: DataFormat;
+}
+// export const SessionResult: FC<SessionResultProps> = ({ result }) => {
+export const SessionResult: FC<ViewResultProps> = ({ result }) => {
   const [value, setValue] = useState<TabSelection>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);

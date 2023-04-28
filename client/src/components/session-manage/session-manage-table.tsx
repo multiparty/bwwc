@@ -81,7 +81,7 @@ export const SessionManageTable = () => {
   const { sessionId } = useSelector((state: AppState) => state.session);
   const data: Submission[] = [];
   const [histData, setHistData] = useState(data);
-  
+
   useEffect(() => {
     async function updateSubmissionHistory() {
       const SubmissionHistory = await getSubmissionHistory(sessionId);
