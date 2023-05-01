@@ -106,7 +106,7 @@ export const DecryptInputForm = () => {
           <Divider />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Formik validationSchema={validationSchema} initialValues={{ privateKey: '' }} onSubmit={console.log}>
+              <Formik validationSchema={validationSchema} initialValues={{ privateKey: '' }} onSubmit={() => {}}>
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>
