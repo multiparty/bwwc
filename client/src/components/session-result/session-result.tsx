@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
 import { AppState, ResultFormat, TabSelection,  DataFormat, StringDataFormatMap } from '@utils/data-format';
@@ -32,7 +32,7 @@ function handleClick(result: ResultFormat) {
   createCSV(result);
 }
 
-export const SessionResult: FC = () => {
+export const SessionResult = () => {
   const { decodedTable } = useSelector((state: AppState) => state.session);
   const result = { 0: decodedTable.data as DataFormat, 1: decodedTable.metadata.companySize as StringDataFormatMap, 2: decodedTable.metadata.industry as StringDataFormatMap};
   const [value, setValue] = useState<TabSelection>(0);
