@@ -85,7 +85,6 @@ export const SessionManageTable = () => {
   useEffect(() => {
     async function updateSubmissionHistory() {
       const SubmissionHistory = await getSubmissionHistory(sessionId, authToken);
-      console.log(SubmissionHistory);
       Object.values(SubmissionHistory).forEach((key, val: any) => {
         let d = {
           industry: val.industry,
