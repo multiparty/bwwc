@@ -233,7 +233,6 @@ export async function tableToSecretShares(
 ): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
-    const encoder = new TextEncoder();
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
@@ -289,7 +288,6 @@ export async function secretSharesToTable(
   }
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
-    const encoder = new TextEncoder();
 
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
