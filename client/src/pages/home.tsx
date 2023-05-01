@@ -21,8 +21,8 @@ export const HomePage: FC = () => {
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
-  const [numShares, setNumShares] = useState<number>(10);
-  const [threshold, setTheshold] = useState<number>(5); // Must have at least 5 shares to reconstruct
+  const [numShares, setNumShares] = useState<number>(3);
+  const [threshold, setTheshold] = useState<number>(1); // Must have at least 1 share to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
   const [table, setTable] = useState<Record<string, any>>({});
   const { companySize, industry, participantCode, sessionId, privateKey } = useSelector((state: AppState) => state.session);
