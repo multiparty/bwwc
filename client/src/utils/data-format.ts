@@ -122,7 +122,8 @@ export interface ResultFormat {
 }
 
 export interface SessionResultProps {
-  result: ResultFormat;
+  data: DataFormat;
+  metadata:{companySize:StringDataFormatMap, industry: StringDataFormatMap}
 }
 
 export type TabSelection = 0 | 1 | 2;
