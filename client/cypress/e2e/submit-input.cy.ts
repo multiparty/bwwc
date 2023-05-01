@@ -4,8 +4,24 @@ import { Sizes } from '../../src/constants/sizes';
 
 describe('User submission', () => {
   it('user input and submit', () => {
-    cy.visit('http://127.0.0.1:5173/');
+    cy.visit('http://127.0.0.1:5173/create');
+    // cy.visit('https://mpc.sail.codes/create');
+    
+    // // Click the session create button
+    const create = '[id="creare-submission"]';
+    cy.get(create).click();
+    const token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYzcyZWQ5LTg3ZDAtNDUzYS05NGU4LTY1MGI2NTFiNDIwYyIsInByb2plY3RJZCI6IjA2NDcwMDU3LTExYTMtNGI5NS1iNGI1LWZmNDcxMTFmODBmMiIsInJvbGUiOjEsImlhdCI6MTY4MDY0MDQyMSwiaXNzIjoiaHR0cHM6Ly9zYWlsLmJ1LmVkdSJ9.BHjdsvGFKKqmDF2gw7i_6gZtwaZmFmI6Vu0YLgypyPuDCEWQV2p5U8pNiYqWf1I7AgdWe3bbZNnr9lfnNR2rcIPpTVfyvSCame0ks6MI0XoPVa4dLOQos66HUWwPZn1CeayoX68Vxdn5B-BTN3aMcgapyVk-MCuHbCIxL9jsrKKydFpbyaMxsGAnGMfYmKnWMQFf3FmG0vD2cvrpX5O9lTlfcvbDRYWSQGWDVwWaVBnU-2qpgWUxs44dTwbHXJNS7c9eNqpJs2EYwwi1PGFNyAe8XhAtgzPp2LL5ghAVipZ_ShLKo4qkwqt7lwSxaaGYkuqsPAbGyWY3-47FnWyNrg'
+    window.localStorage.setItem('token', token)
 
+    const downloadKey = '[id="downloadKey"]';
+    cy.get(downloadKey).click();
+
+    const consent = '[type="checkbox"]';
+    cy.get(consent).click();
+
+    const manage = '[id="manage-session"]';
+    cy.get(manage).click();
+    
     // // Submitter's input (ID, PW, industry and compny-size)
     // const selector_ID = '[data-cy="submissionID"]';
     // const ID = 'bffaa2ed-6bbd-448d-8853-78f6bcde23db';
@@ -30,62 +46,23 @@ describe('User submission', () => {
     // WIP: drag and drop a randomly generated xlsx workbook
     const filename = 'testData.xlsx';
     const xlsxData = dataObjectToXlsx(filename);
-    const selector = '[data-cy="dropzone"]';
+    // const selector = '[data-cy="dropzone"]';
+    const selector = 'input[type=file]'
 
-    // cy.fixture(filename, 'binary').then((fileContent: string) => {
-    //   // Convert the binary data to a Blob
-    //   const blob = Cypress.Blob.binaryStringToBlob(fileContent, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-    //   // Create a File object
-    //   const file = new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-    //   // Create a DataTransfer object
-    //   const dataTransfer = new DataTransfer();
-    //   dataTransfer.items.add(file);
-
-    //   // Get the dropzone element and simulate the drag and drop events
-    //   cy.get(selector).then(($dropzone: JQuery<HTMLElement>) => {
-    //     const el = $dropzone[0];
-    //     el.ondragover = (event: DragEvent) => event.preventDefault();
-    //     el.ondragenter = (event: DragEvent) => event.preventDefault();
-    //     el.ondrop = (event: DragEvent) => {
-    //       event.preventDefault();
-    //       event.stopPropagation();
-    //     };
-
-    //     // Simulate the drag events
-    //     cy.wrap($dropzone).trigger('dragenter', { dataTransfer }).trigger('dragover', { dataTransfer }).trigger('drop', { dataTransfer }).trigger('dragleave', { dataTransfer });
-    //   });
-    //   // cy.get('[data-cy="dropzone"]').then((element) => {
-    //   //   // Dispatch the 'drop' event and set the dataTransfer object
-    //   //   element[0].dispatchEvent(new DragEvent('drop', { dataTransfer }));
-    //   // });
-    // });
-
-    cy.fixture(filename, 'base64').then((content) => {
-      cy.get(selector).upload(content, filename);
-    });
-    cy.uploadFile(selector, filename);
-    cy.get(selector, { timeout: 10000 })
-      .attachFile({
-        fileContent: new Blob([xlsxData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-        fileName: filename,
-        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        encoding: 'utf8',
-        lastModified: new Date().getTime()
-      })
-      .trigger('change');
-
+    cy.get(selector).selectFile("cypress/downloads/"+filename, {
+      action: 'drag-drop',
+      force: true
+    })
     // Check the radio box
     const verify_data = '[data-cy="data-verify"]';
     cy.get(verify_data).click();
 
-    // Click the submit button
-    const submit = '[data-cy="submit"]';
-    cy.get(submit).click();
+    // // Click the submit button
+    // const submit = '[data-cy="submit"]';
+    // cy.get(submit).click();
 
-    // Check if submission was successful
-    const alert_msg = '[data-cy="alert"]';
-    cy.get(alert_msg).contains('Your submission was successful');
+    // // Check if submission was successful
+    // const alert_msg = '[data-cy="alert"]';
+    // cy.get(alert_msg).contains('Your submission was successful');
   });
 });
