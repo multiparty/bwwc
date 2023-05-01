@@ -78,13 +78,13 @@ const columns: GridColDef[] = [
 
 export const SessionManageTable = () => {
   const { palette } = useTheme();
-  const { sessionId } = useSelector((state: AppState) => state.session);
+  const { sessionId, authToken } = useSelector((state: AppState) => state.session);
   const data: Submission[] = [];
   const [histData, setHistData] = useState(data);
 
   useEffect(() => {
     async function updateSubmissionHistory() {
-      const SubmissionHistory = await getSubmissionHistory(sessionId);
+      const SubmissionHistory = await getSubmissionHistory(sessionId, authToken);
       console.log(SubmissionHistory);
       Object.values(SubmissionHistory).forEach((key, val: any) => {
         let d = {
