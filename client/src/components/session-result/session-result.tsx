@@ -34,7 +34,7 @@ function handleClick(result: ResultFormat) {
 
 export const SessionResult = () => {
   const { decodedTable } = useSelector((state: AppState) => state.session);
-  const result = { 0: decodedTable.data as DataFormat, 1: decodedTable.metadata.companySize as StringDataFormatMap, 2: decodedTable.metadata.industry as StringDataFormatMap};
+  const result = { 0: decodedTable?.data as DataFormat, 1: decodedTable?.metadata.companySize as StringDataFormatMap, 2: decodedTable?.metadata.industry as StringDataFormatMap};
   const [value, setValue] = useState<TabSelection>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);

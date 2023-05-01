@@ -122,7 +122,7 @@ export interface ResultFormat {
 }
 
 export interface SessionResultProps {
-  data: DataFormat;
+  data?: DataFormat;
   metadata:{companySize:StringDataFormatMap, industry: StringDataFormatMap}
 }
 
