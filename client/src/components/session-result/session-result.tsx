@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { AppState, ResultFormat, TabSelection,  DataFormat, StringDataFormatMap } from '@utils/data-format';
+import { AppState, ResultFormat, TabSelection, DataFormat, StringDataFormatMap } from '@utils/data-format';
 import { createCSV } from './to-xlsx';
 import { useSelector } from 'react-redux';
 
@@ -34,7 +34,7 @@ function handleClick(result: ResultFormat) {
 
 export const SessionResult = () => {
   const { decodedTable } = useSelector((state: AppState) => state.session);
-  const result = { 0: decodedTable?.data as DataFormat, 1: decodedTable?.metadata.companySize as StringDataFormatMap, 2: decodedTable?.metadata.industry as StringDataFormatMap};
+  const result = { 0: decodedTable?.data as DataFormat, 1: decodedTable?.metadata.companySize as StringDataFormatMap, 2: decodedTable?.metadata.industry as StringDataFormatMap };
   const [value, setValue] = useState<TabSelection>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);
