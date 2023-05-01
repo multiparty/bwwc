@@ -8,7 +8,7 @@ export function LinearWithValueLabel({ progress }: { progress: number }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (progress >= 1) {
+    if (progress >= 100) {
       navigate('/result');
     }
   }, [progress]);
