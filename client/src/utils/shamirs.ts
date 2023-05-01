@@ -215,6 +215,7 @@ threshold (number) - The minimum number of shares required to reconstruct each s
 numEncryptWithKey (number) - The number of shares to be encrypted using the public key.
 publicKey (CryptoKey) - The public key used for encryption.
 stringify (boolean, optional) - Whether to return the shares as strings. Default: false.
+transform (function, optional) - A function to apply to each secret value before sharing. Default: (x) => x.
 
 output:
 encryptedSecretShares (Promise<Record<string, any>>) - A promise that resolves to an object with the same structure as the
@@ -227,7 +228,8 @@ export async function tableToSecretShares(
   numEncryptWithKey: number,
   publicKey: CryptoKey,
   prime: BigNumber,
-  stringify: boolean = false
+  stringify: boolean = false,
+  transform: (value: any) => any = (x) => x
 ): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
@@ -235,7 +237,8 @@ export async function tableToSecretShares(
 
     for (const key of keys) {
       if (typeof originalObj[key] === 'number') {
-        const points = shamirShare(BigNumber(originalObj[key]), numShares, BigNumber(threshold), stringify, (prime = prime));
+        const cellValue = transform(originalObj[key]);
+        const points = shamirShare(BigNumber(cellValue), numShares, BigNumber(threshold), stringify, (prime = prime));
         currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {
@@ -259,6 +262,7 @@ obj (Record<string, any>) - The nested object containing encrypted secret shares
 privateKey (CryptoKey) - The private key used to decrypt the secret shares.
 prime (BigNumber) - The prime used to generate the secret shares.
 reduce (function) - A function that reduces the unencrypted secret shares to a single value.
+transform (function, optional) - A function to apply to each secret value before reducing. Default: (x) => x.
 
 outputs:
 Promise<Record<string, any>> - A Promise that resolves to the original nested table structure with decrypted secret shares.
@@ -268,7 +272,8 @@ export async function secretSharesToTable(
   privateKey: CryptoKey,
   prime: BigNumber,
   reduce: (value: any) => any,
-  progressBar: (value: any) => any
+  progressBar: (value: any) => any,
+  transform: (value: any) => any = (x) => x
 ): Promise<Record<string, any>> {
   var counter = 0;
   const totalSteps = countSteps(obj);
@@ -289,8 +294,8 @@ export async function secretSharesToTable(
     for (const key of keys) {
       if (Array.isArray(originalObj[key])) {
         const shares = await reduce(await decryptSecretShares(originalObj[key], privateKey));
-        const reconstructed = shamirReconstruct(shares, prime, new BigNumber(0));
-        currentObj[key] = reconstructed;
+        const reconstructed = parseFloat(shamirReconstruct(shares, prime, new BigNumber(0)));
+        currentObj[key] = transform(reconstructed);
         progressBar(counter++);
       } else if (typeof originalObj[key] === 'object') {
         if (!currentObj[key]) {

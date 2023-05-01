@@ -44,7 +44,7 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
       <Stack spacing={2} sx={{ textAlign: 'center' }}>
         <Grid item xs={12} md={6} sx={{ width: '50%' }}>
           {tabSelection != 0 ? (
-            <Formik validationSchema={validationSchema} initialValues={initialValue} onSubmit={console.log}>
+            <Formik validationSchema={validationSchema} initialValues={initialValue} onSubmit={() => {}}>
               <Form>
                 <FormObserver />
                 {tabSelection == 1 ? (

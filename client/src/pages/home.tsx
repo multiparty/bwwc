@@ -33,10 +33,11 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
+        const scale = (num: number) => num * 100;
         const prime = await getPrime(sessionId);
         const publicKeyString = await getPublicKey(sessionId);
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
-        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, new BigNumber(prime), true);
+        const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, new BigNumber(prime), true, scale);
         setTable(secretTable);
       }
     };

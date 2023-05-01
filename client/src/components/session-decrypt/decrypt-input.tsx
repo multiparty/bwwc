@@ -77,12 +77,14 @@ export const DecryptInputForm = () => {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
         const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
+
         const recordProgress = (progress: number) => {
           const numTable = Object.keys(metadata.companySize).length + Object.keys(metadata.industry).length + 1;
           setProgress((progress / (total_cells * numTable - 1)) * 100);
         };
 
-        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress);
+        const scale = (num: number) => num / 100;
+        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress, scale);
         dispatch(setDecodedTable(decodedTable));
         dispatch(setMetadata(metadata));
       }
@@ -104,7 +106,7 @@ export const DecryptInputForm = () => {
           <Divider />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Formik validationSchema={validationSchema} initialValues={{ privateKey: '' }} onSubmit={console.log}>
+              <Formik validationSchema={validationSchema} initialValues={{ privateKey: '' }} onSubmit={() => {}}>
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>
