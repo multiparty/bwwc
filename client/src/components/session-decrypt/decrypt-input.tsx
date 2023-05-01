@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik, useFormikContext } from 'formik';
 import * as Yup from 'yup';
@@ -21,16 +21,11 @@ const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
 });
 
-export interface CompanyInputFormProps {
-  onFileUpload: (file: CustomFile) => void;
-  setPrivateKey: (privateKey: string) => void;
-}
-
 interface valueProps {
   privateKey: string;
 }
 
-export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
+export const DecryptInputForm = () => {
   const dispatch = useDispatch();
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
@@ -40,7 +35,6 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
-      props.setPrivateKey(values.privateKey);
       setPrivateKey(values.privateKey);
     }, [values]);
     return null;
@@ -48,7 +42,6 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
 
   const submitPrivateKeyHandler = async (files: CustomFile[]) => {
     const file = files[0];
-    props.onFileUpload(file);
 
     const reader = new FileReader();
 
@@ -84,9 +77,9 @@ export const DecryptInputForm: FC<CompanyInputFormProps> = (props) => {
         const fileContent = event.target?.result as string;
         const privateCryptoKey = await importPemPrivateKey(fileContent);
         const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
-
         const recordProgress = (progress: number) => {
-          setProgress((progress / (total_cells - 1)) * 100);
+          const numTable = Object.keys(metadata.companySize).length + Object.keys(metadata.industry).length + 1;
+          setProgress((progress / (total_cells * numTable - 1)) * 100);
         };
 
         const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress);

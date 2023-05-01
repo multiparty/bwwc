@@ -72,19 +72,21 @@ export const createCSV = (result: ResultFormat): void => {
 
   // Generate sheets for All, aggregated numbers
   const data = result[0];
-  var prefix = 'All';
+  let prefix = 'All';
   map_xlsx(wb, data, prefix, prefix);
 
   // Generate sheets for Industries and Sizes
   const second = result[1];
   for (const [key, value] of Object.entries(second)) {
     prefix = key;
-    var longName = Industries.find((industry) => industry.value === key)?.label;
-    if (!longName) {
-      longName = Sizes.find((size) => size.value === key)?.label;
-    }
-    const data = value;
-    map_xlsx(wb, data, prefix, longName || prefix);
+    let longName = Industries.find((industry) => industry.value === key)?.label;
+    map_xlsx(wb, value, prefix, longName || prefix);
+  }
+  const third = result[2];
+  for (const [key, value] of Object.entries(third)) {
+    prefix = key;
+    let longName = Sizes.find((size) => size.value === key)?.label;
+    map_xlsx(wb, value, prefix, longName || prefix);
   }
 
   // Export the workbook to a file to download
