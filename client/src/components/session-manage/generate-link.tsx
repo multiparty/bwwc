@@ -24,7 +24,7 @@ function CopyToClipboardButton(props: CopyToClipboardButtonProps) {
   return (
     <>
       <Button onClick={handleClick} id="copyLink">
-        <CopyAllIcon color="action"/>
+        <CopyAllIcon color="action" />
       </Button>
 
       <Snackbar open={open} onClose={() => setOpen(false)} autoHideDuration={2000} message="Copied to clipboard" />
@@ -63,8 +63,8 @@ export const LinkGenerator: FC = () => {
               <Stack spacing={2}>
                 <Typography variant="subtitle1">Generate more URLs for new participants.</Typography>
 
-                <TextInput fullWidth name="count" label="New participants" type="number"/>
-                <SubmitButton type="submit" variant="contained" fullWidth  id="generateID">
+                <TextInput fullWidth name="count" label="New participants" type="number" />
+                <SubmitButton type="submit" variant="contained" fullWidth id="generateID">
                   Submit
                 </SubmitButton>
               </Stack>
@@ -81,7 +81,7 @@ export const LinkGenerator: FC = () => {
             <Card>
               <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
                 <Grid item sx={{ marginLeft: 'auto' }}>
-                  <CopyToClipboardButton links={generatedLinks}/>
+                  <CopyToClipboardButton links={generatedLinks} />
                 </Grid>
               </Grid>
               <CardContent>

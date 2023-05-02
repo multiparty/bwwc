@@ -51,7 +51,7 @@ export const SessionCreateForm: FC = (props) => {
         >
           <Form>
             <Stack spacing={2}>
-              <LoadingButton disabled={!!sessionId} loading={loading} fullWidth variant="contained" onClick={handleClick} id ="creare-submission">
+              <LoadingButton disabled={!!sessionId} loading={loading} fullWidth variant="contained" onClick={handleClick} id="creare-submission">
                 Create New Session
               </LoadingButton>
               <Divider sx={{ p: 1 }} />
@@ -73,13 +73,21 @@ export const SessionCreateForm: FC = (props) => {
               </Typography>
               <TextInput disabled fullWidth multiline name="privateKey" label="Private Key" rows={4} />
               <Box>
-                <Button disabled={!privateKey} variant="contained" startIcon={<DownloadTwoTone />} component="a" href={fileUrl} download={`privateKey-${sessionId}.pem`} id="downloadKey">
+                <Button
+                  disabled={!privateKey}
+                  variant="contained"
+                  startIcon={<DownloadTwoTone />}
+                  component="a"
+                  href={fileUrl}
+                  download={`privateKey-${sessionId}.pem`}
+                  id="downloadKey"
+                >
                   Download Private Key
                 </Button>
               </Box>
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox value={checked} onChange={(event) => setChecked(event.target.checked)}/>}
+                  control={<Checkbox value={checked} onChange={(event) => setChecked(event.target.checked)} />}
                   label="I have saved the BWWC 2023 Submission ID, and private key in a secure location."
                 />
               </FormGroup>
