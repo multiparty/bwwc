@@ -8,5 +8,6 @@ declare namespace Cypress {
      */
     uploadFile(selector: string, fileName: string): Chainable<null>;
     upload(file: any, fileName: string): Chainable<null>;
+    getClipboardText(): Chainable<string>;
   }
 }

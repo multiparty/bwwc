@@ -91,11 +91,13 @@ export function dataGenerator() {
 export function dataObjectToXlsx(filename: string): ArrayBuffer {
   const dataObjects = dataGenerator();
   const wb = XLSX.utils.book_new();
+
   // Adding an empty, first sheet
   const empty_sheet: any[] = [];
   let ws = XLSX.utils.aoa_to_sheet(empty_sheet);
   const first_sheet = 'Enter Data →';
   XLSX.utils.book_append_sheet(wb, ws, first_sheet);
+
   // Adding sheets for respective statistics
   Object.keys(dataObjects).forEach((dataObj, index) => {
     if (dataObj !== 'totalEmployees') {
@@ -132,6 +134,5 @@ export function dataObjectToXlsx(filename: string): ArrayBuffer {
   for (let i = 0; i < xlsxData.length; i++) {
     view[i] = xlsxData.charCodeAt(i) & 0xff;
   }
-  cy.writeFile(`cypress/fixtures/${filename}`, buf, { encoding: 'binary' });
   return XLSX.writeFile(wb, `${filename}`);
 }
