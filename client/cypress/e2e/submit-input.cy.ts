@@ -23,7 +23,7 @@ describe('User submission', () => {
     cy.get(manage).click(); // This takes us to /manage page
 
     UserInput();
-    // Next submission
+    // WIP: Next submission
     cy.visit(prefix + '/manage');
   });
 });
