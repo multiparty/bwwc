@@ -66,6 +66,12 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
   const [initialValue, setInitialValue] = useState({ input: tabSelection == 1 ? 'small' : 'it' });
   const [ddSelection, setDDSelection] = useState<String>(tabSelection == 1 ? 'small' : 'it');
 
+  const sizeValuesToMatch = data ? Object.keys(data[1]) : [];
+  const selectedSizes = Sizes.filter((option) => sizeValuesToMatch.includes(option.value));
+
+  const industryValuesToMatch = data ? Object.keys(data[2]) : [];
+  const selectedIndustriess = Industries.filter((option) => industryValuesToMatch.includes(option.value));
+
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
@@ -88,9 +94,9 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
               <Form>
                 <FormObserver />
                 {tabSelection == 1 ? (
-                  <AutoCompleteInput key={tabSelection} fullWidth name="size" options={Sizes} label="Company Size selection" tabSelection={tabSelection} />
+                  <AutoCompleteInput key={tabSelection} fullWidth name="size" options={selectedSizes} label="Company Size selection" tabSelection={tabSelection} />
                 ) : (
-                  <AutoCompleteInput key={tabSelection} fullWidth name="industry" options={Industries} label="Industry selection" tabSelection={tabSelection} />
+                  <AutoCompleteInput key={tabSelection} fullWidth name="industry" options={selectedIndustriess} label="Industry selection" tabSelection={tabSelection} />
                 )}
               </Form>
             </Formik>
