@@ -71,7 +71,7 @@ export const SessionManage: FC = () => {
               )}
             </Stack>
 
-            <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
+            <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={() => {}}>
               <Form>
                 <FormObserver />
                 <Stack spacing={2}>

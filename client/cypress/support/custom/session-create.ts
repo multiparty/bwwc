@@ -77,8 +77,7 @@ export async function startSession(): Promise<CreateSessionResponse> {
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
     API_ENDPOINTS.START_SESSION,
     convertToFormData({
-      public_key: publicKeyPem,
-      auth_token: 'remove this later'
+      public_key: publicKeyPem
     })
   );
 

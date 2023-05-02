@@ -1,17 +1,14 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
-import { ResultFormat, TabSelection } from '@utils/data-format';
+import { AppState, ResultFormat, TabSelection, DataFormat, StringDataFormatMap } from '@utils/data-format';
 import { createCSV } from './to-xlsx';
+import { useSelector } from 'react-redux';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
-
-interface SessionResultProps {
-  result: ResultFormat;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -35,7 +32,9 @@ function handleClick(result: ResultFormat) {
   createCSV(result);
 }
 
-export const SessionResult: FC<SessionResultProps> = ({ result }) => {
+export const SessionResult = () => {
+  const { decodedTable } = useSelector((state: AppState) => state.session);
+  const result = { 0: decodedTable?.data as DataFormat, 1: decodedTable?.metadata.companySize as StringDataFormatMap, 2: decodedTable?.metadata.industry as StringDataFormatMap };
   const [value, setValue] = useState<TabSelection>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);
@@ -56,7 +55,7 @@ export const SessionResult: FC<SessionResultProps> = ({ result }) => {
                   handleClick(result);
                 }}
               >
-                DownLoad File
+                Download File
               </Button>
             </Grid>
             <Box>

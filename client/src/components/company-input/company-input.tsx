@@ -69,7 +69,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
           <Divider />
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={console.log}>
+              <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={() => {}}>
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>

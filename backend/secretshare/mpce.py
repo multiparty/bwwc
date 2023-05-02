@@ -5,6 +5,7 @@ import numbers
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 from itertools import groupby
 from operator import itemgetter
+from collections import defaultdict
 
 sys.path.append("../cryptography")
 
@@ -81,15 +82,17 @@ class MPCEngine(object):
     def create_session(self, auth_token: str, public_key: str) -> str:
         session_id = str(uuid.uuid4())[:26]
         session_data = {
-            "session_id": session_id,
+            "auth_token": auth_token,
+            "merged": {},
+            "metadata": {},
+            "num_cells": 0,
             "participants": {},
             "participant_submissions": {},
-            "protocol": self.protocol,
             "prime": self.prime,
+            "protocol": self.protocol,
             "public_key": public_key,
-            "auth_token": auth_token,
+            "session_id": session_id,
             "state": "open",
-            "merged": {},
         }
 
         self.save_session(session_id, session_data)
@@ -220,6 +223,59 @@ class MPCEngine(object):
         return result_table
 
     """
+    Count the number of cells in a table.
+    
+    inputs:
+    table (Dict[str, Union[List, int]]) - the table to be counted, cells can be lists, strings or integers.
+    
+    outputs:
+    count (int) - the number of cells in the table.
+    """
+
+    def count_cells(self, table: Dict[str, Union[List, int]]) -> int:
+        count = 0
+
+        def dfs_helper(key: str, table: Dict[str, Any]):
+            nonlocal count
+            if (
+                isinstance(table[key], numbers.Number)
+                or isinstance(table[key], str)
+                or isinstance(table[key], list)
+            ):
+                count += 1
+            elif isinstance(table[key], dict):
+                for k in table[key].keys():
+                    dfs_helper(k, table[key])
+            else:
+                raise Exception("Invalid table")
+
+        for key in table:
+            dfs_helper(key, table)
+
+        return count
+
+    """
+    Get the number of cells in the final merged table.
+    
+    inputs:
+    session_id (str) - the unique identifier of the session.
+    
+    outputs:
+    count (int) - the number of cells in the final merged table.
+    """
+
+    def get_cell_count(self, session_id: str):
+        session_data = self.get_session(session_id)
+
+        if session_data["state"] != "closed":
+            raise ValueError("Session is still open")
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["num_cells"]
+
+    """
     Update session data with new data submitted by a participant
 
     inputs:
@@ -251,6 +307,33 @@ class MPCEngine(object):
 
         session_data["participant_submissions"][participant_id] = data
         self.save_session(session_id, session_data)
+
+    """
+    Get the current session data
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which submissions should be closed
+    
+    outputs:
+    participant_submissions (dict) - the current session data history
+    """
+
+    def get_submission_history(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return [
+            {
+                "participantCode": participant_code,
+                "industry": data["industry"],
+                "companySize": data["companySize"],
+            }
+            for participant_code, data in session_data[
+                "participant_submissions"
+            ].items()
+        ]
 
     """
     Close submissions for a session
@@ -434,14 +517,82 @@ class MPCEngine(object):
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
 
-        submissions = list(session_data["participant_submissions"].values())
-        data = submissions[0]["table"]
+        def reduce_tables(elements: List[Dict], key: str) -> Dict:
+            data = elements[0][key]
 
-        for i in range(1, len(session_data["participant_submissions"])):
-            data = self.merge_tables(data, submissions[i]["table"], reduce)
+            for i in range(1, len(elements)):
+                data = self.merge_tables(data, elements[i][key], reduce)
+
+            return data
+
+        submissions = list(session_data["participant_submissions"].values())
+        company_size_tables = defaultdict(list)
+        industry_tables = defaultdict(list)
+
+        # extract tables by categories
+        for data in submissions:
+            company_size_tables[data["companySize"]].append(data)
+            industry_tables[data["industry"]].append(data)
+
+        # reduce tables by categories
+        for key, value in company_size_tables.items():
+            company_size_tables[key] = reduce_tables(value, "table")
+
+        for key, value in industry_tables.items():
+            industry_tables[key] = reduce_tables(value, "table")
+
+        merged_tables = reduce_tables(submissions, "table")
+        metadata = self.compute_metadata(submissions)
+        metadata["companySize"] = company_size_tables
+        metadata["industry"] = industry_tables
 
         if "merged" not in session_data:
             session_data["merged"] = {}
 
-        session_data["merged"] = data
+        session_data["merged"] = merged_tables
+        session_data["metadata"] = metadata
+        session_data["num_cells"] = self.count_cells(session_data["merged"])
+
         self.save_session(session_id, session_data)
+
+    """
+    Compute summary of metadata
+    
+    inputs:
+    data (list) - the list of submission dictionaries
+    
+    outputs:
+    metadata (dict) - the metadata for the session
+    """
+
+    def compute_metadata(self, data: List[dict]) -> dict:
+        metadata = {"companySize": defaultdict(int), "industry": defaultdict(int)}
+
+        for i in range(len(data)):
+            companySizeType = data[i]["companySize"]
+            industryType = data[i]["industry"]
+            metadata["companySize"][companySizeType] += 1
+            metadata["industry"][industryType] += 1
+
+        return metadata
+
+    """
+    Get metadata for a session
+    
+    inputs:
+    session_id (str) - the unique identifier of the session for which the metadata should be retrieved
+    
+    outputs:
+    metadata (dict) - the metadata for the session
+    """
+
+    def get_metadata(self, session_id: str) -> dict:
+        session_data = self.get_session(session_id)
+
+        if session_data["state"] != "closed":
+            raise ValueError("Session is not closed")
+
+        if not session_data:
+            raise ValueError("Invalid session ID")
+
+        return session_data["metadata"]

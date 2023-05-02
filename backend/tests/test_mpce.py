@@ -121,3 +121,16 @@ def test_nested_structure():
     table2 = {"A": [6, [7, 8]], "B": [9, 10]}
     expected = {"A": [(1, 6), [(2, 7), (3, 8)]], "B": [(4, 9), (5, 10)]}
     assert engine.merge_tables(table1, table2) == expected
+
+
+def test_count_cells():
+    table = {
+        "a": 1,
+        "b": {
+            "c": "foo",
+            "d": [1, 2, 3],
+            "e": {"f": "bar", "g": [4, 5, 6], "h": {"i": "wow", "j": {"k": [7, 8, 9]}}},
+        },
+    }
+    expected = 7
+    assert engine.count_cells(table) == expected

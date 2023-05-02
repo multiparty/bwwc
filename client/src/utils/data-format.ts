@@ -5,8 +5,11 @@ import BigNumber from 'bignumber.js';
 
 export interface AppState {
   session: {
+    aggregatedCompanySize: any;
+    aggregatedIndustry: any;
     authToken: string;
     companySize: string;
+    decodedTable: SessionResultProps;
     industry: string;
     participantCode: string;
     publicKey: string;
@@ -116,6 +119,11 @@ export interface ResultFormat {
   0: DataFormat;
   1: StringDataFormatMap;
   2: StringDataFormatMap;
+}
+
+export interface SessionResultProps {
+  data?: DataFormat;
+  metadata: { companySize: StringDataFormatMap; industry: StringDataFormatMap };
 }
 
 export type TabSelection = 0 | 1 | 2;

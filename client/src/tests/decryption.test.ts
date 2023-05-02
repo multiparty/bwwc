@@ -17,7 +17,56 @@ describe('shamirReconstruct', () => {
       ['10', '10114232']
     ];
 
-    const expectedSecret = new BigNumber(8888);
+    const expectedSecret = '8888';
+    const prime = new BigNumber(15485867);
+    const reconstructedSecret = shamirReconstruct(
+      shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
+      prime,
+      new BigNumber(0)
+    );
+
+    expect(reconstructedSecret).toEqual(expectedSecret);
+  });
+
+  it('should reconstruct the secret correctly', () => {
+    const shares: Point[] = [
+      ['1', '618311'],
+      ['2', '12729322'],
+      ['3', '2467414'],
+      ['4', '5825123'],
+      ['5', '4766504'],
+      ['6', '4656466'],
+      ['7', '3289038'],
+      ['8', '6373236'],
+      ['9', '12047196'],
+      ['10', '10878174']
+    ];
+
+    const expectedSecret = '300';
+    const prime = new BigNumber(15485867);
+    const reconstructedSecret = shamirReconstruct(
+      shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),
+      prime,
+      new BigNumber(0)
+    );
+
+    expect(reconstructedSecret).toEqual(expectedSecret);
+  });
+
+  it('should reconstruct the secret correctly', () => {
+    const shares: Point[] = [
+      ['1', '11640419'],
+      ['2', '6340497'],
+      ['3', '12316611'],
+      ['4', '2435563'],
+      ['5', '2615949'],
+      ['6', '14398824'],
+      ['7', '14947702'],
+      ['8', '3506157'],
+      ['9', '1397823'],
+      ['10', '5568793']
+    ];
+    const expectedSecret = '300';
     const prime = new BigNumber(15485867);
     const reconstructedSecret = shamirReconstruct(
       shares.map(([x, y]) => [new BigNumber(x), new BigNumber(y)]),

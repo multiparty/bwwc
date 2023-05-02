@@ -17,6 +17,7 @@ const API_ENDPOINTS = {
   GET_PUBLIC_KEY: 'get_public_key/',
   GET_SUBMISSION_URLS: 'get_submission_urls/',
   GET_SUBMISSIONS: 'get_submitted_data/',
+  GET_SUBMISSION_HISTORY: 'get_submission_history/',
   SUBMIT_DATA: 'submit_data/'
 };
 
@@ -41,11 +42,28 @@ interface EndSessionResponse {
   };
 }
 
+interface Submission {
+  participantCode: string;
+  industry: string;
+  companySize: string;
+}
+
 export interface GetSubmissionUrlsResponse {
   [participant: string]: string;
 }
 
 interface GetEncryptedSharesResponse extends NestedObject {}
+
+interface Metadata {
+  companySize: number;
+  industry: number;
+}
+
+interface GetSubmissionData {
+  data: GetEncryptedSharesResponse;
+  total_cells: number;
+  metadata: Metadata;
+}
 
 interface SubmitDataResponse {
   status: {
@@ -65,7 +83,8 @@ export interface ApiContextProps {
   endSession: (sessionId: string, authToken: string) => Promise<EndSessionResponse>;
   createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => Promise<GetSubmissionUrlsResponse>;
   getPublicKey: (sessionId: string) => Promise<string>;
-  getSubmissions: (sessionId: string, authToken: string) => Promise<GetEncryptedSharesResponse>;
+  getSubmissions: (sessionId: string, authToken: string) => Promise<GetSubmissionData>;
+  getSubmissionHistory: (sessionId: string, authToken: string) => Promise<Submission[]>;
   stopSession: (sessionId: string, authToken: string) => Promise<StopSessionResponse>;
   submitData: (data: NestedObject, sessionId: string, participantCode: string) => Promise<AxiosResponse>;
 }
@@ -78,8 +97,7 @@ export async function startSession(): Promise<CreateSessionResponse> {
   const response: AxiosResponse<StartSessionResponse> = await axios.post(
     API_ENDPOINTS.START_SESSION,
     convertToFormData({
-      public_key: publicKeyPem,
-      auth_token: 'remove this later'
+      public_key: publicKeyPem
     })
   );
 
@@ -118,16 +136,19 @@ export async function createNewSubmissionUrls(count: number, sessionId: string, 
     API_ENDPOINTS.GET_SUBMISSION_URLS,
     convertToFormData({
       session_id: sessionId,
-      participant_count: count,
-      auth_token: 'remove this later'
+      participant_count: count
     })
   );
   return response.data;
 }
 
-export async function getSubmissions(sessionId: string, authToken: string): Promise<GetEncryptedSharesResponse> {
+export async function getSubmissions(sessionId: string, authToken: string): Promise<GetSubmissionData> {
   const response: AxiosResponse = await axios.get(API_ENDPOINTS.GET_SUBMISSIONS, { params: { session_id: sessionId, auth_token: authToken } });
-  return response.data;
+  return {
+    data: response.data,
+    total_cells: response.data.total_cells,
+    metadata: response.data.metadata
+  };
 }
 
 export async function submitData(data: NestedObject, sessionId: string, participantCode: string): Promise<AxiosResponse> {
@@ -150,6 +171,11 @@ export async function getPrime(sessionId: string): Promise<string> {
 export async function getPublicKey(session_id: string): Promise<string> {
   const response = await axios.get(API_ENDPOINTS.GET_PUBLIC_KEY, { params: { session_id: session_id } });
   return response.data.public_key;
+}
+
+export async function getSubmissionHistory(sessionId: string, authToken: string): Promise<Submission[]> {
+  const response = await axios.get(API_ENDPOINTS.GET_SUBMISSION_HISTORY, { params: { session_id: sessionId, auth_token: authToken } });
+  return response.data;
 }
 
 const convertToFormData = (data: any): FormData => {
@@ -194,6 +220,7 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
         createNewSubmissionUrls: (count: number, sessionId: string, authToken: string) => createNewSubmissionUrls(count, sessionId, authToken),
         getPublicKey: (session_id: string) => getPublicKey(session_id),
         getSubmissions: (sessionId: string, authToken: string) => getSubmissions(sessionId, authToken),
+        getSubmissionHistory: (sessionId: string, authToken: string) => getSubmissionHistory(sessionId, authToken),
         stopSession: (sessionId: string, authToken: string) => stopSession(sessionId, authToken),
         submitData: (data: NestedObject, sessionId: string, participantCode: string) => submitData(data, sessionId, participantCode)
       }}

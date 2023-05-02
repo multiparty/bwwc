@@ -12,17 +12,11 @@ export const Footer = () => {
           <Stack spacing={3}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={4}>
-                <Typography variant="h6" color="black">
+                <Typography variant="h6" color="black" style={{ marginBottom: '1rem' }}>
                   Need Help?
                 </Typography>
-                <Typography variant="subtitle1" color="gray">
-                  For immediate questions, the team will be available during the following times from 2 - 4PM.
-                </Typography>
-                <Typography variant="subtitle1" color="gray" sx={{ ml: 2 }}>
-                  M/W/F: Please reach out to Renee Lucas at 508-498-7341
-                </Typography>
-                <Typography variant="subtitle1" color="gray" sx={{ ml: 2 }}>
-                  T/Th: Please reach out to Cindy Nguyen at 774-641-2130
+                <Typography variant="subtitle1" color="gray" style={{ marginBottom: '1rem' }}>
+                  For immediate questions, Renee Lucas (508-498-7341) will be available during the following times, Monday-Friday, from 2-4 PM ET, during the submission period.
                 </Typography>
                 <Typography variant="subtitle1" color="gray">
                   For any other times, please email us at <Link>team@thebwwc.org</Link> and we will get back to you within 24 hours.
