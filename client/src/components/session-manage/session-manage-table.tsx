@@ -55,9 +55,9 @@ export const SessionManageTable = () => {
 
   useEffect(() => {
     async function updateSubmissionHistory() {
-      const SubmissionHistory:any = await getSubmissionHistory(sessionId, authToken);
+      const SubmissionHistory: any = await getSubmissionHistory(sessionId, authToken);
       if (SubmissionHistory.data.length > 0) {
-        const newData = Object.values(SubmissionHistory.data).map((val:any) => ({
+        const newData = Object.values(SubmissionHistory.data).map((val: any) => ({
           industry: val.industry,
           participationID: val.participantCode,
           size: val.companySize,
@@ -70,16 +70,14 @@ export const SessionManageTable = () => {
 
           if (existingItemIndex !== -1) {
             const existingItem = updatedData[existingItemIndex];
-            // Check if there are any changes in other elements
+            // Check if there are any changes in other elements and Update the existing item in histData
             if (existingItem.industry !== newItem.industry || existingItem.size !== newItem.size) {
-              // Update the existing item in histData
               updatedData[existingItemIndex] = {
                 ...newItem,
                 hist: Date.now().toString()
               };
             }
           } else {
-            // Add new item to histData
             updatedData.push(newItem);
           }
         });
