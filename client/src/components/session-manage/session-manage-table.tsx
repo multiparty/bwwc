@@ -5,35 +5,6 @@ import { getSubmissionHistory } from '@services/api';
 import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
 
-////// Example usage STARTS //////
-// let data: Submission[] = [];
-
-// const newSubmission: Submission = {
-//   industry: 'Information Technology',
-//   participationID: '12345678912345678912345678',
-//   size: 'Medium (50-199 employees)',
-//   hist: '2022-02-12 12:34'
-// };
-// data.push(newSubmission);
-
-// const newSubmission2: Submission = {
-//   industry: 'Information Technology',
-//   participationID: '1234567891ddd5678912345678',
-//   size: 'Medium (50-199 employees)',
-//   hist: '2022-03-12 12:34'
-// };
-// data.push(newSubmission2);
-
-// const newSubmission3: Submission = {
-//   industry: 'Biotech/Pharmaceuticals',
-//   participationID: '12345678912345678912345578',
-//   size: 'Medium (50-199 employees)',
-//   hist: '2022-03-12 15:34'
-// };
-// data.push(newSubmission3);
-
-// ////// ^Example usage ENDS //////
-
 const COLUMN_WIDTH = 250;
 const HEIGHT = 400;
 
@@ -84,19 +55,44 @@ export const SessionManageTable = () => {
 
   useEffect(() => {
     async function updateSubmissionHistory() {
-      const SubmissionHistory = await getSubmissionHistory(sessionId, authToken);
-      Object.values(SubmissionHistory).forEach((key, val: any) => {
-        let d = {
+      const SubmissionHistory:any = await getSubmissionHistory(sessionId, authToken);
+      if (SubmissionHistory.data.length > 0) {
+        const newData = Object.values(SubmissionHistory.data).map((val:any) => ({
           industry: val.industry,
           participationID: val.participantCode,
           size: val.companySize,
           hist: Date.now().toString()
-        };
-        data.push(d);
-      });
-      setHistData(data);
+        }));
+
+        let updatedData = [...histData];
+        newData.forEach((newItem) => {
+          const existingItemIndex = updatedData.findIndex((item) => item.participationID === newItem.participationID);
+
+          if (existingItemIndex !== -1) {
+            const existingItem = updatedData[existingItemIndex];
+            // Check if there are any changes in other elements
+            if (existingItem.industry !== newItem.industry || existingItem.size !== newItem.size) {
+              // Update the existing item in histData
+              updatedData[existingItemIndex] = {
+                ...newItem,
+                hist: Date.now().toString()
+              };
+            }
+          } else {
+            // Add new item to histData
+            updatedData.push(newItem);
+          }
+        });
+
+        setHistData(updatedData);
+      }
     }
-    updateSubmissionHistory();
+
+    const intervalId = setInterval(() => {
+      updateSubmissionHistory();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
