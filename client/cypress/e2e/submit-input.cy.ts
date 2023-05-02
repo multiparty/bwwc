@@ -1,7 +1,7 @@
 import { UserInput } from '../support/custom/user-input';
 
 describe('User submission', () => {
-  const prefix = 'https://mpc.sail.codes'
+  const prefix = 'https://mpc.sail.codes';
 
   it('user input and submit', () => {
     cy.visit(prefix + '/create');
