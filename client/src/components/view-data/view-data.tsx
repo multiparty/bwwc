@@ -1,14 +1,16 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Box, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { DataFormat } from '@utils/data-format';
 import { Table } from '@components/table';
 
 export interface ViewDataProps {
   data?: DataFormat;
+  check: boolean;
+  setCheck: (check:boolean) => void;
 }
 
-export const ViewData: FC<ViewDataProps> = ({ data }) => {
-  const [check, setCheck] = useState<boolean>(false);
+export const ViewData: FC<ViewDataProps> = ({ data, check, setCheck }) => {
+
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>
