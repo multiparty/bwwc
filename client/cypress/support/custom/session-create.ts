@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 Object.defineProperty(globalThis, 'crypto', {
   value: {
-    getRandomValues: (arr:any) => crypto.randomBytes(arr.length)
+    getRandomValues: (arr: any) => crypto.randomBytes(arr.length)
   }
 });
 
