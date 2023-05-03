@@ -2,6 +2,7 @@ import { UserInput } from '../support/custom/user-input';
 
 describe('User submission', () => {
   const prefix = 'https://mpc.sail.codes';
+  let numTest = 1;
 
   it('user input and submit', () => {
     cy.visit(prefix + '/create');
@@ -23,7 +24,13 @@ describe('User submission', () => {
     cy.get(manage).click(); // This takes us to /manage page
 
     UserInput();
-    // WIP: Next submission
-    cy.visit(prefix + '/manage');
+
+    while (numTest > 1) {
+      cy.visit(prefix + '/manage');
+      UserInput();
+      numTest--;
+    }
+
+    // WIP: Decrypt and check result
   });
 });

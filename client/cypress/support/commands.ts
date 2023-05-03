@@ -40,3 +40,10 @@ Cypress.Commands.add('getClipboardText', () => {
     return win.navigator.clipboard.readText();
   });
 });
+
+declare global {
+  interface Clipboard {
+    __data?: string;
+  }
+}
+export {};
