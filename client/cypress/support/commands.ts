@@ -35,3 +35,8 @@
 //     }
 //   }
 // }
+Cypress.Commands.add('getClipboardText', () => {
+  return cy.window().then((win) => {
+    return win.navigator.clipboard.readText();
+  });
+});

@@ -23,7 +23,7 @@ function CopyToClipboardButton(props: CopyToClipboardButtonProps) {
 
   return (
     <>
-      <Button onClick={handleClick}>
+      <Button onClick={handleClick} id="copyLink">
         <CopyAllIcon color="action" />
       </Button>
 
@@ -56,7 +56,7 @@ export const LinkGenerator: FC = () => {
   return (
     <Stack spacing={3} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
       <Box style={{ width: '50%' }}>
-        <Formik validationSchema={validationSchema} initialValues={{ count: 0 }} onSubmit={handleSubmit}>
+        <Formik validationSchema={validationSchema} initialValues={{ count: 1 }} onSubmit={handleSubmit}>
           <Form>
             <Stack spacing={0}>
               <Typography variant="h5">Add Participants</Typography>
@@ -64,7 +64,7 @@ export const LinkGenerator: FC = () => {
                 <Typography variant="subtitle1">Generate more URLs for new participants.</Typography>
 
                 <TextInput fullWidth name="count" label="New participants" type="number" />
-                <SubmitButton type="submit" variant="contained" fullWidth>
+                <SubmitButton type="submit" variant="contained" fullWidth id="generateID">
                   Submit
                 </SubmitButton>
               </Stack>

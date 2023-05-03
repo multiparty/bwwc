@@ -37,7 +37,7 @@ export const FileUpload: FC<FileUploadProps> = (props) => {
     [props.value]
   );
   return (
-    <div {...getRootProps()}>
+    <div {...getRootProps()} data-cy="dropzone">
       <Box
         sx={{
           outline: 'none',
