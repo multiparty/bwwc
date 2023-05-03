@@ -71,7 +71,7 @@ export const HomePage: FC = () => {
     <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
-        <ViewData open={false} data={data} />
+        <ViewData data={data} />
         <VerifyData data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} />
       </Stack>
     </Layout>

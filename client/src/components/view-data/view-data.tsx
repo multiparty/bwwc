@@ -1,15 +1,14 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Box, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { DataFormat } from '@utils/data-format';
 import { Table } from '@components/table';
-import { date } from 'yup';
 
 export interface ViewDataProps {
-  open: boolean;
   data?: DataFormat;
 }
 
-export const ViewData: FC<ViewDataProps> = ({ open, data }) => {
+export const ViewData: FC<ViewDataProps> = ({ data }) => {
+  const [check, setCheck] = useState<boolean>(false);
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>
@@ -25,7 +24,12 @@ export const ViewData: FC<ViewDataProps> = ({ open, data }) => {
               <Typography variant="h6" gutterBottom>
                 Number Of Employees
               </Typography>
-              <Table data={data?.numberOfEmployees} />
+              {check && (
+                <Typography gutterBottom color="#f73378">
+                  **Please check your input for the number of employees. Your input contains negative values and/or decimals.
+                </Typography>
+              )}
+              <Table data={data?.numberOfEmployees} setCheck={setCheck} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>

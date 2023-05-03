@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { convertToRows, TableData } from '@utils/data-format';
-import { DataGrid, GridColDef, GridColumnGroup, GridAlignment } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridColumnGroup, GridAlignment, GridCellParams } from '@mui/x-data-grid';
 import { Box, useTheme } from '@mui/material';
 import { Ethnicity, EthnicityDisplayNames } from '@utils/ethnicity';
 import { Gender, GenderDisplayNames } from '@utils/gender';
+import './table.css';
 
 const POSITION_WIDTH = 200;
 const COLUMN_WIDTH = 90;
@@ -56,15 +57,16 @@ export const columns: CustomGridColDef[] = [
 const columnGroupingModel: GridColumnGroup[] = Object.values(Ethnicity).map((e) => ({
   groupId: EthnicityDisplayNames[e],
   children: [{ field: `${e}M` }, { field: `${e}F` }, { field: `${e}NB` }],
-  headerAlign: 'center' as GridAlignment // Add this line
+  headerAlign: 'center' as GridAlignment
 }));
 
 export interface TableProps {
   data?: TableData;
+  setCheck?: (check: boolean) => void;
 }
-
-export const Table: FC<TableProps> = ({ data }) => {
+export const Table: FC<TableProps> = ({ data, setCheck }) => {
   const { palette } = useTheme();
+
   return (
     <Box
       sx={{
@@ -95,6 +97,15 @@ export const Table: FC<TableProps> = ({ data }) => {
         getRowHeight={() => 'auto'}
         showCellVerticalBorder={true}
         showColumnVerticalBorder={true}
+        getCellClassName={(params: GridCellParams<any, any, number>) => {
+          if (setCheck != undefined) {
+            if (params.value < 0 || (typeof params.value === 'number' && params.value % 1 !== 0)) {
+              setCheck(true);
+              return 'highlight-red';
+            }
+          }
+          return '';
+        }}
       />
     </Box>
   );
