@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { convertToRows, TableData } from '@utils/data-format';
 import { DataGrid, GridColDef, GridColumnGroup, GridAlignment, GridCellParams } from '@mui/x-data-grid';
 import { Box, useTheme } from '@mui/material';
@@ -66,6 +66,12 @@ export interface TableProps {
 }
 export const Table: FC<TableProps> = ({ data, setCheck }) => {
   const { palette } = useTheme();
+
+  useEffect(() => {
+    if (setCheck) {
+      setCheck(false);
+    }
+  }, [data]);
 
   return (
     <Box
