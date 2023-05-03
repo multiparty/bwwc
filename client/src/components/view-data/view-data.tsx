@@ -5,12 +5,10 @@ import { Table } from '@components/table';
 
 export interface ViewDataProps {
   data?: DataFormat;
-  check: boolean;
-  setCheck: (check:boolean) => void;
+  setCheck: (check: boolean) => void;
 }
 
-export const ViewData: FC<ViewDataProps> = ({ data, check, setCheck }) => {
-
+export const ViewData: FC<ViewDataProps> = ({ data, setCheck }) => {
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>
@@ -26,11 +24,6 @@ export const ViewData: FC<ViewDataProps> = ({ data, check, setCheck }) => {
               <Typography variant="h6" gutterBottom>
                 Number Of Employees
               </Typography>
-              {check && (
-                <Typography gutterBottom color="#f73378">
-                  **Please check your input for the number of employees. Your input contains negative values and/or decimals.
-                </Typography>
-              )}
               <Table data={data?.numberOfEmployees} setCheck={setCheck} />
             </Box>
             <Box>

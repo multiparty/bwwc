@@ -21,12 +21,12 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
   const [pressed, wasPressed] = useState(false);
 
   useEffect(() => {
-    if (verifyTicked && data?.totalEmployees) {
+    if (verifyTicked && data?.totalEmployees && !check) {
       setCanSubmit(true);
     } else {
       setCanSubmit(false);
     }
-  }, [verifyTicked, data]);
+  }, [verifyTicked, data, check]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVerifyTicked(event.target.checked);
@@ -54,10 +54,10 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
             control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} onChange={handleCheckboxChange} data-cy="data-verify" />}
             label="I verified all data is correct."
           />
-          <LoadingButton variant="contained" disabled={!canSubmit&&!check } onClick={handleSubmit} data-cy="submit">
+          <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit} data-cy="submit">
             Submit
           </LoadingButton>
-          <SubmissionAlert submitResp={submitResp} pressed={pressed} />
+          <SubmissionAlert submitResp={submitResp} pressed={pressed} check={check} />
         </Stack>
       </CardContent>
     </Card>
