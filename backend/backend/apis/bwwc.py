@@ -1,6 +1,8 @@
 import os
 import sys
 
+from .auth import Authenticator # need the dot in front of auth
+
 sys.path.append("secretshare")
 
 import json
@@ -12,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from secretshare.mpce import MPCEngine
 
 engine = MPCEngine()
+auth = Authenticator()
 
 
 @csrf_exempt
@@ -19,6 +22,8 @@ def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         public_key = req.POST.get("public_key")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        
+        auth.verify_token(auth_token, public_key)
 
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
