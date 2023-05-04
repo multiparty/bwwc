@@ -5,13 +5,15 @@ from .auth import Authenticator  # need the dot in front of auth
 
 sys.path.append("secretshare")
 
-import json
+import logging
 
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from secretshare.mpce import MPCEngine
+
+logger = logging.getLogger("django")
 
 engine = MPCEngine()
 auth = Authenticator()
