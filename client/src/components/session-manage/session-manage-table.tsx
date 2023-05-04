@@ -61,7 +61,7 @@ export const SessionManageTable = () => {
           industry: val.industry,
           participationID: val.participantCode,
           size: val.companySize,
-          hist: Date.now().toString()
+          hist: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
         }));
 
         let updatedData = [...histData];
@@ -74,7 +74,7 @@ export const SessionManageTable = () => {
             if (existingItem.industry !== newItem.industry || existingItem.size !== newItem.size) {
               updatedData[existingItemIndex] = {
                 ...newItem,
-                hist: Date.now().toString()
+                hist: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
               };
             }
           } else {

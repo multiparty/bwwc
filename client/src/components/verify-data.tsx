@@ -12,20 +12,21 @@ export interface VerifyDataProps {
   submitDataHandler: () => void;
   submitResp: AxiosResponse | undefined;
   data: DataFormat;
+  check: boolean;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler, check }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [pressed, wasPressed] = useState(false);
 
   useEffect(() => {
-    if (verifyTicked && data?.totalEmployees) {
+    if (verifyTicked && data?.totalEmployees && !check) {
       setCanSubmit(true);
     } else {
       setCanSubmit(false);
     }
-  }, [verifyTicked, data]);
+  }, [verifyTicked, data, check]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVerifyTicked(event.target.checked);
@@ -56,7 +57,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
           <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit} data-cy="submit">
             Submit
           </LoadingButton>
-          <SubmissionAlert submitResp={submitResp} pressed={pressed} />
+          <SubmissionAlert submitResp={submitResp} pressed={pressed} check={check} />
         </Stack>
       </CardContent>
     </Card>
