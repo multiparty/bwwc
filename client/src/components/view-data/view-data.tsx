@@ -2,14 +2,13 @@ import { FC } from 'react';
 import { Box, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { DataFormat } from '@utils/data-format';
 import { Table } from '@components/table';
-import { date } from 'yup';
 
 export interface ViewDataProps {
-  open: boolean;
   data?: DataFormat;
+  setCheck: (check: boolean) => void;
 }
 
-export const ViewData: FC<ViewDataProps> = ({ open, data }) => {
+export const ViewData: FC<ViewDataProps> = ({ data, setCheck }) => {
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>
@@ -25,7 +24,7 @@ export const ViewData: FC<ViewDataProps> = ({ open, data }) => {
               <Typography variant="h6" gutterBottom>
                 Number Of Employees
               </Typography>
-              <Table data={data?.numberOfEmployees} />
+              <Table data={data?.numberOfEmployees} setCheck={setCheck} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>

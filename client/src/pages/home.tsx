@@ -18,6 +18,7 @@ import BigNumber from 'bignumber.js';
 
 export const HomePage: FC = () => {
   const { token } = useAuth();
+  const [check, setCheck] = useState<boolean>(false);
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
@@ -71,8 +72,8 @@ export const HomePage: FC = () => {
     <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
-        <ViewData open={false} data={data} />
-        <VerifyData data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} />
+        <ViewData data={data} setCheck={setCheck} />
+        <VerifyData data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} check={check} />
       </Stack>
     </Layout>
   );
