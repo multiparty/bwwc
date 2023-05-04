@@ -217,6 +217,6 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": HANDLERS,
-    "loggers": LOGGERS["django"],
+    "loggers": LOGGERS,
     "formatters": FORMATTER
 }
