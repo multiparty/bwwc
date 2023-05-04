@@ -54,7 +54,7 @@ class Authenticator(object):
 
         # else the key is already formatted
         return key
-    
+
     """
     Verify if a token is expired.
     
@@ -64,10 +64,9 @@ class Authenticator(object):
     outputs:
     is_expired (bool) - True if the token is expired, False otherwise.
     """
-    
+
     def is_expired(self, exp: float) -> bool:
         return exp < time.time()
-            
 
     """
 	Verify authentication token
@@ -79,7 +78,7 @@ class Authenticator(object):
 
     def is_valid_token(self, token: str) -> bool:
         payload = dict()
-        
+
         for key in self.get_public_key():
             try:
                 payload = jwt.decode(token, key)
@@ -91,5 +90,5 @@ class Authenticator(object):
             except JWTError as e:
                 print(e)
                 pass
-        
+
         return not self.is_expired(float(payload["exp"]))
