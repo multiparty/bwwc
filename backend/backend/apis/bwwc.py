@@ -23,7 +23,7 @@ def start_session(req: HttpRequest) -> HttpResponse:
         public_key = req.POST.get("public_key")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
         
-        auth.verify_token(auth_token, public_key)
+        auth.verify_token(auth_token)
 
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")

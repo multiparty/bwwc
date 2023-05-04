@@ -1,13 +1,28 @@
 import os
 import jwt
-from jwt.algorithms import get_default_algorithms
-jwt.api_jws._algorithms.update(get_default_algorithms())
-
+import json
+import requests
+from typing import List
 
 class Authenticator(object):
 	def __init__(self):
 		self.AUTH_PK_API = os.getenv("AUTH_PK_API")
 		self.jwt_algorithm = os.getenv("JWT_ALGORITHM")
+
+
+	"""
+	Get public keys
+
+	outputs:
+	public_keys (List[str]) - A list of public keys.
+	"""
+	def get_public_key(self) -> List[str]:
+		response = requests.get(self.AUTH_PK_API)
+
+		if response.status_code != 200:
+			raise Exception(f"HTTP request failed with status code {response.status_code}")
+		
+		return [self.format_public_key(key) for key in json.loads(response.text)]
   
 	"""
 	Format a public key string.
@@ -38,7 +53,9 @@ class Authenticator(object):
  
 	outputs:
 	"""
-	def verify_token(self, token: str, public_key: str) -> bool:
-		public_key = self.format_public_key(public_key)
-		payload = jwt.decode(token, public_key, algorithms=[self.jwt_algorithm])
+	def verify_token(self, token: str) -> bool:
+		for key in self.get_public_key():
+			payload = jwt.decode(token, key, algorithms=[self.jwt_algorithm])
+			print(payload)
+			# Check if valid payload
 		return True
