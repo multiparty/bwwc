@@ -14,8 +14,9 @@ import { secretSharesToTable } from '@utils/shamirs';
 import { importPemPrivateKey } from '@utils/keypair';
 import { Point } from '@utils/data-format';
 import BigNumber from 'bignumber.js';
-import { setDecodedTable, setMetadata } from '../../redux/session';
+import { setDecodedTable, setMetadata, setSessionId, setPrime } from '../../redux/session';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
   privateKey: Yup.string().required('Please input your Private Key.')
@@ -27,10 +28,21 @@ interface valueProps {
 
 export const DecryptInputForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { token } = useAuth();
   const [privateKey, setPrivateKey] = useState<string>('');
   const { prime, sessionId } = useSelector((state: AppState) => state.session);
   const [progress, setProgress] = useState<number>(0);
+
+
+  useEffect(() => {
+    const sessionIdfromStorage = localStorage.getItem('sessionId');
+    dispatch(setSessionId(sessionIdfromStorage));
+    console.log(prime)
+    if(prime===null|| typeof prime !== 'string' || prime===''){
+      navigate('/manage')
+    }
+  }, []);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -44,14 +56,13 @@ export const DecryptInputForm = () => {
     const file = files[0];
 
     const reader = new FileReader();
-
     // Complete the MPC by summing all the shares together
     // Can replace this function with any custom functionality to apply
     // over unencrypted shares.
     type InputElement = string | BigNumber;
     type InputList = Array<Array<InputElement>>;
     const bigPrime = new BigNumber(prime);
-
+    
     const reduce = async (input: Array<Point>) => {
       const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
 

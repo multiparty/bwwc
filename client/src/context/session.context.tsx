@@ -26,27 +26,6 @@ export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
   const [industry, setIndustry] = useState<string>();
   const [companySize, setCompanySize] = useState<string>();
 
-  useEffect(() => {
-    const sessionId = restoreSessionId();
-    if (sessionId) {
-      setSessionId(sessionId);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (sessionId) {
-      saveSessionId(sessionId);
-    }
-  }, [sessionId]);
-
-  const saveSessionId = (sessionId: string) => {
-    localStorage.setItem('sessionId', sessionId);
-  };
-
-  const restoreSessionId = (): string | null => {
-    return localStorage.getItem('sessionId');
-  };
-
   return (
     <SessionContext.Provider
       value={{

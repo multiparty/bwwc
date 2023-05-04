@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
 import { AppState } from '@utils/data-format';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSessionId } from '../../redux/session';
+import { setSessionId, setPrime } from '../../redux/session';
 import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
@@ -32,7 +32,9 @@ export const SessionManage: FC = () => {
 
   useEffect(() => {
     const sessionIdfromStorage = localStorage.getItem('sessionId');
+    const primefromStorage = localStorage.getItem('prime');
     dispatch(setSessionId(sessionIdfromStorage));
+    dispatch(setPrime(primefromStorage));
   }, []);
 
   const FormObserver: React.FC = () => {
