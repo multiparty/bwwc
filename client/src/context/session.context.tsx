@@ -1,4 +1,4 @@
-import React, { createContext, FC, useState } from 'react';
+import React, { createContext, FC, useEffect, useState } from 'react';
 
 export interface SessionContextProps {
   publicKey?: string;
@@ -21,10 +21,31 @@ export interface SessionProviderProps {
 
 export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
   const [publicKey, setPublicKey] = useState<string>();
-  const [sessionId, setSessionId] = useState<string>();
+  const [sessionId, setSessionId] = useState<string>(); // save in local storage
   const [participantCode, setParticipantCode] = useState<string>();
   const [industry, setIndustry] = useState<string>();
   const [companySize, setCompanySize] = useState<string>();
+
+  useEffect(() => {
+    const sessionId = restoreSessionId();
+    if (sessionId) {
+      setSessionId(sessionId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sessionId) {
+      saveSessionId(sessionId);
+    }
+  }, [sessionId]);
+
+  const saveSessionId = (sessionId: string) => {
+    localStorage.setItem('sessionId', sessionId);
+  };
+
+  const restoreSessionId = (): string | null => {
+    return localStorage.getItem('sessionId');
+  };
 
   return (
     <SessionContext.Provider

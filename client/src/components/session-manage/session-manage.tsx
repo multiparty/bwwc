@@ -7,7 +7,7 @@ import { useApi } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
 import { AppState } from '@utils/data-format';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setSessionId } from '../../redux/session';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ interface valueProps {
 
 export const SessionManage: FC = () => {
   const { stopSession } = useApi();
+  const dispatch = useDispatch();
   const urlParams = new URLSearchParams(window.location.search);
   const { sessionId, authToken } = useSelector((state: AppState) => state.session);
   const navigate = useNavigate();
@@ -28,6 +29,11 @@ export const SessionManage: FC = () => {
     submissionId: sessionId
   });
   const [stopped, setStopped] = useState(false);
+
+  useEffect(() => {
+    const sessionIdfromStorage = localStorage.getItem('sessionId');
+    dispatch(setSessionId(sessionIdfromStorage));
+  }, []);
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
