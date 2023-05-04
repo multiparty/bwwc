@@ -1,8 +1,10 @@
 import os
-import jwt
 import json
 import requests
 from typing import List
+
+from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWTError
 
 class Authenticator(object):
 	def __init__(self):
@@ -55,7 +57,14 @@ class Authenticator(object):
 	"""
 	def verify_token(self, token: str) -> bool:
 		for key in self.get_public_key():
-			payload = jwt.decode(token, key, algorithms=[self.jwt_algorithm])
-			print(payload)
-			# Check if valid payload
+			try :
+				payload = jwt.decode(token, key, algorithms=[self.jwt_algorithm])
+				print(payload)
+			except ExpiredSignatureError as e:
+				print(e)
+				pass
+				# Check if valid payload
+			except JWTError as e:
+				print(e)
+				pass
 		return True
