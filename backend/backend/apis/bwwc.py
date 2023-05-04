@@ -1,6 +1,8 @@
 import os
 import sys
 
+from .auth import Authenticator  # need the dot in front of auth
+
 sys.path.append("secretshare")
 
 import json
@@ -12,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from secretshare.mpce import MPCEngine
 
 engine = MPCEngine()
+auth = Authenticator()
 
 
 @csrf_exempt
@@ -19,6 +22,9 @@ def start_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         public_key = req.POST.get("public_key")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
 
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
@@ -36,6 +42,9 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
 
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
+
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
@@ -46,7 +55,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
             )
             return JsonResponse({"status": 200})
         else:
-            return HttpResponseBadRequest("Invalid auth token")
+            return HttpResponse("Unauthorized", status=401)
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -57,6 +66,9 @@ def end_session(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
 
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
+
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
@@ -64,7 +76,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
             engine.end_session(session_id)
             return JsonResponse({"status": 200})
         else:
-            return HttpResponseBadRequest("Invalid auth token")
+            return HttpResponse("Unauthorized", status=401)
     else:
         return HttpResponseBadRequest("Invalid request method")
 
@@ -76,8 +88,11 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
 
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
+
         if not engine.is_initiator(session_id, auth_token):
-            return HttpResponseBadRequest("Invalid auth token")
+            return HttpResponse("Unauthorized", status=401)
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -103,6 +118,9 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
             or not session_id
         ):
             return HttpResponseBadRequest("Invalid request body")
+
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
 
         result = engine.get_encrypted_shares(session_id)
         return JsonResponse({"result": result})
@@ -176,6 +194,9 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
         session_id = req.GET.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
 
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
+
         if not engine.is_initiator(session_id, auth_token):
             return HttpResponseBadRequest("Invalid request body")
 
@@ -198,6 +219,9 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+
+        if not auth.is_valid_token(auth_token):
+            return HttpResponse("Unauthorized", status=401)
 
         if not engine.is_initiator(session_id, auth_token):
             return HttpResponseBadRequest("Invalid request body")
