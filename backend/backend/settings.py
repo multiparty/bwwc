@@ -188,7 +188,7 @@ HANDLERS = {
         "encoding": "utf-8",
         "formatter": "simple",
         "backupCount": 5,
-        "maxBytes": 1024 *  1024 * 5, # 5 MB
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
     },
     "request_handler": {
         "class": "logging.handlers.RotatingFileHandler",
@@ -196,8 +196,8 @@ HANDLERS = {
         "mode": "a",
         "formatter": "verbose",
         "backupCount": 5,
-        "maxBytes": 1024 *  1024 * 5, # 5 MB
-    }
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
 }
 
 LOGGERS = {
@@ -209,8 +209,8 @@ LOGGERS = {
     "django.request": {
         "handlers": ["request_handler"],
         "level": "WARNING",
-        "propagate": False
-    }
+        "propagate": False,
+    },
 }
 
 LOGGING = {
@@ -218,5 +218,5 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": HANDLERS,
     "loggers": LOGGERS,
-    "formatters": FORMATTER
+    "formatters": FORMATTER,
 }
