@@ -82,13 +82,9 @@ class Authenticator(object):
         for key in self.get_public_key():
             try:
                 payload = jwt.decode(token, key)
-                print(payload)
             except ExpiredSignatureError as e:
-                print(e)
                 pass
-                # Check if valid payload
             except JWTError as e:
-                print(e)
                 pass
 
         return not self.is_expired(float(payload["exp"]))
