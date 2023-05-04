@@ -77,14 +77,13 @@ class Authenticator(object):
 	"""
 
     def is_valid_token(self, token: str) -> bool:
-        payload = dict()
-
         for key in self.get_public_key():
             try:
                 payload = jwt.decode(token, key)
+                return not self.is_expired(float(payload["exp"]))
             except ExpiredSignatureError as e:
                 pass
             except JWTError as e:
                 pass
 
-        return not self.is_expired(float(payload["exp"]))
+        return False
