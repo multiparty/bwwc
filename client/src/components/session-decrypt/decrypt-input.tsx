@@ -34,13 +34,11 @@ export const DecryptInputForm = () => {
   const { prime, sessionId } = useSelector((state: AppState) => state.session);
   const [progress, setProgress] = useState<number>(0);
 
-
   useEffect(() => {
     const sessionIdfromStorage = localStorage.getItem('sessionId');
     dispatch(setSessionId(sessionIdfromStorage));
-    console.log(prime)
-    if(prime===null|| typeof prime !== 'string' || prime===''){
-      navigate('/manage')
+    if (prime === null || typeof prime !== 'string' || prime === '') {
+      navigate('/manage');
     }
   }, []);
 
@@ -62,7 +60,7 @@ export const DecryptInputForm = () => {
     type InputElement = string | BigNumber;
     type InputList = Array<Array<InputElement>>;
     const bigPrime = new BigNumber(prime);
-    
+
     const reduce = async (input: Array<Point>) => {
       const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
 

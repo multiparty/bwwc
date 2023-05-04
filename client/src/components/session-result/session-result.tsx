@@ -42,11 +42,11 @@ export const SessionResult = () => {
     setValue(newValue);
   };
 
-  useEffect(()=>{
-    if(decodedTable===null){
-      navigate('/manage')
+  useEffect(() => {
+    if (decodedTable === null) {
+      navigate('/manage');
     }
-  }, [])
+  }, []);
 
   return (
     <Box>
@@ -77,9 +77,11 @@ export const SessionResult = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-          {(decodedTable!==null)&&<Box>
-              <TableView tabSelection={value} data={result} />
-            </Box>}
+            {decodedTable !== null && (
+              <Box>
+                <TableView tabSelection={value} data={result} />
+              </Box>
+            )}
           </TabPanel>
         </CardContent>
       </Card>
