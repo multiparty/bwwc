@@ -34,7 +34,6 @@ export const NavBar = () => {
       >
         <Button
           variant="outlined"
-          color="secondary"
           style={{
             width: `${(drawerWidth * 90) / 100}px`, // 90% of drawerWidth
             color: 'gray',
