@@ -85,13 +85,14 @@ export const SessionManageTable = () => {
         setHistData(updatedData);
       }
     }
+    if (sessionId) {
+      const intervalId = setInterval(() => {
+        updateSubmissionHistory();
+      }, 5000);
 
-    const intervalId = setInterval(() => {
-      updateSubmissionHistory();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
+      return () => clearInterval(intervalId);
+    }
+  }, [sessionId]);
 
   return (
     <Box

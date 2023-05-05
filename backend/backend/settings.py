@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+import logging
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -26,6 +27,9 @@ else:
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+if not os.path.exists(os.path.join(BASE_DIR, "logs")):
+    os.mkdir(os.path.join(BASE_DIR, "logs"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -158,3 +162,61 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+FORMATTER = {
+    "verbose": {
+        "()": "logging.Formatter",
+        "format": "[{asctime:s}] {levelname} [{name}:{lineno}] {filename}.{module}.{funcName} - {message}",
+        "style": "{",
+    },
+    "simple": {
+        "()": "logging.Formatter",
+        "format": "[{asctime:s}] {levelname} [{name}:{lineno}] {message}",
+        "style": "{",
+    },
+}
+
+HANDLERS = {
+    "console_handler": {
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
+    },
+    "detailed_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/django-detailed.log",
+        "mode": "a",
+        "encoding": "utf-8",
+        "formatter": "simple",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+    "request_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/django_request.log",
+        "mode": "a",
+        "formatter": "verbose",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+}
+
+LOGGERS = {
+    "django": {
+        "handlers": ["console_handler", "detailed_handler"],
+        "level": "INFO",
+        "propagate": False,
+    },
+    "django.request": {
+        "handlers": ["request_handler"],
+        "level": "WARNING",
+        "propagate": False,
+    },
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": HANDLERS,
+    "loggers": LOGGERS,
+    "formatters": FORMATTER,
+}

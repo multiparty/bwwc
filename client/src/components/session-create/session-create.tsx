@@ -29,7 +29,7 @@ export const SessionCreateForm: FC = (props) => {
   const handleClick = async () => {
     setLoading(true);
     const { privateKey, publicKey, sessionId, prime } = await startSession();
-
+    localStorage.removeItem('generatedUrls');
     dispatch(setSessionId(sessionId));
     dispatch(setPrivateKey(privateKey));
     dispatch(setPublicKey(publicKey));

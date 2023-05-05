@@ -37,15 +37,18 @@ export const sessionSlice = createSlice({
     },
     setPrime: (state, action) => {
       state.prime = action.payload;
+      localStorage.setItem('prime', action.payload);
     },
     setPublicKey: (state, action) => {
       state.publicKey = action.payload;
+      localStorage.setItem('publicKey', action.payload);
     },
     setPrivateKey: (state, action) => {
       state.privateKey = action.payload;
     },
     setSessionId: (state, action) => {
       state.sessionId = action.payload;
+      localStorage.setItem('sessionId', action.payload);
     }
   }
 });

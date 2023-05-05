@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Formik, Form, FormikHelpers } from 'formik';
 import { Card, CardContent, Grid, Box, Typography, Stack, Divider, Button, Snackbar } from '@mui/material';
 import * as Yup from 'yup';
@@ -42,6 +42,13 @@ export const LinkGenerator: FC = () => {
     count: Yup.number().positive().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
   });
 
+  useEffect(() => {
+    const URLsFromLocalStorage = localStorage.getItem('generatedUrls');
+    if (URLsFromLocalStorage) {
+      setExistingLinks(URLsFromLocalStorage.split(','));
+    }
+  }, []);
+
   const handleSubmit = (values: { count: number }, { setSubmitting }: FormikHelpers<any>) => {
     if (generatedLinks.length != 0) {
       setExistingLinks([...existingLinks, ...generatedLinks]);
@@ -49,6 +56,8 @@ export const LinkGenerator: FC = () => {
     createNewSubmissionUrls(values.count, sessionId, authToken)
       .then((urls) => {
         setGeneratedLinks(Object.values(urls));
+        const generatedUrls = [...Object.values(urls), ...existingLinks, ...generatedLinks];
+        localStorage.setItem('generatedUrls', generatedUrls.toString());
       })
       .finally(() => setSubmitting(false));
   };
