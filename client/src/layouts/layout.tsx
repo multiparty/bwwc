@@ -17,7 +17,7 @@ export const Layout: FC<LayoutProps> = ({ children, maxWidth, ...headerProps }) 
       <Header {...headerProps} />
       <Box sx={{ flexGrow: 1, minHeight: '95vh', display: 'flex' }}>
         <Grid container>
-        {showNavBar && (
+          {showNavBar && (
             <Grid item xs={2}>
               <NavBar />
             </Grid>
