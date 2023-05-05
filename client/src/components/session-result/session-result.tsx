@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography, Stack, Tabs, Tab } from '@mui/material';
 import { TableView } from './table-view';
 import { AppState, ResultFormat, TabSelection, DataFormat, StringDataFormatMap } from '@utils/data-format';
 import { createCSV } from './to-xlsx';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -33,12 +34,20 @@ function handleClick(result: ResultFormat) {
 }
 
 export const SessionResult = () => {
+  const navigate = useNavigate();
   const { decodedTable } = useSelector((state: AppState) => state.session);
   const result = { 0: decodedTable?.data as DataFormat, 1: decodedTable?.metadata.companySize as StringDataFormatMap, 2: decodedTable?.metadata.industry as StringDataFormatMap };
   const [value, setValue] = useState<TabSelection>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: TabSelection) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    if (decodedTable === null) {
+      navigate('/manage');
+    }
+  }, []);
+
   return (
     <Box>
       <Card>
@@ -68,9 +77,11 @@ export const SessionResult = () => {
           </Stack>
           <Divider sx={{ width: '98%' }} />
           <TabPanel value={value} index={value}>
-            <Box>
-              <TableView tabSelection={value} data={result} />
-            </Box>
+            {decodedTable !== null && (
+              <Box>
+                <TableView tabSelection={value} data={result} />
+              </Box>
+            )}
           </TabPanel>
         </CardContent>
       </Card>

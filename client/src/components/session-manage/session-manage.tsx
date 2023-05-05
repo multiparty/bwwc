@@ -3,12 +3,12 @@ import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/mate
 import { TextInput } from '@components/forms/text-input';
 import { SessionManageTable } from './session-manage-table';
 import { LinkGenerator } from './generate-link';
-import { useApi } from '@services/api';
+import { useApi, getPrime } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
 import { AppState } from '@utils/data-format';
-import { useSelector } from 'react-redux';
-import { setSessionId } from '../../redux/session';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSessionId, setPrime } from '../../redux/session';
 import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
@@ -21,6 +21,7 @@ interface valueProps {
 
 export const SessionManage: FC = () => {
   const { stopSession } = useApi();
+  const dispatch = useDispatch();
   const urlParams = new URLSearchParams(window.location.search);
   const { sessionId, authToken } = useSelector((state: AppState) => state.session);
   const navigate = useNavigate();
@@ -29,10 +30,26 @@ export const SessionManage: FC = () => {
   });
   const [stopped, setStopped] = useState(false);
 
+  useEffect(() => {
+    const sessionIdfromStorage = localStorage.getItem('sessionId');
+    const primefromStorage = localStorage.getItem('prime');
+    dispatch(setSessionId(sessionIdfromStorage));
+    dispatch(setPrime(primefromStorage));
+  }, []);
+
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
-      setSessionId(values.submissionId);
+      async function updateIDandPrime() {
+        setSessionId(values.submissionId);
+        if (values.submissionId !== '') {
+          dispatch(setSessionId(values.submissionId));
+          const prime = await getPrime(sessionId);
+          setPrime(prime);
+          dispatch(setPrime(prime));
+        }
+      }
+      updateIDandPrime();
     }, [values]);
     return null;
   };
