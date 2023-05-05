@@ -37,7 +37,8 @@ export const NavBar = () => {
           color="secondary"
           style={{
             width: `${(drawerWidth * 90) / 100}px`, // 90% of drawerWidth
-            color: 'gray'
+            color: 'gray',
+            borderColor: 'gray'
           }}
           onClick={() => handleClick()}
           endIcon={<SendIcon />}
