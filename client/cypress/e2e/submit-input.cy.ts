@@ -1,7 +1,9 @@
 import { UserInput } from '../support/custom/user-input';
+import path from 'path';
 
 describe('User submission', () => {
-  const prefix = 'https://mpc.sail.codes';
+  // const prefix = 'https://mpc.sail.codes';
+  const prefix = 'http://127.0.0.1:5173'
   let numTest = 1;
 
   it('user input and submit', () => {
@@ -11,7 +13,7 @@ describe('User submission', () => {
     const create = '[id="creare-submission"]';
     cy.get(create).click();
     const token =
-      'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYzcyZWQ5LTg3ZDAtNDUzYS05NGU4LTY1MGI2NTFiNDIwYyIsInByb2plY3RJZCI6IjA2NDcwMDU3LTExYTMtNGI5NS1iNGI1LWZmNDcxMTFmODBmMiIsInJvbGUiOjEsImlhdCI6MTY4MDY0MDQyMSwiaXNzIjoiaHR0cHM6Ly9zYWlsLmJ1LmVkdSJ9.BHjdsvGFKKqmDF2gw7i_6gZtwaZmFmI6Vu0YLgypyPuDCEWQV2p5U8pNiYqWf1I7AgdWe3bbZNnr9lfnNR2rcIPpTVfyvSCame0ks6MI0XoPVa4dLOQos66HUWwPZn1CeayoX68Vxdn5B-BTN3aMcgapyVk-MCuHbCIxL9jsrKKydFpbyaMxsGAnGMfYmKnWMQFf3FmG0vD2cvrpX5O9lTlfcvbDRYWSQGWDVwWaVBnU-2qpgWUxs44dTwbHXJNS7c9eNqpJs2EYwwi1PGFNyAe8XhAtgzPp2LL5ghAVipZ_ShLKo4qkwqt7lwSxaaGYkuqsPAbGyWY3-47FnWyNrg';
+      'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkYzcyZWQ5LTg3ZDAtNDUzYS05NGU4LTY1MGI2NTFiNDIwYyIsInByb2plY3RJZCI6IjA2NDcwMDU3LTExYTMtNGI5NS1iNGI1LWZmNDcxMTFmODBmMiIsInJvbGUiOjEsImlhdCI6MTY4MDY0MDQyMSwiaXNzIjoiaHR0cHM6Ly9zYWlsLmJ1LmVkdSIsImV4cCI6MzM4MDY0MDQyMX0.JNIEwLs5sMOz7iUCREaT_fkrqf7WQRiA99TDs-WJ1WGcYwvkKQ7iNBvmNHbT2NqQLt2CakruF8lTL7iDwnuTmMzDPFhEoL3BYkK1MF6mQqjvMmAu7lfnNRdutWYHYvdy9rp5rUnKQds55oFAsR_4LJxmOZD_yZLRVvwHDvP2M3M_JU7W-vh-bLe7nYZ60fv7YuZOnyrbuy910QK6W0Rc1BliSMl1XooqQYivWBqBqIDegcEGVT7eIreW0qKQ-G1DHfjZcvt1TM1b1wf8oyIbXmZZ7VD5K3ZCVhZSgZph_TLysWyJ80dhr2_iDenp1H38JFKv4wDrGMvmKDhQ71UMHg';
     window.localStorage.setItem('token', token);
 
     const downloadKey = '[id="downloadKey"]';
@@ -31,6 +33,21 @@ describe('User submission', () => {
       numTest--;
     }
 
-    // WIP: Decrypt and check result
+    // Decrypt the result
+    cy.visit(prefix + '/manage');
+    const stop = '[id="stop"]';
+    cy.get(stop).click(); // This takes us to /manage page
+    const reveal = '[id="reveal"]';
+    cy.get(reveal).click(); // This takes us to /manage page
+
+
+    const selector = 'input[type=file]';
+    const privateKeyFile = '' //Fix this
+    const downloadsDir = 'cypress/downloads/';
+    cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
+      action: 'drag-drop',
+      force: true,
+    });    
+
   });
 });

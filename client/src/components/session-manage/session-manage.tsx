@@ -78,11 +78,11 @@ export const SessionManage: FC = () => {
               </Button>
 
               {stopped ? (
-                <Button fullWidth variant="outlined" color="success" onClick={revealResult}>
+                <Button fullWidth variant="outlined" color="success" onClick={revealResult} id="reveal">
                   Reveal Result
                 </Button>
               ) : (
-                <Button fullWidth variant="outlined" color="error" onClick={handleClick}>
+                <Button fullWidth variant="outlined" color="error" onClick={handleClick} id="stop">
                   Stop Session
                 </Button>
               )}
