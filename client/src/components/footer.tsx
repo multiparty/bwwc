@@ -7,7 +7,7 @@ import sailLogo from '../assets/sail-logo.png';
 export const Footer = () => {
   return (
     <Box component="footer" sx={{ mt: 4 }}>
-      <AppBar position="relative" sx={(theme) => ({ backgroundColor: theme.palette.background.paper, bottom: 0, p: 3, pt: 6 })}>
+      <AppBar position="relative" sx={(theme) => ({ backgroundColor: theme.palette.background.paper, zIndex: 1300, bottom: 0, p: 3, pt: 6 })}>
         <Toolbar>
           <Stack spacing={3}>
             <Grid container spacing={3}>

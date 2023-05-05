@@ -10,7 +10,7 @@ export interface HeaderProps {
 
 export const Header: FC<HeaderProps> = (props) => {
   return (
-    <AppBar position="static" sx={(theme) => ({ backgroundColor: theme.palette.background.paper })}>
+    <AppBar position="static" sx={(theme) => ({ backgroundColor: theme.palette.background.paper, zIndex: 1300 })}>
       <Toolbar>
         <Stack sx={{ flexGrow: 1, ml: 5, m: 3 }}>
           <Typography variant="h5" color="black">
