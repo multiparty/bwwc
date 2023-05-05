@@ -3,7 +3,7 @@ import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/mate
 import { TextInput } from '@components/forms/text-input';
 import { SessionManageTable } from './session-manage-table';
 import { LinkGenerator } from './generate-link';
-import { useApi } from '@services/api';
+import { useApi, getPrime } from '@services/api';
 import * as Yup from 'yup';
 import { Form, Formik, useFormikContext } from 'formik';
 import { AppState } from '@utils/data-format';
@@ -40,7 +40,16 @@ export const SessionManage: FC = () => {
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
     useEffect(() => {
-      setSessionId(values.submissionId);
+      async function updateIDandPrime() {
+        setSessionId(values.submissionId);
+        if (values.submissionId !== '') {
+          dispatch(setSessionId(values.submissionId));
+          const prime = await getPrime(sessionId);
+          setPrime(prime);
+          dispatch(setPrime(prime));
+        }
+      }
+      updateIDandPrime();
     }, [values]);
     return null;
   };
