@@ -65,7 +65,7 @@ export const NavBar = () => {
         anchor="left"
       >
         <Divider sx={{ background: 'white' }} variant="middle" />
-        <Stack spacing={2} alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
+        <Stack spacing={3} alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
           <NavBarButtons name="Home" />
           <NavBarButtons name="Create" />
           <NavBarButtons name="Manage" />
