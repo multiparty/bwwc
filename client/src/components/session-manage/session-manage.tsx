@@ -10,6 +10,7 @@ import { AppState } from '@utils/data-format';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSessionId, setPrime } from '../../redux/session';
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '@context/session.context';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
@@ -25,6 +26,7 @@ export const SessionManage: FC = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const { sessionId, authToken } = useSelector((state: AppState) => state.session);
   const navigate = useNavigate();
+  const { setSessionId: setSessionIdContext } = useSession();
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId
   });
@@ -43,6 +45,7 @@ export const SessionManage: FC = () => {
       async function updateIDandPrime() {
         setSessionId(values.submissionId);
         if (values.submissionId !== '') {
+          setSessionIdContext(values.submissionId);
           dispatch(setSessionId(values.submissionId));
           const prime = await getPrime(sessionId);
           setPrime(prime);
