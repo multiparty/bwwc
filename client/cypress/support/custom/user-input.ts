@@ -1,8 +1,8 @@
-import { dataObjectToXlsx } from '../custom/generate-xlsx';
+import { createInputXlsx, ExtendedDataFormat } from '../custom/generate-xlsx';
 import { Industries } from '../../../src/constants/industries';
 import { Sizes } from '../../../src/constants/sizes';
 
-export function UserInput() {
+export function UserInput(result: ExtendedDataFormat, numTest:number) {
   const generateID = '[id="generateID"]';
   cy.get(generateID).click();
 
@@ -42,8 +42,8 @@ export function UserInput() {
   cy.contains(selected_size).click();
 
   // Drag and drop a randomly generated xlsx workbook
-  const filename = 'testData.xlsx';
-  dataObjectToXlsx(filename);
+  const filename = 'testData-'+numTest+'.xlsx';
+  createInputXlsx(filename, result);
   const selector = 'input[type=file]';
   cy.get(selector).selectFile('cypress/downloads/' + filename, {
     action: 'drag-drop',

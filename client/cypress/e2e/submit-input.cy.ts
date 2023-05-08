@@ -1,10 +1,10 @@
 import { UserInput } from '../support/custom/user-input';
-import path from 'path';
+import { setResultObject, dataToXlsx } from '../support/custom/generate-xlsx';
 
 describe('User submission', () => {
   // const prefix = 'https://mpc.sail.codes';
-  const prefix = 'http://127.0.0.1:5173'
-  let numTest = 1;
+  const prefix = 'http://127.0.0.1:5173';
+  let numTest = 2;
 
   it('user input and submit', () => {
     cy.visit(prefix + '/create');
@@ -24,30 +24,31 @@ describe('User submission', () => {
 
     const manage = '[id="manage-session"]';
     cy.get(manage).click(); // This takes us to /manage page
-
-    UserInput();
-
-    while (numTest > 1) {
+    let result = setResultObject();
+    UserInput(result, numTest);
+    numTest--;
+    while (numTest > 0) {
       cy.visit(prefix + '/manage');
-      UserInput();
+      UserInput(result, numTest);
       numTest--;
     }
+    console.log('result', result);
+    const filename = 'aggregatedData.xlsx';
+    dataToXlsx(result, filename);
 
     // Decrypt the result
     cy.visit(prefix + '/manage');
     const stop = '[id="stop"]';
-    cy.get(stop).click(); // This takes us to /manage page
+    cy.get(stop).click();
     const reveal = '[id="reveal"]';
-    cy.get(reveal).click(); // This takes us to /manage page
-
+    cy.get(reveal).click(); // This takes us to /decrypt page
 
     const selector = 'input[type=file]';
-    const privateKeyFile = '' //Fix this
+    const privateKeyFile = ''; //Fix this
     const downloadsDir = 'cypress/downloads/';
-    cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
-      action: 'drag-drop',
-      force: true,
-    });    
-
+    // cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
+    //   action: 'drag-drop',
+    //   force: true,
+    // });
   });
 });
