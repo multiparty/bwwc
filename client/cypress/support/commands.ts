@@ -41,6 +41,18 @@ Cypress.Commands.add('getClipboardText', () => {
   });
 });
 
+Cypress.Commands.add('readFileAsText', (file) => {
+  return cy.wrap(
+    new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve(event.target?.result as string);
+      };
+      reader.readAsText(file);
+    })
+  );
+});
+
 declare global {
   interface Clipboard {
     __data?: string;

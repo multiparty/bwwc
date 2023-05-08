@@ -7,5 +7,6 @@ declare namespace Cypress {
      * @example cy.uploadFIle()
      */
     getClipboardText(): Chainable<string>;
+    readFileAsText(file: File): Chainable<string>;
   }
 }

@@ -1,10 +1,11 @@
 import { UserInput } from '../support/custom/user-input';
 import { setResultObject, dataToXlsx } from '../support/custom/generate-xlsx';
+import path from 'path';
 
 describe('User submission', () => {
   // const prefix = 'https://mpc.sail.codes';
   const prefix = 'http://127.0.0.1:5173';
-  let numTest = 2;
+  let numTest = 1;
 
   it('user input and submit', () => {
     cy.visit(prefix + '/create');
@@ -43,12 +44,16 @@ describe('User submission', () => {
     const reveal = '[id="reveal"]';
     cy.get(reveal).click(); // This takes us to /decrypt page
 
-    const selector = 'input[type=file]';
-    const privateKeyFile = ''; //Fix this
-    const downloadsDir = 'cypress/downloads/';
-    // cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
-    //   action: 'drag-drop',
-    //   force: true,
-    // });
+    // Drop public key into the dnd box
+    cy.window().then((win) => {
+      const sessionId = win.localStorage.getItem('sessionId');
+      const selector = 'input[type=file]';
+      const privateKeyFile = 'privateKey-' + sessionId + '.pem';
+      const downloadsDir = 'cypress/downloads/';
+      cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
+        action: 'drag-drop',
+        force: true
+      })
+    });
   });
 });
