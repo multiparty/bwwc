@@ -20,7 +20,7 @@ export class FileUtils {
   static cleanSheet(sheet: XLSX.WorkSheet): XLSX.WorkSheet {
     const cells = Object.keys(sheet);
     cells.forEach((cell) => {
-      if (sheet[cell].t === 's') {
+      if (sheet[cell] && sheet[cell].t === 's' && sheet[cell].v) {
         sheet[cell].v = this.cleanText(sheet[cell].v);
       }
     });
@@ -32,6 +32,9 @@ export class FileUtils {
   }
 
   static readCell(sheet: XLSX.WorkSheet, cell: string): number {
+    if (!sheet[cell]) {
+      return 'MISSING!' as any;
+    }
     return Number(sheet[cell].v);
   }
 }
