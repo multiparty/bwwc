@@ -31,7 +31,8 @@ def start_session(req: HttpRequest) -> HttpResponse:
         if not public_key or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        session_id = engine.create_session(auth_token, public_key)
+        user_id = auth.get_user_id(auth_token)
+        session_id = engine.create_session(user_id, public_key)
 
         return JsonResponse({"session_id": session_id, "prime": str(engine.prime)})
     else:
@@ -43,6 +44,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         session_id = req.POST.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        user_id = auth.get_user_id(auth_token)
 
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
@@ -50,7 +52,7 @@ def stop_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(session_id, auth_token):
+        if engine.is_initiator(session_id, user_id):
             engine.close_submissions(session_id)
             engine.reduce_unencrypted(
                 session_id, lambda x, y: (float(x) + float(y)) % engine.prime
@@ -67,6 +69,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         session_id = req.POST.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        user_id = auth.get_user_id(auth_token)
 
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
@@ -74,7 +77,7 @@ def end_session(req: HttpRequest) -> HttpResponse:
         if not session_id or not auth_token:
             return HttpResponseBadRequest("Invalid request body")
 
-        if engine.is_initiator(session_id, auth_token):
+        if engine.is_initiator(session_id, user_id):
             engine.end_session(session_id)
             return JsonResponse({"status": 200})
         else:
@@ -89,12 +92,13 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
         session_id = req.POST.get("session_id")
         participant_count = int(req.POST.get("participant_count"), 0)
+        user_id = auth.get_user_id(auth_token)
 
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
 
-#        if not engine.is_initiator(session_id, auth_token):
-#            return HttpResponse("Unauthorized", status=401)
+        if not engine.is_initiator(session_id, user_id):
+            return HttpResponse("Unauthorized", status=401)
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -113,9 +117,10 @@ def get_encrypted_shares(req: HttpRequest) -> HttpResponse:
     if req.method == "POST":
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
         session_id = req.POST.get("session_id")
+        user_id = auth.get_user_id(auth_token)
 
         if (
-            not engine.is_initiator(session_id, auth_token)
+            not engine.is_initiator(session_id, user_id)
             or not auth_token
             or not session_id
         ):
@@ -195,11 +200,12 @@ def get_submitted_data(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        user_id = auth.get_user_id(auth_token)
 
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
 
-        if not engine.is_initiator(session_id, auth_token):
+        if not engine.is_initiator(session_id, user_id):
             return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
@@ -221,12 +227,13 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
         auth_token = req.META.get("HTTP_AUTHORIZATION").split()[1]
+        user_id = auth.get_user_id(auth_token)
 
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
 
-#        if not engine.is_initiator(session_id, auth_token):
-#            return HttpResponseBadRequest("Invalid request body")
+        if not engine.is_initiator(session_id, user_id):
+            return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
