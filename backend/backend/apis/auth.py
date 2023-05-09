@@ -72,8 +72,10 @@ class Authenticator(object):
 	Verify authentication token
 
 	inputs:
+    token (str) - The authentication token.
  
 	outputs:
+    is_valid_token (bool) - True if the token is valid, False otherwise.
 	"""
 
     def is_valid_token(self, token: str) -> bool:
@@ -87,3 +89,25 @@ class Authenticator(object):
                 pass
 
         return False
+
+    """
+	Get the user id from a token. If there is no id, then raise an exception.
+
+	inputs:
+    token (str) - The authentication token.
+ 
+	outputs:
+    user_id (str) - The user id.
+	"""
+
+    def get_user_id(self, token: str) -> str:
+        for key in self.get_public_key():
+            try:
+                payload = jwt.decode(token, key)
+                return payload["id"]
+            except ExpiredSignatureError as e:
+                pass
+            except JWTError as e:
+                pass
+
+        raise Exception("Invalid token")

@@ -17,8 +17,6 @@ from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
 
-from pprint import pprint
-
 
 class MPCEngine(object):
     """
@@ -72,17 +70,17 @@ class MPCEngine(object):
     Create a new session with the given authentication token and public key
 
     inputs:
-    auth_token (str) - the authentication token of the user initiating the session
+    user_id (str) - id of the user initiating the session
     public_key (str) - the public key associated with the session
 
     outputs:
     session_id (str) - the unique identifier of the created session
     """
 
-    def create_session(self, auth_token: str, public_key: str) -> str:
+    def create_session(self, user_id: str, public_key: str) -> str:
         session_id = str(uuid.uuid4())[:26]
         session_data = {
-            "auth_token": auth_token,
+            "user_id": user_id,
             "merged": {},
             "metadata": {},
             "num_cells": 0,
@@ -99,19 +97,19 @@ class MPCEngine(object):
         return session_id
 
     """
-    Determine if a user is the initiator of a session based on their auth_token
+    Determine if a user is the initiator of a session based on their user_id
 
     inputs:
     session_id (str) - the unique identifier of the session to be checked
-    auth_token (str) - the authentication token of the user attempting to verify if they are the initiator
+    user_id (str) - id of the user attempting to verify if they are the initiator
 
     outputs:
     bool - True if the user is the initiator of the session, False otherwise
     """
 
-    def is_initiator(self, session_id: str, auth_token: str) -> bool:
+    def is_initiator(self, session_id: str, user_id: str) -> bool:
         session_data = self.get_session(session_id)
-        return session_data["auth_token"] == auth_token
+        return session_data["user_id"] == user_id
 
     """
     Check if a session exists in the data store
