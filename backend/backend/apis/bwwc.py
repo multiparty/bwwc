@@ -93,8 +93,8 @@ def get_submission_urls(req: HttpRequest) -> HttpResponse:
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
 
-        if not engine.is_initiator(session_id, auth_token):
-            return HttpResponse("Unauthorized", status=401)
+#        if not engine.is_initiator(session_id, auth_token):
+#            return HttpResponse("Unauthorized", status=401)
 
         if not auth_token or not session_id or not participant_count:
             return HttpResponseBadRequest("Invalid request body")
@@ -225,8 +225,8 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
         if not auth.is_valid_token(auth_token):
             return HttpResponse("Unauthorized", status=401)
 
-        if not engine.is_initiator(session_id, auth_token):
-            return HttpResponseBadRequest("Invalid request body")
+#        if not engine.is_initiator(session_id, auth_token):
+#            return HttpResponseBadRequest("Invalid request body")
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
