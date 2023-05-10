@@ -39,8 +39,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_ENV == "dev"
-
 CORS_ALLOW_CREDENTIALS = True
+USE_X_FORWARDED_HOST = True
+
+# Number of seconds for the HTTP Strict Transport Security (HSTS) header, which instructs browsers to only 
+# connect to the site over HTTPS. This can help prevent man-in-the-middle attacks.
+SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", default=31536000))
 
 ALLOWED_HOSTS = [
     "199.94.60.152",  # IP of the SAIL Proxy Server
