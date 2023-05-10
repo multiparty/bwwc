@@ -17,8 +17,6 @@ from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
 
-from pprint import pprint
-
 
 class MPCEngine(object):
     """
@@ -31,6 +29,9 @@ class MPCEngine(object):
     """
 
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
+        self.redis_host = os.environ.get("REDIS_HOST", "redis")
+        self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
+
         # Default to 'dev' if not specified
         DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
 
@@ -38,6 +39,7 @@ class MPCEngine(object):
 
         if DJANGO_ENV == "prod":
             load_dotenv(os.path.join(current_directory_path, "../env/.env.prod"))
+            self.configure_redis_for_production()
         else:
             load_dotenv(os.path.join(current_directory_path, "../env/.env.dev"))
 
@@ -51,8 +53,21 @@ class MPCEngine(object):
         if config_prime and is_prime_miller_rabin(config_prime):
             self.prime = config_prime
 
-        self.redis_host = os.environ.get("REDIS_HOST", "redis")
-        self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
+    """
+    Configure Redis for production
+    """
+
+    def configure_redis_for_production(self):
+        # Set RDB configuration
+        self.redis_client.config_set("save", "900 1 300 10 60 10000")
+
+        # Set AOF configuration
+        self.redis_client.config_set("appendonly", "yes")
+        self.redis_client.config_set("appendfsync", "everysec")
+
+        # Enable AOF rewrite during runtime
+        self.redis_client.config_set("auto-aof-rewrite-percentage", "100")
+        self.redis_client.config_set("auto-aof-rewrite-min-size", "64mb")
 
     """
     Save session data to the data store
