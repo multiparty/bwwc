@@ -43,6 +43,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "199.94.60.152",  # IP of the SAIL Proxy Server
     "mpc-api.sail.codes",
+    "mpc.sail.codes",
     "training-api.100talent.org",
     "api.100talent.org",
     "localhost",
