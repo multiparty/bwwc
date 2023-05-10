@@ -2,6 +2,7 @@ import os
 import sys
 import uuid
 import numbers
+import logging
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 from itertools import groupby
 from operator import itemgetter
@@ -29,6 +30,8 @@ class MPCEngine(object):
     """
 
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
+        self.logger = logging.getLogger("django")
+
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
 
@@ -109,6 +112,8 @@ class MPCEngine(object):
             "session_id": session_id,
             "state": "open",
         }
+
+        self.logger.info(f"Created session {session_id} with public key {public_key}")
 
         self.save_session(session_id, session_data)
         return session_id
