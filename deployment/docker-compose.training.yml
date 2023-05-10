@@ -34,7 +34,7 @@ services:
   bwwc-mongo:
     container_name: bwwc-mongo-training
     restart: always
-    image: mongo:4.4.6
+    image: mongo
     ports:
       - 27018:27017
     volumes:
