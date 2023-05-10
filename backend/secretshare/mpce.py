@@ -36,7 +36,9 @@ class MPCEngine(object):
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
 
-        self.mongo_client = MongoClient(os.environ.get('MONGO_HOST', 'mongodb://localhost:27017/'))
+        self.mongo_client = MongoClient(
+            os.environ.get("MONGO_HOST", "mongodb://localhost:27017/")
+        )
         self.mongo_db = self.mongo_client["bwwc"]
         self.mongo_collection = self.mongo_db["wage_gap"]
 
