@@ -14,6 +14,7 @@ import json
 from datetime import datetime
 
 import redis
+from pymongo import MongoClient
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
@@ -34,6 +35,10 @@ class MPCEngine(object):
 
         self.redis_host = os.environ.get("REDIS_HOST", "redis")
         self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
+
+        self.mongo_client = MongoClient(os.environ.get('MONGO_HOST', 'mongodb://localhost:27017/'))
+        self.mongo_db = self.mongo_client["bwwc"]
+        self.mongo_collection = self.mongo_db["wage_gap"]
 
         # Default to 'dev' if not specified
         DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
@@ -73,7 +78,7 @@ class MPCEngine(object):
         self.redis_client.config_set("auto-aof-rewrite-min-size", "64mb")
 
     """
-    Save session data to the data store
+    Save session data to Redis
 
     inputs:
     session_id (str) - the unique identifier of the session to be saved
@@ -85,6 +90,30 @@ class MPCEngine(object):
 
     def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
         self.redis_client.set(session_id, json.dumps(session_data))
+        self.redundant_save_session(session_id, session_data)
+
+    """
+    Make an backup of the session data in MongoDB
+
+    inputs:
+    session_id (str) - the unique identifier of the session to be saved
+    session_data (Dict[str, Any]) - a dictionary containing the session data
+
+    outputs:
+    None - this function has no return value but saves the session data to the data store
+    """
+
+    def redundant_save_session(
+        self, session_id: str, session_data: Dict[str, Any]
+    ) -> None:
+        query = {"session_id": session_id}
+        update = {"$set": session_data}
+        result = self.mongo_collection.update_one(query, update, upsert=True)
+
+        if result.upserted_id is not None:
+            self.logger.info(f"Successfully saved: {session_id} in MongoDB")
+        else:
+            self.logger.info(f"Failed to save: {session_id} in MongoDB")
 
     """
     Create a new session with the given authentication token and public key
@@ -113,11 +142,13 @@ class MPCEngine(object):
             "state": "open",
         }
 
-        self.logger.info(f"""
+        self.logger.info(
+            f"""
         Created session: {session_id}
         Public key: {public_key}
         Prime: {self.prime}
-        """)
+        """
+        )
 
         self.save_session(session_id, session_data)
         return session_id
