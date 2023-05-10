@@ -38,7 +38,9 @@ if not os.path.exists(os.path.join(BASE_DIR, "logs")):
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DJANGO_ENV == "dev"
+
+CORS_ALLOW_CREDENTIALS = True
 
 ALLOWED_HOSTS = [
     "199.94.60.152",  # IP of the SAIL Proxy Server
