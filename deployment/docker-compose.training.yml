@@ -32,7 +32,7 @@ services:
     env_file:
       - ../stack.env
   bwwc-mongo:
-    container_name: bwwc-mongo
+    container_name: bwwc-mongo-training
     restart: always
     image: mongo:4.4.6
     ports:
