@@ -38,7 +38,7 @@ services:
     ports:
       - 27018:27017
     volumes:
-      - bwwc_data:/data/db
+      - bwwc_data_training:/data/db
     env_file:
       - ../stack.env
 
