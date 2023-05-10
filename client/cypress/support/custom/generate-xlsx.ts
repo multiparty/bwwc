@@ -50,9 +50,9 @@ function gridDataToJSON(rows: TableRow[]) {
   return res;
 }
 
-type ExtendedDataFormat = DataFormat & { [key: string]: PositionMap };
+export type ExtendedDataFormat = DataFormat & { [key: string]: PositionMap };
 
-export function dataGenerator() {
+export function setResultObject() {
   let counter = { F: 0, M: 0, NB: 0, all: 0 };
 
   return dataTypes.reduce((acc: ExtendedDataFormat, value: string) => {
@@ -63,7 +63,7 @@ export function dataGenerator() {
         const ethn = Ethnicity[e as keyof typeof Ethnicity];
         const gender: GenderMap = Object.keys(Gender).reduce((acc, g) => {
           const gen = Gender[g as keyof typeof Gender];
-          const randVal = genRandomInt(10000);
+          const randVal = 0;
           acc[gen] = randVal;
           if (value == 'numberOfEmployees') {
             counter[gen] += randVal;
@@ -88,8 +88,53 @@ export function dataGenerator() {
   }, {} as ExtendedDataFormat);
 }
 
-export function dataObjectToXlsx(filename: string): ArrayBuffer {
-  const dataObjects = dataGenerator();
+export function dataGenerator(result: ExtendedDataFormat) {
+  let counter = { F: 0, M: 0, NB: 0, all: 0 };
+
+  return dataTypes.reduce((acc: ExtendedDataFormat, value: string) => {
+    const pos: PositionMap = Object.keys(Positions).reduce((acc, p) => {
+      const position = Positions[p as keyof typeof Positions];
+
+      const ethnicity: EthnicityMap = Object.keys(Ethnicity).reduce((acc, e) => {
+        const ethn = Ethnicity[e as keyof typeof Ethnicity];
+        const gender: GenderMap = Object.keys(Gender).reduce((acc, g) => {
+          const gen = Gender[g as keyof typeof Gender];
+          const randVal = genRandomInt(10000);
+          acc[gen] = randVal;
+          if (value == 'numberOfEmployees') {
+            counter[gen] += randVal;
+            counter['all'] += randVal;
+            result['totalEmployees'][gen] += randVal;
+            result['totalEmployees']['all'] += randVal;
+          }
+          if (value !== 'totalEmployees') {
+            result[value][position][ethn][gen] += randVal;
+          }
+          return acc;
+        }, {} as GenderMap);
+
+        acc[ethn] = gender;
+        return acc;
+      }, {} as EthnicityMap);
+
+      acc[position] = ethnicity;
+      return acc;
+    }, {} as PositionMap);
+    if (value == 'totalEmployees') {
+      acc['totalEmployees'] = counter;
+    } else {
+      acc[value] = pos;
+    }
+    return acc;
+  }, {} as ExtendedDataFormat);
+}
+
+export function createInputXlsx(filename: string, result: ExtendedDataFormat): ArrayBuffer {
+  const dataObjects = dataGenerator(result);
+  return dataToXlsx(dataObjects, filename);
+}
+
+export function dataToXlsx(dataObjects: ExtendedDataFormat, filename: string): ArrayBuffer {
   const wb = XLSX.utils.book_new();
 
   // Adding an empty, first sheet

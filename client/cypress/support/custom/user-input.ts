@@ -1,17 +1,31 @@
-import { dataObjectToXlsx } from '../custom/generate-xlsx';
+import { createInputXlsx, ExtendedDataFormat } from '../custom/generate-xlsx';
 import { Industries } from '../../../src/constants/industries';
 import { Sizes } from '../../../src/constants/sizes';
 
-export function UserInput() {
+export function UserInput(result: ExtendedDataFormat, numTest: number) {
   const generateID = '[id="generateID"]';
   cy.get(generateID).click();
+
+  cy.window().then((win) => {
+    // Override the clipboard API with a custom implementation
+    cy.stub(win.navigator.clipboard, 'writeText').callsFake((text) => {
+      win.navigator.clipboard.__data = text;
+      return Promise.resolve();
+    });
+    cy.stub(win.navigator.clipboard, 'readText').callsFake(() => {
+      return Promise.resolve(win.navigator.clipboard.__data);
+    });
+  });
 
   const copyLink = '[id="copyLink"]';
   cy.get(copyLink).should('be.visible').should('be.enabled').click();
 
-  // Copy URL and transition to the URL
-  cy.getClipboardText().then((clipboardText) => {
-    cy.visit(clipboardText);
+  // Use the custom clipboard API implementation for your test
+  cy.window().then((win) => {
+    // Read text from the custom clipboard API
+    win.navigator.clipboard.readText().then((clipboardText) => {
+      cy.visit(clipboardText);
+    });
   });
 
   // Submitter's input (ID, PW, industry and compny-size)
@@ -28,8 +42,8 @@ export function UserInput() {
   cy.contains(selected_size).click();
 
   // Drag and drop a randomly generated xlsx workbook
-  const filename = 'testData.xlsx';
-  dataObjectToXlsx(filename);
+  const filename = 'testData-' + numTest + '.xlsx';
+  createInputXlsx(filename, result);
   const selector = 'input[type=file]';
   cy.get(selector).selectFile('cypress/downloads/' + filename, {
     action: 'drag-drop',

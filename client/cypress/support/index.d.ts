@@ -6,8 +6,7 @@ declare namespace Cypress {
      * Custom command to ... add your description here
      * @example cy.uploadFIle()
      */
-    uploadFile(selector: string, fileName: string): Chainable<null>;
-    upload(file: any, fileName: string): Chainable<null>;
     getClipboardText(): Chainable<string>;
+    readFileAsText(file: File): Chainable<string>;
   }
 }
