@@ -113,7 +113,11 @@ class MPCEngine(object):
             "state": "open",
         }
 
-        self.logger.info(f"Created session {session_id} with public key {public_key}")
+        self.logger.info(f"""
+        Created session: {session_id}
+        Public key: {public_key}
+        Prime: {self.prime}
+        """)
 
         self.save_session(session_id, session_data)
         return session_id
