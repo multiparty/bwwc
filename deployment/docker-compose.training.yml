@@ -31,6 +31,16 @@ services:
       - 81:80
     env_file:
       - ../stack.env
+  bwwc-mongo:
+    container_name: bwwc-mongo
+    restart: always
+    image: mongo:4.4.6
+    ports:
+      - 27018:27017
+    volumes:
+      - bwwc_data:/data/db
+    env_file:
+      - ../stack.env
 
 volumes:
   bwwc_data_training: ~
