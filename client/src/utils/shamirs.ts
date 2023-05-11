@@ -123,10 +123,6 @@ output:
 shares (Point[]) - A list of tuples containing the x and y values of the shares.
 */
 export function shamirShare(secret: BigNumber, numShares: number, threshold: BigNumber, asString: boolean = false, prime: BigNumber = BigNumber(180252380737439)): Point[] {
-  if (!isIntGreaterThanZero(secret)) {
-    throw new Error(`Secret ${secret} must be a positive integer`);
-  }
-
   if (!isIntGreaterThanZero(prime)) {
     throw new Error(`Prime ${prime} must be a positive integer`);
   }
