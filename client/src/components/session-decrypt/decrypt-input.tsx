@@ -46,11 +46,9 @@ export const DecryptInputForm = () => {
     }
   }, []);
 
-
   useEffect(() => {
     decrypt(privateKey);
   }, [privateKey]);
-
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -59,7 +57,6 @@ export const DecryptInputForm = () => {
     }, [values]);
     return null;
   };
-
 
   const reduce = async (input: Array<Point>) => {
     const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
@@ -81,7 +78,6 @@ export const DecryptInputForm = () => {
     return result;
   };
 
-
   // Complete the MPC by summing all the shares together
   // Can replace this function with any custom functionality to apply
   // over unencrypted shares.
@@ -102,7 +98,6 @@ export const DecryptInputForm = () => {
     }
   }
 
-
   // used as a callback in the FileUpload component to trigger decryption upon dropping a private key file
   const submitPrivateKeyHandler = async (files: CustomFile[]) => {
     const file = files[0];
@@ -115,7 +110,6 @@ export const DecryptInputForm = () => {
 
     reader.readAsText(file);
   };
-
 
   return (
     <Card>
