@@ -147,6 +147,9 @@ def submit_data(req: HttpRequest) -> HttpResponse:
 
         if not engine.session_exists(session_id):
             return HttpResponseBadRequest("Invalid session ID")
+        
+        if len(data["table"]) == 0:
+            return HttpResponseBadRequest("Invalid data")
 
         try:
             engine.add_participant(session_id, participant)
