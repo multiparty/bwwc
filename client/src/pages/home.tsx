@@ -26,6 +26,8 @@ export const HomePage: FC = () => {
   const [threshold, setTheshold] = useState<number>(1); // Must have at least 1 share to reconstruct
   const [numEncryptWithKey, setNumEncryptWithKey] = useState<number>(threshold + 1); // Encrypt amount "theshold + 1" shares with key
   const [table, setTable] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dataIsEncrypted, setDataIsEncrypted] = useState<boolean>(false);
   const { companySize, industry, participantCode, sessionId, privateKey } = useSelector((state: AppState) => state.session);
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export const HomePage: FC = () => {
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, new BigNumber(prime), true, scale);
         setTable(secretTable);
+        setDataIsEncrypted(Object.keys(data).length !== 0);
       }
     };
     loadData();
@@ -57,6 +60,7 @@ export const HomePage: FC = () => {
     }
 
     try {
+      setLoading(true);
       const data = {
         table: table,
         participantCode: participantCode,
@@ -77,7 +81,7 @@ export const HomePage: FC = () => {
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
         <ViewData data={data} setCheck={setCheck} />
-        <VerifyData data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} check={check} />
+        <VerifyData loading={loading} dataIsEncrypted={dataIsEncrypted} data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} check={check} />
       </Stack>
     </Layout>
   );

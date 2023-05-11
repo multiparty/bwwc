@@ -13,20 +13,22 @@ export interface VerifyDataProps {
   submitResp: AxiosResponse | undefined;
   data: DataFormat;
   check: boolean;
+  loading: boolean;
+  dataIsEncrypted: boolean;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler, check }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler, check, loading, dataIsEncrypted }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [pressed, wasPressed] = useState(false);
 
   useEffect(() => {
-    if (verifyTicked && data?.totalEmployees && !check) {
+    if (verifyTicked && data?.totalEmployees && !check && !loading && dataIsEncrypted) {
       setCanSubmit(true);
     } else {
       setCanSubmit(false);
     }
-  }, [verifyTicked, data, check]);
+  }, [verifyTicked, data, check, loading, dataIsEncrypted]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVerifyTicked(event.target.checked);
@@ -57,7 +59,7 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
           <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit} data-cy="submit">
             Submit
           </LoadingButton>
-          <SubmissionAlert submitResp={submitResp} pressed={pressed} check={check} />
+          <SubmissionAlert loading={loading} dataIsEncrypted={dataIsEncrypted} submitResp={submitResp} pressed={pressed} check={check} />
         </Stack>
       </CardContent>
     </Card>
