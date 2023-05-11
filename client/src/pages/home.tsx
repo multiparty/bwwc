@@ -67,12 +67,8 @@ export const HomePage: FC = () => {
         industry: industry,
         companySize: companySize
       };
-      if (Object.keys(table).length === 0) {
-        const resp = await submitData(data, sessionId, participantCode);
-        setSubmitResp(resp);
-      } else {
-        console.error('Table is empty');
-      }
+      const resp = await submitData(data, sessionId, participantCode);
+      setSubmitResp(resp);
     } catch (err) {
       console.error(err);
     } finally {
