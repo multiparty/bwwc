@@ -14,7 +14,7 @@ import { secretSharesToTable } from '@utils/shamirs';
 import { importPemPrivateKey } from '@utils/keypair';
 import { Point } from '@utils/data-format';
 import BigNumber from 'bignumber.js';
-import { setDecodedTable, setMetadata, setSessionId, setPrime } from '../../redux/session';
+import { setDecodedTable, setMetadata, setSessionId } from '../../redux/session';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,6 +34,10 @@ export const DecryptInputForm = () => {
   const { prime, sessionId } = useSelector((state: AppState) => state.session);
   const [progress, setProgress] = useState<number>(0);
 
+  type InputElement = string | BigNumber;
+  type InputList = Array<Array<InputElement>>;
+  const bigPrime = new BigNumber(prime);
+
   useEffect(() => {
     const sessionIdfromStorage = localStorage.getItem('sessionId');
     dispatch(setSessionId(sessionIdfromStorage));
@@ -41,6 +45,12 @@ export const DecryptInputForm = () => {
       navigate('/manage');
     }
   }, []);
+
+
+  useEffect(() => {
+    decrypt(privateKey);
+  }, [privateKey]);
+
 
   const FormObserver: React.FC = () => {
     const { values } = useFormikContext<valueProps>();
@@ -50,57 +60,62 @@ export const DecryptInputForm = () => {
     return null;
   };
 
+
+  const reduce = async (input: Array<Point>) => {
+    const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
+
+    for (const [type, value] of input) {
+      if (!resultMap.has(type)) {
+        resultMap.set(type, [type, new BigNumber(0)]);
+      }
+
+      const currentValue: Array<InputElement> | undefined = resultMap.get(type);
+      if (currentValue) {
+        currentValue[1] = new BigNumber(currentValue[1] as BigNumber).plus(new BigNumber(value)).mod(bigPrime);
+      }
+    }
+
+    // Convert BigNumber back to string in the result
+    const result: InputList = Array.from(resultMap.values()).map(([type, value]) => [type, (value as BigNumber).toString()]);
+
+    return result;
+  };
+
+
+  // Complete the MPC by summing all the shares together
+  // Can replace this function with any custom functionality to apply
+  // over unencrypted shares.
+  async function decrypt(pKey: string) {
+    if (token !== undefined && sessionId !== undefined) {
+      const privateCryptoKey = await importPemPrivateKey(pKey);
+      const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
+
+      const recordProgress = (progress: number) => {
+        const numTable = Object.keys(metadata.companySize).length + Object.keys(metadata.industry).length + 1;
+        setProgress((progress / (total_cells * numTable - 1)) * 100);
+      };
+
+      const scale = (num: number) => num / 100;
+      const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress, scale);
+      dispatch(setDecodedTable(decodedTable));
+      dispatch(setMetadata(metadata));
+    }
+  }
+
+
+  // used as a callback in the FileUpload component to trigger decryption upon dropping a private key file
   const submitPrivateKeyHandler = async (files: CustomFile[]) => {
     const file = files[0];
 
     const reader = new FileReader();
-    // Complete the MPC by summing all the shares together
-    // Can replace this function with any custom functionality to apply
-    // over unencrypted shares.
-    type InputElement = string | BigNumber;
-    type InputList = Array<Array<InputElement>>;
-    const bigPrime = new BigNumber(prime);
-
-    const reduce = async (input: Array<Point>) => {
-      const resultMap: Map<string | BigNumber, Array<InputElement>> = new Map();
-
-      for (const [type, value] of input) {
-        if (!resultMap.has(type)) {
-          resultMap.set(type, [type, new BigNumber(0)]);
-        }
-
-        const currentValue: Array<InputElement> | undefined = resultMap.get(type);
-        if (currentValue) {
-          currentValue[1] = new BigNumber(currentValue[1] as BigNumber).plus(new BigNumber(value)).mod(bigPrime);
-        }
-      }
-
-      // Convert BigNumber back to string in the result
-      const result: InputList = Array.from(resultMap.values()).map(([type, value]) => [type, (value as BigNumber).toString()]);
-
-      return result;
-    };
-
     reader.onload = async (event) => {
-      if (token !== undefined && sessionId !== undefined) {
-        const fileContent = event.target?.result as string;
-        const privateCryptoKey = await importPemPrivateKey(fileContent);
-        const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
-
-        const recordProgress = (progress: number) => {
-          const numTable = Object.keys(metadata.companySize).length + Object.keys(metadata.industry).length + 1;
-          setProgress((progress / (total_cells * numTable - 1)) * 100);
-        };
-
-        const scale = (num: number) => num / 100;
-        const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress, scale);
-        dispatch(setDecodedTable(decodedTable));
-        dispatch(setMetadata(metadata));
-      }
+      const fileContent = event.target?.result as string;
+      decrypt(fileContent);
     };
 
     reader.readAsText(file);
   };
+
 
   return (
     <Card>
@@ -123,7 +138,7 @@ export const DecryptInputForm = () => {
                       <LockTwoTone />
                       <Typography variant="h5">Private Key</Typography>
                     </Stack>
-                    <PasswordInput fullWidth name="privatekey" label="Private Key" />
+                    <PasswordInput fullWidth name="privateKey" label="Private Key" />
                   </Stack>
                 </Form>
               </Formik>
