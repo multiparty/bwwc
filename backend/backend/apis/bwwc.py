@@ -299,7 +299,7 @@ def backup(req: HttpRequest) -> HttpResponse:
         conn.close()
         logger.info("Backup complete")
 
-        return JsonResponse({"data": data})
+        return JsonResponse({"status": 200})
     else:
         return HttpResponseBadRequest("Invalid request method")
 
