@@ -246,6 +246,7 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
 
+@csrf_exempt
 def backup(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         session_id = req.GET.get("session_id")
@@ -253,7 +254,7 @@ def backup(req: HttpRequest) -> HttpResponse:
         if not session_id:
             return HttpResponseBadRequest("Invalid Session ID")
 
-        data = mpce.get_session(req.GET.get("session_id"))
+        data = engine.get_session(req.GET.get("session_id"))
         data_json = json.dumps(data)
 
         cur = connection.cursor()
@@ -262,6 +263,15 @@ def backup(req: HttpRequest) -> HttpResponse:
         connection.commit()
         cur.close()
 
+@csrf_exempt
+def mongo_health(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        if not engine.is_mongodb_running():
+            return HttpResponseBadRequest("MongoDB is down")
+        else:
+            return HttpResponse("MongoDB is up")
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 def get_urlpatterns():
     return [

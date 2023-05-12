@@ -32,8 +32,10 @@ class MPCEngine(object):
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
         self.logger = logging.getLogger("django")
 
+        self.mongo_host = os.environ.get("MONGO_HOST")
+        self.mongo_port = os.environ.get("MONGO_PORT")
         self.mongo_client = MongoClient(
-            os.environ.get("MONGO_HOST", "mongodb://localhost:27017/")
+            os.environ.get("MONGO_HOST", f"mongodb://{self.mongo_host}:{self.mongo_port}/")
         )
         self.mongo_db = self.mongo_client["bwwc"]
         self.mongo_collection = self.mongo_db["wage_gap"]
@@ -69,11 +71,10 @@ class MPCEngine(object):
     bool - True if MongoDB is running, False otherwise
     """
 
-    def is_mongodb_running(self, host: str = "localhost", port: int = 27017) -> bool:
-        client = MongoClient(host=host, port=port, serverSelectionTimeoutMS=1000)
+    def is_mongodb_running(self) -> bool:
         try:
             # The 'isMaster' command is cheap and does not require auth.
-            client.admin.command("ismaster")
+            self.mongo_client.admin.command("ismaster")
             return True
         except errors.ServerSelectionTimeoutError:
             return False
@@ -113,7 +114,6 @@ class MPCEngine(object):
     """
 
     def create_session(self, user_id: str, public_key: str) -> str:
-        self.logger.info(f"MongoDB status: {self.is_mongodb_running()}")
         session_id = str(uuid.uuid4())[:26]
         session_data = {
             "user_id": user_id,
@@ -134,6 +134,7 @@ class MPCEngine(object):
         Created session: {session_id}
         Public key: {public_key}
         Prime: {self.prime}
+        Mongo status: {self.is_mongodb_running()}
         """
         )
 
