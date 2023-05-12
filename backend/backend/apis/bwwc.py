@@ -248,7 +248,8 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
 
 @csrf_exempt
 def backup(req: HttpRequest) -> HttpResponse:
-    if req.method == "GET":
+    # UptimeRobot sends a HEAD request to perform backup
+    if (req.method == "GET" or req.method == "HEAD"):
         logger.info("Backup request received")
         session_id = req.GET.get("session_id")
 
