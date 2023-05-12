@@ -10,6 +10,8 @@ import logging
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
+import json
 
 from secretshare.mpce import MPCEngine
 
@@ -243,6 +245,22 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
         return JsonResponse({"data": data})
     else:
         return HttpResponseBadRequest("Invalid request method")
+
+def backup(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        session_id = req.GET.get("session_id")
+
+        if not session_id:
+            return HttpResponseBadRequest("Invalid Session ID")
+
+        data = mpce.get_session(req.GET.get("session_id"))
+        data_json = json.dumps(data)
+
+        cur = connection.cursor()
+        query = "INSERT INTO wage_gap (session_id, data) VALUES (%s, %s);"
+        cur.execute(query, (session_id, data_json))
+        connection.commit()
+        cur.close()
 
 
 def get_urlpatterns():

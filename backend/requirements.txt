@@ -4,4 +4,6 @@ pymongo==4.3.3
 pytest==7.2.2
 python-dotenv==1.0.0
 python-jose==3.3.0
+redis==4.5.1
 requests==2.30.0
+psycopg2==2.8.6
