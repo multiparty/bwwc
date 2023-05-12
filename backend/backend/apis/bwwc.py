@@ -263,6 +263,16 @@ def backup(req: HttpRequest) -> HttpResponse:
         connection.commit()
         cur.close()
 
+@csrf_exempt
+def mongo_health(req: HttpRequest) -> HttpResponse:
+    if req.method == "GET":
+        if engine.is_mongodb_running() is None:
+            return HttpResponseBadRequest("MongoDB client is not initialized")
+        else:
+            return HttpResponse("MongoDB client is initialized")
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+
 def get_urlpatterns():
     return [
         path("api/bwwc/start_session/", start_session),
