@@ -1,0 +1,13 @@
+# Deployment of the frontend for the production environment
+# Deployed on bwwc-2023 AWS Server
+# Deployed at https://100talent.org
+version: '3.8'
+services:
+  bwwc-frontend:
+    container_name: bwwc-frontend
+    restart: always
+    image: multiparty/bwwc-client:latest
+    ports:
+      - 80:80
+    env_file:
+      - ../stack.env
