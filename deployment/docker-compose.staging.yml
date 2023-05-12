@@ -42,6 +42,14 @@ services:
       - bwwc_data:/data/db
     env_file:
       - ../stack.env
+  bwwc-postgres:
+    container_name: bwwc-postgres
+    restart: always
+    image: postgres:13.3-alpine
+    ports:
+      - 5500:5432
+    volumes:
+      - bwwc_data:/var/lib/postgresql/data
 
 volumes:
   bwwc_data: ~
