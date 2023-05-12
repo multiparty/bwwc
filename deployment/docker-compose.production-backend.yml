@@ -1,0 +1,28 @@
+# Deployment of the backend for the production environment
+# Deployed on AWS bwwc-2023 Server
+# Deployed at https://api.100talent.org
+version: '3.8'
+services:
+  bwwc-backend:
+    container_name: bwwc-backend
+    restart: always
+    image: multiparty/bwwc-backend:latest
+    ports:
+      - 8000:8000
+    depends_on:
+      - bwwc-redis
+    env_file:
+      - ../stack.env
+  bwwc-mongo:
+    container_name: bwwc-mongo
+    restart: always
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - bwwc_data_production:/data/db
+    env_file:
+      - ../stack.env
+
+volumes:
+  bwwc_data_production: ~
