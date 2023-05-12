@@ -68,11 +68,12 @@ class MPCEngine(object):
     outputs:
     bool - True if MongoDB is running, False otherwise
     """
-    def is_mongodb_running(self, host: str='localhost', port: int=27017) -> bool:
+
+    def is_mongodb_running(self, host: str = "localhost", port: int = 27017) -> bool:
         client = MongoClient(host=host, port=port, serverSelectionTimeoutMS=1000)
         try:
             # The 'isMaster' command is cheap and does not require auth.
-            client.admin.command('ismaster')
+            client.admin.command("ismaster")
             return True
         except errors.ServerSelectionTimeoutError:
             return False
@@ -100,7 +101,6 @@ class MPCEngine(object):
         else:
             self.logger.error(f"Failed to save: {session_id} in MongoDB")
 
-
     """
     Create a new session with the given authentication token and public key
 
@@ -113,7 +113,7 @@ class MPCEngine(object):
     """
 
     def create_session(self, user_id: str, public_key: str) -> str:
-        self.logger.info(f'MongoDB status: {self.is_mongodb_running()}')
+        self.logger.info(f"MongoDB status: {self.is_mongodb_running()}")
         session_id = str(uuid.uuid4())[:26]
         session_data = {
             "user_id": user_id,
@@ -337,8 +337,8 @@ class MPCEngine(object):
     ) -> None:
         session_data = self.get_session(session_id)
 
-        print(f'session data: {session_data}')
-        print(f'trying to insert: {data}')
+        print(f"session data: {session_data}")
+        print(f"trying to insert: {data}")
 
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
@@ -416,10 +416,10 @@ class MPCEngine(object):
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         query = {"session_id": session_id}
         result = self.mongo_collection.find_one(query)
-        
+
         if result is None:
             return None
-        
+
         return result
 
     """

@@ -62,7 +62,7 @@ def test_query_all_sessions():
 
     query = {}
     sessions = engine.mongo_collection.find(query)
-    assert sessions.count() >= 2 
+    assert sessions.count() >= 2
 
 
 def test_generate_urls():
