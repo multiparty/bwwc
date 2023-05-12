@@ -13,7 +13,6 @@ sys.path.append("../cryptography")
 import json
 from datetime import datetime
 
-import redis
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
@@ -33,9 +32,6 @@ class MPCEngine(object):
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
         self.logger = logging.getLogger("django")
 
-        self.redis_host = os.environ.get("REDIS_HOST", "redis")
-        self.redis_client = redis.Redis(host=self.redis_host, port=6379, db=0)
-
         self.mongo_client = MongoClient(
             os.environ.get("MONGO_HOST", "mongodb://localhost:27017/")
         )
@@ -49,7 +45,6 @@ class MPCEngine(object):
 
         if DJANGO_ENV == "prod":
             load_dotenv(os.path.join(current_directory_path, "../env/.env.prod"))
-            self.configure_redis_for_production()
         else:
             load_dotenv(os.path.join(current_directory_path, "../env/.env.dev"))
 
@@ -64,37 +59,6 @@ class MPCEngine(object):
             self.prime = config_prime
 
     """
-    Configure Redis for production
-    """
-
-    def configure_redis_for_production(self):
-        # Set RDB configuration
-        self.redis_client.config_set("save", "900 1 300 10 60 10000")
-
-        # Set AOF configuration
-        self.redis_client.config_set("appendonly", "yes")
-        self.redis_client.config_set("appendfsync", "everysec")
-
-        # Enable AOF rewrite during runtime
-        self.redis_client.config_set("auto-aof-rewrite-percentage", "100")
-        self.redis_client.config_set("auto-aof-rewrite-min-size", "64mb")
-
-    """
-    Save session data to Redis
-
-    inputs:
-    session_id (str) - the unique identifier of the session to be saved
-    session_data (Dict[str, Any]) - a dictionary containing the session data
-
-    outputs:
-    None - this function has no return value but saves the session data to the data store
-    """
-
-    def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
-        self.redis_client.set(session_id, json.dumps(session_data))
-        self.redundant_save_session(session_id, session_data)
-
-    """
     Make an backup of the session data in MongoDB
 
     inputs:
@@ -105,9 +69,7 @@ class MPCEngine(object):
     None - this function has no return value but saves the session data to the data store
     """
 
-    def redundant_save_session(
-        self, session_id: str, session_data: Dict[str, Any]
-    ) -> None:
+    def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
         query = {"session_id": session_id}
         update = {"$set": session_data}
         result = self.mongo_collection.update_one(query, update, upsert=True)
@@ -180,8 +142,10 @@ class MPCEngine(object):
     bool - True if the session exists, False otherwise
     """
 
-    def session_exists(self, key):
-        return self.redis_client.exists(key) == 1
+    def session_exists(self, session_id: str) -> bool:
+        query = {"session_id": session_id}
+        result = self.mongo_collection.find_one(query)
+        return result is not None
 
     """
     Add a participant to an existing session.
@@ -414,24 +378,6 @@ class MPCEngine(object):
         self.save_session(session_id, session_data)
 
     """
-    End a session
-
-    inputs:
-    session_id (str) - the unique identifier of the session for which submissions should be closed
-
-    outputs:
-    None - this function has no return value but updates the session state to "closed" and saves 
-    the updated session data to the data store
-    """
-
-    def end_session(self, session_id: str) -> None:
-        session_data = self.get_session(session_id)
-        if not session_data:
-            raise ValueError("Invalid session ID")
-
-        self.redis_client.delete(session_id)
-
-    """
     Get a session object
 
     inputs:
@@ -442,25 +388,13 @@ class MPCEngine(object):
     """
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
-        session_data = self.redis_client.get(session_id)
-
-        if session_data is None:
+        query = {"session_id": session_id}
+        result = self.mongo_collection.find_one(query)
+        
+        if result is None:
             return None
-
-        return json.loads(session_data)
-
-    """
-    Get all active sessions
-
-    inputs:
-    None
-    
-    outputs:
-    session_data (list) - a list of all active sessions
-    """
-
-    def get_all_sessions(self) -> List[Dict[str, Any]]:
-        return [self.get_session(id) for id in self.redis_client.keys()]
+        
+        return result
 
     """
     Generate urls for session participants

@@ -9,21 +9,8 @@ services:
     image: multiparty/bwwc-backend:main
     ports:
       - 8000:8000
-    depends_on:
-    - bwwc-redis
     env_file:
     - ../stack.env
-  bwwc-redis:
-    restart: always
-    image: redis:7.0-alpine
-    container_name: bwwc-redis-staging
-    command: redis-server --appendonly yes --replica-read-only no
-    environment:
-      - redis_read_only=0
-    ports:
-    - 6379:6379
-    volumes:
-      - bwwc_data:/data
   bwwc-frontend:
     container_name: bwwc-frontend
     restart: always

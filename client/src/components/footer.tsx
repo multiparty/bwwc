@@ -3,7 +3,6 @@ import { AppBar, Box, Divider, Grid, Link, Stack, Toolbar, Typography } from '@m
 import buLogo from '../assets/bu-logo.png';
 import bwwcLogo from '../assets/bwwc-logo.png';
 import sailLogo from '../assets/sail-logo.png';
-import { version } from '../../package.json';
 
 export const Footer = () => {
   return (
@@ -62,9 +61,6 @@ export const Footer = () => {
             <Divider />
             <Typography variant="subtitle1" color="gray" sx={{ mt: 2 }}>
               © {new Date().getFullYear()} All rights reserved. Boston Women’s Workforce Council
-            </Typography>
-            <Typography variant="subtitle1" color="gray" sx={{ mt: 2 }}>
-              v{version}
             </Typography>
           </Stack>
         </Toolbar>

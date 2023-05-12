@@ -67,12 +67,12 @@ export const HomePage: FC = () => {
         industry: industry,
         companySize: companySize
       };
-      const resp = await submitData(data, sessionId, participantCode);
-      setSubmitResp(resp);
+      if (Object.keys(data).length === 0) {
+        const resp = await submitData(data, sessionId, participantCode);
+        setSubmitResp(resp);
+      }
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 

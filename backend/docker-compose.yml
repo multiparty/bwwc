@@ -11,12 +11,3 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_ENV=development
-      - REDIS_HOST=redis
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:7.0-alpine
-    container_name: "redis"
-    ports:
-      - "6379:6379"
