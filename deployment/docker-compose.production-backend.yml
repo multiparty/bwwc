@@ -9,8 +9,6 @@ services:
     image: multiparty/bwwc-backend:latest
     ports:
       - 8000:8000
-    depends_on:
-      - bwwc-redis
     env_file:
       - ../stack.env
   bwwc-mongo:
