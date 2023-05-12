@@ -152,6 +152,7 @@ export async function getSubmissions(sessionId: string, authToken: string): Prom
 }
 
 export async function submitData(data: NestedObject, sessionId: string, participantCode: string): Promise<AxiosResponse> {
+  console.log('WTF IS THE DATA?')
   const response: AxiosResponse = await axios.post(
     API_ENDPOINTS.SUBMIT_DATA,
     convertToFormData({

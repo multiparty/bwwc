@@ -17,7 +17,7 @@ export const SubmissionAlert = ({ submitResp, pressed, check, dataIsEncrypted, l
   if (loading) {
     severity = 'info';
     message = 'Please wait while submitting your data';
-  } else if (!dataIsEncrypted) {
+  } else if (!dataIsEncrypted && check) {
     severity = 'error';
     message = 'Unable to submit, data is not encrypted correctly. Please contact an administrator.';
   } else if (check) {

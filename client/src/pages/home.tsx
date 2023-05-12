@@ -36,8 +36,6 @@ export const HomePage: FC = () => {
         const csvData = await readCsv(file);
         setData(csvData);
 
-        console.log(csvData);
-
         const scale = (num: number) => num * 100;
         const prime = await getPrime(sessionId);
         const publicKeyString = await getPublicKey(sessionId);

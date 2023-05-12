@@ -337,6 +337,9 @@ class MPCEngine(object):
     ) -> None:
         session_data = self.get_session(session_id)
 
+        print(f'session data: {session_data}')
+        print(f'trying to insert: {data}')
+
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
 
