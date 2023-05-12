@@ -10,6 +10,4 @@ export const MaintenanceBanner: FC = () => {
       100talent.org is currently unavailable due to system maintenance. We apologize for the inconvenience. If you have any questions please contact team@thebwwc.org
     </Alert>
   );
-
-  return null;
 };
