@@ -6,7 +6,7 @@ services:
   bwwc-backend:
     container_name: bwwc-backend
     restart: always
-    image: multiparty/bwwc-backend:latest
+    image: multiparty/bwwc-backend:1.0.7
     ports:
       - 8000:8000
     depends_on:
@@ -25,7 +25,7 @@ services:
   bwwc-frontend:
     container_name: bwwc-frontend
     restart: always
-    image: multiparty/bwwc-client:latest
+    image: multiparty/bwwc-client:1.0.7
     ports:
       - 80:80
     env_file:
