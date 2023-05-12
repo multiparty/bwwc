@@ -266,10 +266,10 @@ def backup(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def mongo_health(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
-        if engine.is_mongodb_running() is None:
-            return HttpResponseBadRequest("MongoDB client is not initialized")
+        if not engine.is_mongodb_running():
+            return HttpResponseBadRequest("MongoDB is down")
         else:
-            return HttpResponse("MongoDB client is initialized")
+            return HttpResponse("MongoDB is up")
     else:
         return HttpResponseBadRequest("Invalid request method")
 
