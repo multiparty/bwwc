@@ -8,6 +8,6 @@ services:
     restart: always
     image: multiparty/bwwc-client:latest
     ports:
-      - 80:80
+      - 443:80
     env_file:
       - ../stack.env

@@ -8,7 +8,7 @@ services:
     restart: always
     image: multiparty/bwwc-backend:latest
     ports:
-      - 80:8000
+      - 443:8000
     env_file:
       - ../stack.env
   bwwc-mongo:
