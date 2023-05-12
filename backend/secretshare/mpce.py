@@ -13,7 +13,7 @@ sys.path.append("../cryptography")
 import json
 from datetime import datetime
 
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 from dotenv import load_dotenv
 from mpc.shamir import SecretShare
 from utils.primality import is_prime_miller_rabin
@@ -59,6 +59,25 @@ class MPCEngine(object):
             self.prime = config_prime
 
     """
+    Test if MongoDB is running
+
+    inputs:
+    host (str, optional) - the host of the MongoDB instance
+    port (int, optional) - the port of the MongoDB instance
+
+    outputs:
+    bool - True if MongoDB is running, False otherwise
+    """
+    def is_mongodb_running(self, host: str='localhost', port: int=27017) -> bool:
+        client = MongoClient(host=host, port=port, serverSelectionTimeoutMS=1000)
+        try:
+            # The 'isMaster' command is cheap and does not require auth.
+            client.admin.command('ismaster')
+            return True
+        except errors.ServerSelectionTimeoutError:
+            return False
+
+    """
     Make an backup of the session data in MongoDB
 
     inputs:
@@ -74,10 +93,13 @@ class MPCEngine(object):
         update = {"$set": session_data}
         result = self.mongo_collection.update_one(query, update, upsert=True)
 
-        if result.upserted_id is not None:
-            self.logger.info(f"Successfully saved: {session_id} in MongoDB")
+        if result.matched_count > 0:
+            self.logger.info(f"Successfully updated: {session_id} in MongoDB")
+        elif result.upserted_id is not None:
+            self.logger.info(f"Successfully inserted: {session_id} in MongoDB")
         else:
-            self.logger.info(f"Failed to save: {session_id} in MongoDB")
+            self.logger.error(f"Failed to save: {session_id} in MongoDB")
+
 
     """
     Create a new session with the given authentication token and public key
@@ -91,6 +113,7 @@ class MPCEngine(object):
     """
 
     def create_session(self, user_id: str, public_key: str) -> str:
+        self.logger.info(f'MongoDB status: {self.is_mongodb_running()}')
         session_id = str(uuid.uuid4())[:26]
         session_data = {
             "user_id": user_id,
