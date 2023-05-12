@@ -10,7 +10,7 @@ import logging
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
-from django.db import connection
+import psycopg2
 import json
 
 from secretshare.mpce import MPCEngine
@@ -249,19 +249,59 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
 @csrf_exempt
 def backup(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
+        logger.info("Backup request received")
         session_id = req.GET.get("session_id")
 
         if not session_id:
-            return HttpResponseBadRequest("Invalid Session ID")
+            return HttpResponseBadRequest("Missing Session ID")
 
-        data = engine.get_session(req.GET.get("session_id"))
+        logger.info("Checking if session exists")
+        if not engine.session_exists(session_id):
+            return HttpResponseBadRequest("Session ID does not exist")
+
+        host = os.getenv("POSTGRES_HOST")
+        port = os.getenv("POSTGRES_PORT")
+        database = os.getenv("POSTGRES_DATABASE")
+        user = os.getenv("POSTGRES_USERNAME")
+        password = os.getenv("POSTGRES_PASSWORD")
+
+        if not host or not port or not database or not user or not password:
+            return HttpResponseBadRequest("Missing PostgreSQL environment variables")
+
+        # Get Session Info
+        logger.info("Getting session info")
+        data = engine.get_session(session_id)
+        # MongoDb ObjectID is not JSON serializable
+        del data["_id"]
         data_json = json.dumps(data)
 
-        cur = connection.cursor()
+        # Establish a connection to the PostgreSQL database
+        logger.info("Establishing connection to PostgreSQL database")
+        conn = psycopg2.connect(
+            host=host,
+            port=port,
+            database=database,
+            user=user,
+            password=password
+        )
+        # Create a cursor object to interact with the database
+        cur = conn.cursor()
+
+        # Execute the SQL statement
+        logger.info("Executing SQL statement")
         query = "INSERT INTO wage_gap (session_id, data) VALUES (%s, %s);"
         cur.execute(query, (session_id, data_json))
-        connection.commit()
+        # Commit the changes to the database
+        logger.info("Committing changes to database")
+        conn.commit()
+        # Close the cursor and database connection
         cur.close()
+        conn.close()
+        logger.info("Backup complete")
+
+        return JsonResponse({"data": data})
+    else:
+        return HttpResponseBadRequest("Invalid request method")
 
 @csrf_exempt
 def mongo_health(req: HttpRequest) -> HttpResponse:
@@ -285,4 +325,6 @@ def get_urlpatterns():
         path("api/bwwc/get_submitted_data/", get_submitted_data),
         path("api/bwwc/get_prime/", get_prime),
         path("api/bwwc/get_submission_history/", get_submission_history),
+        path("api/bwwc/backup/", backup),
+        path("api/bwwc/health/", mongo_health),
     ]
