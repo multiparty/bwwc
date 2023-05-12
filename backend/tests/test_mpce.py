@@ -3,7 +3,6 @@ import re
 
 import dotenv
 import pytest
-import redis
 from secretshare.mpce import MPCEngine
 
 engine = MPCEngine()
@@ -13,15 +12,6 @@ sample_auth_token = "sample_auth_token"
 current_directory_path = os.path.dirname(os.path.abspath(__file__))
 
 dotenv.load_dotenv(os.path.join(current_directory_path, "../env/", ".env.dev"))
-
-
-@pytest.fixture(autouse=True)
-def clear_redis():
-    # Connect to your Redis server
-    r = redis.Redis(host="localhost", port=6379, db=0)
-
-    # Flush the currently selected Redis database (db=0 in this case)
-    r.flushdb()
 
 
 def test_create_session():
@@ -66,11 +56,13 @@ def test_get_session():
     assert session_data is not None
 
 
-def test_get_all_sessions():
+def test_query_all_sessions():
     _ = engine.create_session(sample_public_key, sample_auth_token)
     _ = engine.create_session(sample_public_key, sample_auth_token)
-    sessions = engine.get_all_sessions()
-    assert len(sessions) >= 2
+
+    query = {}
+    sessions = engine.mongo_collection.find(query)
+    assert sessions.count() >= 2
 
 
 def test_generate_urls():
