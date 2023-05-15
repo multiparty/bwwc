@@ -11,6 +11,7 @@ import CopyAllIcon from '@mui/icons-material/CopyAll';
 
 type CopyToClipboardButtonProps = {
   links: string[];
+  id:string;
 };
 
 function CopyToClipboardButton(props: CopyToClipboardButtonProps) {
@@ -23,7 +24,7 @@ function CopyToClipboardButton(props: CopyToClipboardButtonProps) {
 
   return (
     <>
-      <Button onClick={handleClick} id="copyLink">
+      <Button onClick={handleClick} id={props.id}>
         <CopyAllIcon color="action" />
       </Button>
 
@@ -90,7 +91,7 @@ export const LinkGenerator: FC = () => {
             <Card>
               <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
                 <Grid item sx={{ marginLeft: 'auto' }}>
-                  <CopyToClipboardButton links={generatedLinks} />
+                  <CopyToClipboardButton links={generatedLinks} id="copyLink"/>
                 </Grid>
               </Grid>
               <CardContent>
@@ -115,7 +116,7 @@ export const LinkGenerator: FC = () => {
             <Card>
               <Grid container direction="row" alignItems="center" sx={{ justifyContent: 'flex-end' }}>
                 <Grid item sx={{ marginLeft: 'auto' }}>
-                  <CopyToClipboardButton links={existingLinks} />
+                  <CopyToClipboardButton links={existingLinks} id="existingLink"/>
                 </Grid>
               </Grid>
               <CardContent>
