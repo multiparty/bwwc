@@ -12,23 +12,25 @@ export interface VerifyDataProps {
   submitDataHandler: () => void;
   submitResp: AxiosResponse | undefined;
   data: DataFormat;
-  check: boolean;
+  isDataValid: boolean;
   loading: boolean;
   dataIsEncrypted: boolean;
+  fileHasBeenLoaded: boolean;
+  companyInfoValid: boolean;
 }
 
-export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler, check, loading, dataIsEncrypted }) => {
+export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHandler, isDataValid, loading, dataIsEncrypted, fileHasBeenLoaded, companyInfoValid }) => {
   const [verifyTicked, setVerifyTicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [pressed, wasPressed] = useState(false);
 
   useEffect(() => {
-    if (verifyTicked && data?.totalEmployees && !check && !loading && dataIsEncrypted) {
+    if (verifyTicked && fileHasBeenLoaded && isDataValid && !loading && dataIsEncrypted && companyInfoValid) {
       setCanSubmit(true);
     } else {
       setCanSubmit(false);
     }
-  }, [verifyTicked, data, check, loading, dataIsEncrypted]);
+  }, [verifyTicked, fileHasBeenLoaded, isDataValid, loading, dataIsEncrypted, companyInfoValid]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVerifyTicked(event.target.checked);
@@ -59,7 +61,15 @@ export const VerifyData: FC<VerifyDataProps> = ({ data, submitResp, submitDataHa
           <LoadingButton variant="contained" disabled={!canSubmit} onClick={handleSubmit} data-cy="submit">
             Submit
           </LoadingButton>
-          <SubmissionAlert loading={loading} dataIsEncrypted={dataIsEncrypted} submitResp={submitResp} pressed={pressed} check={check} />
+          <SubmissionAlert
+            loading={loading}
+            dataIsEncrypted={dataIsEncrypted}
+            submitResp={submitResp}
+            pressed={pressed}
+            isDataValid={isDataValid}
+            fileHasBeenLoaded={fileHasBeenLoaded}
+            companyInfoValid={companyInfoValid}
+          />
         </Stack>
       </CardContent>
     </Card>

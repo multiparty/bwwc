@@ -62,16 +62,9 @@ const columnGroupingModel: GridColumnGroup[] = Object.values(Ethnicity).map((e) 
 
 export interface TableProps {
   data?: TableData;
-  setCheck?: (check: boolean) => void;
 }
-export const Table: FC<TableProps> = ({ data, setCheck }) => {
+export const Table: FC<TableProps> = ({ data }) => {
   const { palette } = useTheme();
-
-  useEffect(() => {
-    if (setCheck) {
-      setCheck(false);
-    }
-  }, [data]);
 
   return (
     <Box
@@ -104,11 +97,10 @@ export const Table: FC<TableProps> = ({ data, setCheck }) => {
         showCellVerticalBorder={true}
         showColumnVerticalBorder={true}
         getCellClassName={(params: GridCellParams<any, any, number>) => {
-          if (setCheck != undefined) {
-            if (params.value < 0 || (typeof params.value === 'number' && params.value % 1 !== 0)) {
-              setCheck(true);
-              return 'highlight-red';
-            }
+          if (params.value < 0 || (typeof params.value === 'number' && params.value % 1 !== 0)) {
+            return 'highlight-red';
+          } else if (typeof params.value !== 'number' || Number.isNaN(params.value)) {
+            return 'highlight-red';
           }
           return '';
         }}
