@@ -5,6 +5,7 @@ import { Header, HeaderProps } from '@components/header';
 import { Footer } from '@components/footer';
 import { TrainingBanner } from '@components/training-banner';
 import { MaintenanceBanner } from '@components/maintenance-banner';
+import {NavBar} from '@components/navbar/navbar'
 
 export interface LayoutProps extends HeaderProps {
   children: React.ReactNode;
