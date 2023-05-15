@@ -19,7 +19,7 @@ import { validateData } from '@utils/validate-data';
 
 export const HomePage: FC = () => {
   const { token } = useAuth();
-  const [isDataValid, setIsDataValid] = useState<boolean>(true);
+  const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
@@ -43,10 +43,9 @@ export const HomePage: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (file) {
-        // Reset Data Validation Check
-        setIsDataValid(true);
         console.log('Starting MPC Encryption');
         const csvData = await readCsv(file);
+        console.log('Validating Data');
         setIsDataValid(validateData(csvData));
         console.log('Loading File Data');
         setData(csvData);
