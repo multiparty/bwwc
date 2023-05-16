@@ -38,7 +38,8 @@ class MPCEngine(object):
             os.environ.get("MONGO_HOST", f"mongodb://{self.mongo_host}:{self.mongo_port}/")
         )
         self.mongo_db = self.mongo_client["bwwc"]
-        self.mongo_collection = self.mongo_db["wage_gap"]
+        self.session_collection = self.mongo_db["wage_gap"]
+        self.participant_collection = self.mongo_db["participant"]
 
         # Default to 'dev' if not specified
         DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
@@ -93,7 +94,31 @@ class MPCEngine(object):
     def save_session(self, session_id: str, session_data: Dict[str, Any]) -> None:
         query = {"session_id": session_id}
         update = {"$set": session_data}
-        result = self.mongo_collection.update_one(query, update, upsert=True)
+        result = self.session_collection.update_one(query, update, upsert=True)
+
+        if result.matched_count > 0:
+            self.logger.info(f"Successfully updated: {session_id} in MongoDB")
+        elif result.upserted_id is not None:
+            self.logger.info(f"Successfully inserted: {session_id} in MongoDB")
+        else:
+            self.logger.error(f"Failed to save: {session_id} in MongoDB")
+
+    """
+    Saves Participant Data to MongoDB
+
+    inputs:
+    session_id (str) - the unique identifier of the session to be saved
+    participant_code (str) - the unique identifier of the participant
+    session_data (Dict[str, Any]) - a dictionary containing the session data
+
+    outputs:
+    None - this function has no return value but saves the session data to the data store
+    """
+
+    def save_participant_data(self, session_id: str, participant_code: str, session_data: Dict[str, Any]) -> None:
+        query = {"session_id": session_id, "participant_code": participant_code}
+        update = {"$set": session_data}
+        result = self.participant_collection.update_one(query, update, upsert=True)
 
         if result.matched_count > 0:
             self.logger.info(f"Successfully updated: {session_id} in MongoDB")
@@ -121,7 +146,6 @@ class MPCEngine(object):
             "metadata": {},
             "num_cells": 0,
             "participants": {},
-            "participant_submissions": {},
             "prime": self.prime,
             "protocol": self.protocol,
             "public_key": public_key,
@@ -168,35 +192,8 @@ class MPCEngine(object):
 
     def session_exists(self, session_id: str) -> bool:
         query = {"session_id": session_id}
-        result = self.mongo_collection.find_one(query)
+        result = self.session_collection.find_one(query)
         return result is not None
-
-    """
-    Add a participant to an existing session.
-
-    inputs:
-    session_id (str) - the unique identifier of the session to which the participant should be added
-    participant (str) - the identifier of the participant to be added
-
-    outputs:
-    This function has no return value but updates the session data with the new participant and their metadata
-    """
-
-    def add_participant(self, session_id: str, participant: str) -> None:
-        session_data = self.get_session(session_id)
-
-        if session_data["state"] == "closed":
-            raise ValueError("Session is closed")
-
-        if not session_data:
-            raise ValueError("Invalid session ID")
-
-        if participant not in session_data["participants"]:
-            metadata = {
-                "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-            }
-            session_data["participants"][participant] = metadata
-            self.save_session(session_id, session_data)
 
     """
     Merge two tables by applying a custom function to their matching elements.
@@ -207,7 +204,7 @@ class MPCEngine(object):
     func (Callable[[Any, Any], Any]) - a custom function to apply to the matching elements of table1 and table2
 
     outputs:
-    result_table (Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]]) - the merged table, where keys are strings 
+    result_table (Dict[str, Union[List[Tuple[int, int]], Tuple[int, int]]]) - the merged table, where keys are strings
     and values can be lists of tuples with integers or tuples with integers
     """
 
@@ -269,10 +266,10 @@ class MPCEngine(object):
 
     """
     Count the number of cells in a table.
-    
+
     inputs:
     table (Dict[str, Union[List, int]]) - the table to be counted, cells can be lists, strings or integers.
-    
+
     outputs:
     count (int) - the number of cells in the table.
     """
@@ -301,10 +298,10 @@ class MPCEngine(object):
 
     """
     Get the number of cells in the final merged table.
-    
+
     inputs:
     session_id (str) - the unique identifier of the session.
-    
+
     outputs:
     count (int) - the number of cells in the final merged table.
     """
@@ -329,7 +326,7 @@ class MPCEngine(object):
     data (dict | str) - the data submitted by the participant, either as a dictionary or a JSON string
 
     outputs:
-    None - this function has no return value but updates the session data with the new participant submission 
+    None - this function has no return value but updates the session data with the new participant submission
     and saves the updated session data to the data store
     """
 
@@ -347,40 +344,42 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        if not session_data["participant_submissions"]:
-            session_data["participant_submissions"] = {}
-
         if type(data) == str:
             data = json.loads(data)
 
-        session_data["participant_submissions"][participant_id] = data
-        self.save_session(session_id, session_data)
+        participant_data = self.get_participant_data(session_id, participant_id)
+
+        if participant_data is not None:
+            data['_id'] = participant_data['_id']
+
+        data["timestamp"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.save_participant_data(session_id, participant_id, data)
 
     """
     Get the current session data
-    
+
     inputs:
     session_id (str) - the unique identifier of the session for which submissions should be closed
-    
+
     outputs:
     participant_submissions (dict) - the current session data history
     """
 
     def get_submission_history(self, session_id: str) -> dict:
         session_data = self.get_session(session_id)
+        participant_data = self.get_all_participant_data(session_id)
 
         if not session_data:
             raise ValueError("Invalid session ID")
 
         return [
             {
-                "participantCode": participant_code,
-                "industry": data["industry"],
-                "companySize": data["companySize"],
+                "participantCode": participant["participantCode"],
+                "industry": participant["industry"],
+                "companySize": participant["companySize"],
+                "timestamp": participant["timestamp"]
             }
-            for participant_code, data in session_data[
-                "participant_submissions"
-            ].items()
+            for participant in participant_data
         ]
 
     """
@@ -390,7 +389,7 @@ class MPCEngine(object):
     session_id (str) - the unique identifier of the session for which submissions should be closed
 
     outputs:
-    None - this function has no return value but updates the session state to "closed" and saves 
+    None - this function has no return value but updates the session state to "closed" and saves
     the updated session data to the data store
     """
 
@@ -416,13 +415,34 @@ class MPCEngine(object):
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         query = {"session_id": session_id}
-        result = self.mongo_collection.find_one(query)
+        result = self.session_collection.find_one(query)
 
         if result is None:
             return None
 
         return result
 
+    """
+    Get a all participant submission objects
+
+    inputs:
+    session_id (str) - the unique identifier of the session to be retrieved
+
+    outputs:
+    session_data (dict) - the participant data as a array
+    """
+
+    def get_all_participant_data(self, session_id: str) -> Optional[Dict[str, Any]]:
+        query = {"session_id": session_id}
+        result = self.participant_collection.find(query)
+
+        return result
+
+    def get_participant_data(self, session_id: str, participant_code: str) -> Optional[Dict[str, Any]]:
+        query = {"session_id": session_id, "participant_code": participant_code}
+        result = self.participant_collection.find_one(query)
+
+        return result
     """
     Generate urls for session participants
 
@@ -466,10 +486,10 @@ class MPCEngine(object):
 
     """
     Get prime number for a session
-    
+
     inputs:
     session_id (str) - the unique identifier of the session for which the prime number should be retrieved
-    
+
     outputs:
     prime (str) - the prime number for the session as a string
     """
@@ -543,7 +563,7 @@ class MPCEngine(object):
 
             return data
 
-        submissions = list(session_data["participant_submissions"].values())
+        submissions = list(self.get_all_participant_data(session_id))
         company_size_tables = defaultdict(list)
         industry_tables = defaultdict(list)
 
@@ -575,10 +595,10 @@ class MPCEngine(object):
 
     """
     Compute summary of metadata
-    
+
     inputs:
     data (list) - the list of submission dictionaries
-    
+
     outputs:
     metadata (dict) - the metadata for the session
     """
@@ -596,10 +616,10 @@ class MPCEngine(object):
 
     """
     Get metadata for a session
-    
+
     inputs:
     session_id (str) - the unique identifier of the session for which the metadata should be retrieved
-    
+
     outputs:
     metadata (dict) - the metadata for the session
     """

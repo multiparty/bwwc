@@ -151,7 +151,6 @@ def submit_data(req: HttpRequest) -> HttpResponse:
             return HttpResponseBadRequest("Invalid session ID")
 
         try:
-            engine.add_participant(session_id, participant)
             engine.update_session_data(session_id, participant, data)
 
             return JsonResponse({"status": 200})
