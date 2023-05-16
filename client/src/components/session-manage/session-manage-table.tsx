@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@utils/data-format';
 
 const COLUMN_WIDTH = 250;
+const SMALL_COLUMN_WIDTH = 150;
 const HEIGHT = 400;
 
 interface Submission {
@@ -26,14 +27,14 @@ const columns: GridColDef[] = [
 
   {
     field: 'industry',
-    width: COLUMN_WIDTH,
+    width: SMALL_COLUMN_WIDTH,
     sortable: true,
     headerName: 'Industry',
     cellClassName: 'position-cell'
   },
   {
     field: 'size',
-    width: COLUMN_WIDTH,
+    width: SMALL_COLUMN_WIDTH,
     sortable: true,
     headerName: 'Size',
     cellClassName: 'position-cell'
@@ -61,7 +62,7 @@ export const SessionManageTable = () => {
           industry: val.industry,
           participationID: val.participantCode,
           size: val.companySize,
-          hist: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
+          hist: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h12' })
         }));
 
         let updatedData = [...histData];
