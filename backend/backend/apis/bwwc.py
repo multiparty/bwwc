@@ -271,10 +271,13 @@ def backup(req: HttpRequest) -> HttpResponse:
         # Get Session Info
         logger.info("Getting session info")
         data = engine.get_session(session_id)
+        participants = list(engine.get_all_participant_data(session_id))
         # MongoDb ObjectID is not JSON serializable
-        del data["_id"]
-        data_json = json.dumps(data)
-
+        data["_id"] = str(data["_id"])
+        session_data_json = json.dumps(data)
+        for participant in participants:
+            participant["_id"] = str(participant["_id"])
+        participants_json = json.dumps(participants)
         # Establish a connection to the PostgreSQL database
         logger.info("Establishing connection to PostgreSQL database")
         conn = psycopg2.connect(
@@ -289,8 +292,8 @@ def backup(req: HttpRequest) -> HttpResponse:
 
         # Execute the SQL statement
         logger.info("Executing SQL statement")
-        query = "INSERT INTO wage_gap (session_id, data) VALUES (%s, %s);"
-        cur.execute(query, (session_id, data_json))
+        query = "INSERT INTO wage_gap (session_id, session_data, participants) VALUES (%s, %s, %s);"
+        cur.execute(query, (session_id, session_data_json, participants_json))
         # Commit the changes to the database
         logger.info("Committing changes to database")
         conn.commit()
