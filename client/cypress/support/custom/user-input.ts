@@ -16,7 +16,7 @@ export function UserInput(result: ExtendedDataFormat, numTest: number) {
       return Promise.resolve(win.navigator.clipboard.__data);
     });
   });
-  cy.wait(1000)
+  cy.wait(1000);
   const copyLink = '[id="copyLink"]';
   cy.get(copyLink).should('be.visible').should('be.enabled').click();
 

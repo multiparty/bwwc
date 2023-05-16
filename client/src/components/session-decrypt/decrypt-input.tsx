@@ -47,7 +47,7 @@ export const DecryptInputForm = () => {
   }, []);
 
   useEffect(() => {
-    decrypt(privateKey);
+    if(privateKey!=='') decrypt(privateKey);
   }, [privateKey]);
 
   const FormObserver: React.FC = () => {
