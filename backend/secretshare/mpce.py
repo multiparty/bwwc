@@ -145,7 +145,6 @@ class MPCEngine(object):
             "merged": {},
             "metadata": {},
             "num_cells": 0,
-            "participants": {},
             "prime": self.prime,
             "protocol": self.protocol,
             "public_key": public_key,
