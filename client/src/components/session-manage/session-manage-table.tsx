@@ -98,7 +98,8 @@ export const SessionManageTable = () => {
   return (
     <Box
       sx={{
-        height: HEIGHT,
+        minHeight: HEIGHT,
+        height: 'auto',
         width: '85%',
         overflow: 'hidden',
         '& .position-cell': {

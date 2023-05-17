@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setSessionId, setPrime } from '../../redux/session';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@context/session.context';
+import { LoadingButton } from '@mui/lab';
 
 const validationSchema = Yup.object().shape({
   submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
@@ -31,6 +32,7 @@ export const SessionManage: FC = () => {
     submissionId: sessionId
   });
   const [stopped, setStopped] = useState(false);
+  const [stopLoading, setStopLoading] = useState(false);
 
   useEffect(() => {
     const sessionIdfromStorage = localStorage.getItem('sessionId');
@@ -61,8 +63,14 @@ export const SessionManage: FC = () => {
     navigate('/decrypt');
   }
   const handleClick = async () => {
-    setStopped(true);
-    stopSession(sessionId, authToken);
+    setStopLoading(true);
+    stopSession(sessionId, authToken)
+      .then(() => {
+        setStopped(true);
+      })
+      .finally(() => {
+        setStopLoading(false);
+      });
   };
 
   return (
@@ -85,9 +93,9 @@ export const SessionManage: FC = () => {
                   Reveal Result
                 </Button>
               ) : (
-                <Button fullWidth variant="outlined" color="error" onClick={handleClick} id="stop">
+                <LoadingButton loading={stopLoading} fullWidth variant="outlined" color="error" onClick={handleClick} id="stop">
                   Stop Session
-                </Button>
+                </LoadingButton>
               )}
             </Stack>
 
