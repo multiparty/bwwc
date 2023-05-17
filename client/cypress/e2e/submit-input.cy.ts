@@ -3,8 +3,8 @@ import { setResultObject, dataToXlsx } from '../support/custom/generate-xlsx';
 import path from 'path';
 
 describe('User submission', () => {
-  const prefix = 'https://mpc.sail.codes';
-  // const prefix = 'http://127.0.0.1:5173';
+  // const prefix = 'https://mpc.sail.codes';
+  const prefix = 'http://127.0.0.1:5173';
   let _numTest = 5; // Only works max 5 for some reason
 
   let numTest = _numTest > 10 ? _numTest % 10 : _numTest;
@@ -31,6 +31,7 @@ describe('User submission', () => {
     let result = setResultObject();
     UserInput(result, numTest);
     numTest--;
+    // Loop needs to be this way because more than 10 xlsx files may not be generated
     while (loop > 0) {
       while (numTest > 0) {
         cy.visit(prefix + '/manage');
@@ -38,7 +39,7 @@ describe('User submission', () => {
         numTest--;
       }
       loop--;
-      numTest=10;
+      numTest = 10;
     }
 
     console.log('result', result);
