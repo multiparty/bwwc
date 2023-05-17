@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 from itertools import groupby
 from operator import itemgetter
 from collections import defaultdict
+import gridfs
 
 sys.path.append("../cryptography")
 
@@ -40,7 +41,7 @@ class MPCEngine(object):
         self.mongo_db = self.mongo_client["bwwc"]
         self.session_collection = self.mongo_db["wage_gap"]
         self.participant_collection = self.mongo_db["participant"]
-
+        self.fs = gridfs.GridFS(self.mongo_db)
         # Default to 'dev' if not specified
         DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
 
@@ -142,8 +143,6 @@ class MPCEngine(object):
         session_id = str(uuid.uuid4())[:26]
         session_data = {
             "user_id": user_id,
-            "merged": {},
-            "metadata": {},
             "num_cells": 0,
             "prime": self.prime,
             "protocol": self.protocol,
@@ -517,7 +516,10 @@ class MPCEngine(object):
         if not session_data:
             raise ValueError("Invalid session ID")
 
-        return session_data["merged"]
+        file = self.fs.find_one({ "filename" : f"{session_id}_merged.json"})
+        if file is None:
+            return None
+        return json.loads(file.read())
 
     """
     Get the state of a session
@@ -583,12 +585,9 @@ class MPCEngine(object):
         metadata["companySize"] = company_size_tables
         metadata["industry"] = industry_tables
 
-        if "merged" not in session_data:
-            session_data["merged"] = {}
-
-        session_data["merged"] = merged_tables
-        session_data["metadata"] = metadata
-        session_data["num_cells"] = self.count_cells(session_data["merged"])
+        self.fs.put(json.dumps(merged_tables).encode("utf-8"), filename=f"{session_id}_merged.json")
+        self.fs.put(json.dumps(metadata).encode("utf-8"), filename=f"{session_id}_metadata.json")
+        session_data["num_cells"] = self.count_cells(merged_tables)
 
         self.save_session(session_id, session_data)
 
@@ -631,5 +630,7 @@ class MPCEngine(object):
 
         if not session_data:
             raise ValueError("Invalid session ID")
-
-        return session_data["metadata"]
+        file = self.fs.find_one({ "filename" : f"{session_id}_metadata.json"})
+        if file is None:
+            return None
+        return json.loads(file.read())
