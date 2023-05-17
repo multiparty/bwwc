@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
-import { Stack, Toolbar, IconButton, Drawer, Menu, MenuItem } from '@mui/material';
+import { Toolbar, IconButton, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';

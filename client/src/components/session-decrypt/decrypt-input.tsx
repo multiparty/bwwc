@@ -47,7 +47,7 @@ export const DecryptInputForm = () => {
   }, []);
 
   useEffect(() => {
-    decrypt(privateKey);
+    if (privateKey !== '') decrypt(privateKey);
   }, [privateKey]);
 
   const FormObserver: React.FC = () => {
@@ -82,7 +82,9 @@ export const DecryptInputForm = () => {
   // Can replace this function with any custom functionality to apply
   // over unencrypted shares.
   async function decrypt(pKey: string) {
+    console.log('privateKey received');
     if (token !== undefined && sessionId !== undefined) {
+      console.log('decryption started');
       const privateCryptoKey = await importPemPrivateKey(pKey);
       const { data, total_cells, metadata } = await getSubmissions(sessionId, token);
 
@@ -93,8 +95,12 @@ export const DecryptInputForm = () => {
 
       const scale = (num: number) => num / 100;
       const decodedTable = await secretSharesToTable(data, privateCryptoKey, bigPrime, reduce, recordProgress, scale);
+      console.log('decryption completed');
       dispatch(setDecodedTable(decodedTable));
       dispatch(setMetadata(metadata));
+    } else {
+      if (token !== undefined) console.log('token is missing');
+      if (sessionId !== undefined) console.log('sessionId is missing');
     }
   }
 
