@@ -15,10 +15,11 @@ import { useSelector } from 'react-redux';
 import { defaultData } from '@constants/default-data';
 import { useAuth } from '@context/auth.context';
 import BigNumber from 'bignumber.js';
+import { validateData } from '@utils/validate-data';
 
 export const HomePage: FC = () => {
   const { token } = useAuth();
-  const [check, setCheck] = useState<boolean>(false);
+  const [isDataValid, setIsDataValid] = useState<boolean>(false);
   const [file, setFile] = useState<CustomFile | null>(null);
   const [data, setData] = useState<DataFormat>(defaultData);
   const [submitResp, setSubmitResp] = useState<AxiosResponse | undefined>();
@@ -28,13 +29,24 @@ export const HomePage: FC = () => {
   const [table, setTable] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [dataIsEncrypted, setDataIsEncrypted] = useState<boolean>(false);
+  const [companyInfoValid, setCompanyInfoValid] = useState<boolean>(false);
   const { companySize, industry, participantCode, sessionId, privateKey } = useSelector((state: AppState) => state.session);
+
+  useEffect(() => {
+    if (!companySize || !industry || !participantCode || !sessionId) {
+      setCompanyInfoValid(false);
+    } else {
+      setCompanyInfoValid(true);
+    }
+  }, [companySize, industry, participantCode, sessionId]);
 
   useEffect(() => {
     const loadData = async () => {
       if (file) {
         console.log('Starting MPC Encryption');
         const csvData = await readCsv(file);
+        console.log('Validating Data');
+        setIsDataValid(validateData(csvData));
         console.log('Loading File Data');
         setData(csvData);
         const scale = (num: number) => num * 100;
@@ -84,8 +96,17 @@ export const HomePage: FC = () => {
     <Layout title="Boston Women's Workforce Council" subtitle="100% Talent Data Submission">
       <Stack spacing={5}>
         <CompanyInputForm onFileUpload={setFile} />
-        <ViewData data={data} setCheck={setCheck} />
-        <VerifyData loading={loading} dataIsEncrypted={dataIsEncrypted} data={data} submitResp={submitResp} submitDataHandler={submitDataHandler} check={check} />
+        <ViewData data={data} />
+        <VerifyData
+          loading={loading}
+          dataIsEncrypted={dataIsEncrypted}
+          data={data}
+          submitResp={submitResp}
+          submitDataHandler={submitDataHandler}
+          isDataValid={isDataValid}
+          fileHasBeenLoaded={!!file}
+          companyInfoValid={companyInfoValid}
+        />
       </Stack>
     </Layout>
   );
