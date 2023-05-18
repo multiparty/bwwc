@@ -4,12 +4,14 @@ import { Alert, AlertColor } from '@mui/material';
 interface SubmissionAlertProps {
   submitResp: AxiosResponse | undefined;
   pressed: boolean;
-  check: boolean;
+  isDataValid: boolean;
   dataIsEncrypted: boolean;
   loading: boolean;
+  fileHasBeenLoaded: boolean;
+  companyInfoValid: boolean;
 }
 
-export const SubmissionAlert = ({ submitResp, pressed, check, dataIsEncrypted, loading }: SubmissionAlertProps) => {
+export const SubmissionAlert = ({ submitResp, pressed, isDataValid, dataIsEncrypted, loading, fileHasBeenLoaded, companyInfoValid }: SubmissionAlertProps) => {
   let severity: AlertColor | undefined;
   let message = 'You have not submitted yet';
   severity = 'warning';
@@ -17,12 +19,18 @@ export const SubmissionAlert = ({ submitResp, pressed, check, dataIsEncrypted, l
   if (loading) {
     severity = 'info';
     message = 'Please wait while submitting your data';
-  } else if (!dataIsEncrypted && check) {
+  } else if (!fileHasBeenLoaded) {
+    severity = 'warning';
+    message = 'Please upload a file before submitting.';
+  } else if (!companyInfoValid) {
+    severity = 'error';
+    message = 'Please check your company information.';
+  } else if (!dataIsEncrypted && fileHasBeenLoaded) {
     severity = 'error';
     message = 'Unable to submit, data is not encrypted correctly. Please contact an administrator.';
-  } else if (check) {
-    severity = 'warning';
-    message = 'Please check your input for the number of employees. Your input contains negative values and/or decimals.';
+  } else if (!isDataValid) {
+    severity = 'error';
+    message = 'Please check your input. Your input contains negative, decimal, or non-numeric values.';
   } else if (submitResp === undefined) {
     if (pressed) {
       severity = 'warning';

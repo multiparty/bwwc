@@ -208,8 +208,6 @@ export const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
   useEffect(() => {
     // Set Default
     axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
-    axios.defaults.headers.common['Access-Control-Request-Headers'] = 'content-type';
-    axios.defaults.headers.common['Access-Control-Request-Method'] = 'POST';
   }, []);
 
   return (

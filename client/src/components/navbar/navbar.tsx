@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import { Stack } from '@mui/material';
-import Divider from '@mui/material/Divider';
+import AppBar from '@mui/material/AppBar';
+import { Toolbar, IconButton, Menu, MenuItem } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -12,6 +12,16 @@ type nameProp = {
 };
 
 export const NavBar = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const drawerWidth = 200;
 
   const NavBarButtons: FC<nameProp> = ({ name }) => {
@@ -28,16 +38,17 @@ export const NavBar = () => {
     return (
       <Box
         style={{
-          justifyContent: 'center',
+          display: 'flex',
+          justifyContent: 'flex-start',
           alignItems: 'center'
         }}
       >
         <Button
           variant="outlined"
           style={{
-            width: `${(drawerWidth * 90) / 100}px`, // 90% of drawerWidth
+            width: `${(drawerWidth * 60) / 100}px`, // 90% of drawerWidth
             color: 'gray',
-            borderColor: 'lightgrey'
+            borderColor: 'transparent'
           }}
           onClick={() => handleClick()}
           endIcon={<SendIcon />}
@@ -49,28 +60,37 @@ export const NavBar = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', width: '0%' }}>
-      <Drawer
+    <Box sx={{ display: 'flex', width: '100%' }}>
+      <AppBar
+        position="static"
         sx={{
-          width: drawerWidth,
-          flexShrink: 0,
+          height: '45px',
+          width: '100%',
+          backgroundColor: 'white',
           '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
+            height: '60px',
+            width: '100%',
             justifyContent: 'space-between'
           }
         }}
-        variant="permanent"
-        anchor="left"
       >
-        <Divider sx={{ background: 'white' }} variant="middle" />
-        <Stack spacing={3} alignItems="center" justifyContent="center" sx={{ height: '100%' }}>
-          <NavBarButtons name="Home" />
-          <NavBarButtons name="Create" />
-          <NavBarButtons name="Manage" />
-        </Stack>
-        <Divider sx={{ background: 'white' }} variant="middle" />
-      </Drawer>
+        <Toolbar variant="dense">
+          <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }} onClick={handleMenuClick}>
+            <MenuIcon sx={{ color: 'grey' }} />
+          </IconButton>
+          <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={handleClose}>
+              <NavBarButtons name="Home" />
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <NavBarButtons name="Create" />
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <NavBarButtons name="Manage" />
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
     </Box>
   );
 };

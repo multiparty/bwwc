@@ -5,12 +5,15 @@ import path from 'path';
 describe('User submission', () => {
   // const prefix = 'https://mpc.sail.codes';
   const prefix = 'http://127.0.0.1:5173';
-  let numTest = 1;
+  let _numTest = 5; // Only works max 5 for some reason
+
+  let numTest = _numTest > 10 ? _numTest % 10 : _numTest;
+  let loop = _numTest > 10 ? _numTest / 10 : 1;
 
   it('user input and submit', () => {
     cy.visit(prefix + '/create');
 
-    // // Click the session create button
+    // Click the session create button
     const create = '[id="creare-submission"]';
     cy.get(create).click();
     const token =
@@ -22,22 +25,29 @@ describe('User submission', () => {
 
     const consent = '[type="checkbox"]';
     cy.get(consent).click();
-
+    
     const manage = '[id="manage-session"]';
     cy.get(manage).click(); // This takes us to /manage page
     let result = setResultObject();
     UserInput(result, numTest);
     numTest--;
-    while (numTest > 0) {
-      cy.visit(prefix + '/manage');
-      UserInput(result, numTest);
-      numTest--;
+    // Loop needs to be this way because more than 10 xlsx files may not be generated
+    while (loop > 0) {
+      while (numTest > 0) {
+        cy.visit(prefix + '/manage');
+        UserInput(result, numTest);
+        numTest--;
+      }
+      loop--;
+      numTest = 10;
     }
+
     console.log('result', result);
     const filename = 'aggregatedData.xlsx';
     dataToXlsx(result, filename);
 
     // Decrypt the result
+    cy.wait(1000);
     cy.visit(prefix + '/manage');
     const stop = '[id="stop"]';
     cy.get(stop).click();
@@ -53,7 +63,7 @@ describe('User submission', () => {
       cy.get(selector).selectFile(path.join(downloadsDir, privateKeyFile), {
         action: 'drag-drop',
         force: true
-      })
+      });
     });
   });
 });

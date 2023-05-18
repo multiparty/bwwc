@@ -5,10 +5,9 @@ import { Table } from '@components/table';
 
 export interface ViewDataProps {
   data?: DataFormat;
-  setCheck: (check: boolean) => void;
 }
 
-export const ViewData: FC<ViewDataProps> = ({ data, setCheck }) => {
+export const ViewData: FC<ViewDataProps> = ({ data }) => {
   return (
     <Card>
       <CardContent sx={{ m: 2 }}>
@@ -24,7 +23,7 @@ export const ViewData: FC<ViewDataProps> = ({ data, setCheck }) => {
               <Typography variant="h6" gutterBottom>
                 Number Of Employees
               </Typography>
-              <Table data={data?.numberOfEmployees} setCheck={setCheck} />
+              <Table data={data?.numberOfEmployees} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>
