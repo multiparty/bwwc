@@ -4,7 +4,6 @@ import { Box, Container } from '@mui/material';
 import { Header, HeaderProps } from '@components/header';
 import { Footer } from '@components/footer';
 import { TrainingBanner } from '@components/training-banner';
-import { MaintenanceBanner } from '@components/maintenance-banner';
 import { NavBar } from '@components/navbar/navbar';
 
 export interface LayoutProps extends HeaderProps {
@@ -29,7 +28,6 @@ export const Layout: FC<LayoutProps> = ({ children, maxWidth, ...headerProps }) 
       <Header {...headerProps} />
       {showNavBar && <NavBar />}
       <TrainingBanner />
-      <MaintenanceBanner />
       <Box sx={{ flexGrow: 1, minHeight: '95vh' }}>
         <Container maxWidth={maxWidth || 'xl'} sx={{ mt: 5 }}>
           {children}
