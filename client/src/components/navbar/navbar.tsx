@@ -68,6 +68,7 @@ export const NavBar = () => {
           <NavBarButtons name="Home" />
           <NavBarButtons name="Create" />
           <NavBarButtons name="Manage" />
+          <NavBarButtons name="Logout" />
         </Stack>
         <Divider sx={{ background: 'white' }} variant="middle" />
       </Drawer>
