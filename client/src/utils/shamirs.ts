@@ -230,7 +230,7 @@ export async function tableToSecretShares(
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
     const keys = Object.keys(originalObj);
 
-    for (const key of keys) {
+    const promises = keys.map(async (key) => {
       if (typeof originalObj[key] === 'number') {
         const cellValue = transform(originalObj[key]);
         const points = shamirShare(BigNumber(cellValue), numShares, BigNumber(threshold), stringify, (prime = prime));
@@ -241,7 +241,9 @@ export async function tableToSecretShares(
         }
         await dfs(currentObj[key], originalObj[key]);
       }
-    }
+    });
+
+    await Promise.all(promises);
 
     return currentObj;
   };
