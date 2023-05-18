@@ -88,6 +88,9 @@ export const NavBar = () => {
             <MenuItem onClick={handleClose}>
               <NavBarButtons name="Manage" />
             </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <NavBarButtons name="Logout" />
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
