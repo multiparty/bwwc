@@ -16,15 +16,14 @@ export function UserInput(result: ExtendedDataFormat, numTest: number) {
       return Promise.resolve(win.navigator.clipboard.__data);
     });
   });
-  cy.wait(1000);
   const copyLink = '[id="copyLink"]';
-  cy.get(copyLink).should('be.visible').should('be.enabled').click();
+  cy.get(copyLink).should('be.visible').should('be.enabled').click({ timeout: 40000 });
 
   // Use the custom clipboard API implementation for your test
   cy.window().then((win) => {
     // Read text from the custom clipboard API
     win.navigator.clipboard.readText().then((clipboardText) => {
-      cy.visit(clipboardText);
+      cy.visit(clipboardText, { timeout: 40000 });
     });
   });
 
@@ -56,7 +55,7 @@ export function UserInput(result: ExtendedDataFormat, numTest: number) {
 
   // // Click the submit button
   const submit = '[data-cy="submit"]';
-  cy.get(submit).click();
+  cy.get(submit).should('be.visible').click({ timeout: 40000 });
 
   // Check if submission was successful
   const alert_msg = '[data-cy="alert"]';
