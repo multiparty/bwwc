@@ -246,10 +246,11 @@ def get_submission_history(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
 
+
 @csrf_exempt
 def backup(req: HttpRequest) -> HttpResponse:
     # UptimeRobot sends a HEAD request to perform backup
-    if (req.method == "GET" or req.method == "HEAD"):
+    if req.method == "GET" or req.method == "HEAD":
         logger.info("Backup request received")
         session_id = req.GET.get("session_id")
 
@@ -279,11 +280,7 @@ def backup(req: HttpRequest) -> HttpResponse:
         # Establish a connection to the PostgreSQL database
         logger.info("Establishing connection to PostgreSQL database")
         conn = psycopg2.connect(
-            host=host,
-            port=port,
-            database=database,
-            user=user,
-            password=password
+            host=host, port=port, database=database, user=user, password=password
         )
         # Create a cursor object to interact with the database
         cur = conn.cursor()
@@ -304,6 +301,7 @@ def backup(req: HttpRequest) -> HttpResponse:
     else:
         return HttpResponseBadRequest("Invalid request method")
 
+
 @csrf_exempt
 def mongo_health(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
@@ -313,6 +311,7 @@ def mongo_health(req: HttpRequest) -> HttpResponse:
             return HttpResponse("MongoDB is up")
     else:
         return HttpResponseBadRequest("Invalid request method")
+
 
 def get_urlpatterns():
     return [

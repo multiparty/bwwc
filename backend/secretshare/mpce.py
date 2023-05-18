@@ -35,7 +35,9 @@ class MPCEngine(object):
         self.mongo_host = os.environ.get("MONGO_HOST")
         self.mongo_port = os.environ.get("MONGO_PORT")
         self.mongo_client = MongoClient(
-            os.environ.get("MONGO_HOST", f"mongodb://{self.mongo_host}:{self.mongo_port}/")
+            os.environ.get(
+                "MONGO_HOST", f"mongodb://{self.mongo_host}:{self.mongo_port}/"
+            )
         )
         self.mongo_db = self.mongo_client["bwwc"]
         self.mongo_collection = self.mongo_db["wage_gap"]

@@ -228,25 +228,25 @@ export async function tableToSecretShares(
   transform: (value: any) => any = (x) => x
 ): Promise<Record<string, any>> {
   const dfs = async (currentObj: Record<string, any>, originalObj: Record<string, any>): Promise<Record<string, any>> => {
-  const keys = Object.keys(originalObj);
+    const keys = Object.keys(originalObj);
 
-  const promises = keys.map(async (key) => {
-    if (typeof originalObj[key] === 'number') {
-      const cellValue = transform(originalObj[key]);
-      const points = shamirShare(BigNumber(cellValue), numShares, BigNumber(threshold), stringify, (prime = prime));
-      currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
-    } else if (typeof originalObj[key] === 'object') {
-      if (!currentObj[key]) {
-        currentObj[key] = {};
+    const promises = keys.map(async (key) => {
+      if (typeof originalObj[key] === 'number') {
+        const cellValue = transform(originalObj[key]);
+        const points = shamirShare(BigNumber(cellValue), numShares, BigNumber(threshold), stringify, (prime = prime));
+        currentObj[key] = await encryptSecretShares(points, numEncryptWithKey, publicKey);
+      } else if (typeof originalObj[key] === 'object') {
+        if (!currentObj[key]) {
+          currentObj[key] = {};
+        }
+        await dfs(currentObj[key], originalObj[key]);
       }
-      await dfs(currentObj[key], originalObj[key]);
-    }
-  });
+    });
 
-  await Promise.all(promises);
+    await Promise.all(promises);
 
-  return currentObj;
-};
+    return currentObj;
+  };
 
   return await dfs({}, obj);
 }
