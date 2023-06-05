@@ -102,13 +102,6 @@ class Authenticator(object):
 	"""
 
     def get_user_id(self, token: str) -> str:
-        for key in self.get_public_key():
-            try:
-                payload = jwt.decode(token, key)
-                return payload["id"]
-            except ExpiredSignatureError as e:
-                pass
-            except JWTError as e:
-                pass
-
+        payload = jwt.decode(token, key)
+        return payload["id"]
         raise Exception("Invalid token")
