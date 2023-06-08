@@ -29,19 +29,19 @@ export const ViewData: FC<ViewDataProps> = ({ data }) => {
               <Typography variant="h6" gutterBottom>
                 Total Annual Compensation (Dollars)
               </Typography>
-              <Table data={data?.wages} />
+              <Table data={data?.wages} allowDecimal={true} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>
                 Total Annual Cash Performance Pay (Dollars)
               </Typography>
-              <Table data={data?.performance} />
+              <Table data={data?.performance} allowDecimal={true} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>
                 Total Length of Service (Months)
               </Typography>
-              <Table data={data?.lengthOfService} />
+              <Table data={data?.lengthOfService} allowDecimal={true} />
             </Box>
           </Stack>
         </Stack>

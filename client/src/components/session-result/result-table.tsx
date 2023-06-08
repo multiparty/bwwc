@@ -14,25 +14,25 @@ export const ResultTable: FC<ViewResultProps> = ({ data }) => {
         <Typography variant="h6" gutterBottom>
           Number Of Employees
         </Typography>
-        <Table data={data?.numberOfEmployees} />
+        <Table data={data?.numberOfEmployees} allowDecimal={true} />
       </Box>
       <Box>
         <Typography variant="h6" gutterBottom>
           Total Annual Compensation (Dollars)
         </Typography>
-        <Table data={data?.wages} />
+        <Table data={data?.wages} allowDecimal={true} />
       </Box>
       <Box>
         <Typography variant="h6" gutterBottom>
           Total Annual Cash Performance Pay (Dollars)
         </Typography>
-        <Table data={data?.performance} />
+        <Table data={data?.performance} allowDecimal={true} />
       </Box>
       <Box>
         <Typography variant="h6" gutterBottom>
           Total Length of Service (Months)
         </Typography>
-        <Table data={data?.lengthOfService} />
+        <Table data={data?.lengthOfService} allowDecimal={true} />
       </Box>
     </Stack>
   );
