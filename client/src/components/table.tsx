@@ -62,8 +62,9 @@ const columnGroupingModel: GridColumnGroup[] = Object.values(Ethnicity).map((e) 
 
 export interface TableProps {
   data?: TableData;
+  allowDecimal?: boolean;
 }
-export const Table: FC<TableProps> = ({ data }) => {
+export const Table: FC<TableProps> = ({ data, allowDecimal }) => {
   const { palette } = useTheme();
 
   return (
@@ -97,9 +98,11 @@ export const Table: FC<TableProps> = ({ data }) => {
         showCellVerticalBorder={true}
         showColumnVerticalBorder={true}
         getCellClassName={(params: GridCellParams<any, any, number>) => {
-          if (params.value < 0 || (typeof params.value === 'number' && params.value % 1 !== 0)) {
+          if (params.value < 0) {
             return 'highlight-red';
           } else if (typeof params.value !== 'number' || Number.isNaN(params.value)) {
+            return 'highlight-red';
+          } else if (!allowDecimal && params.value % 1 !== 0) {
             return 'highlight-red';
           }
           return '';

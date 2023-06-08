@@ -19,7 +19,7 @@ export const validateData = (data: DataFormat): boolean => {
           if (typeof value !== 'number' || Number.isNaN(value) || value < 0) {
             return false;
           }
-          if (value % 1 !== 0) {
+          if (table == 'numberOfEmployees' && value % 1 !== 0) {
             return false;
           }
         }

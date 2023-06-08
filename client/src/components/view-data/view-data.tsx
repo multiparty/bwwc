@@ -23,7 +23,7 @@ export const ViewData: FC<ViewDataProps> = ({ data }) => {
               <Typography variant="h6" gutterBottom>
                 Number Of Employees
               </Typography>
-              <Table data={data?.numberOfEmployees} />
+              <Table data={data?.numberOfEmployees} allowDecimal={false} />
             </Box>
             <Box>
               <Typography variant="h6" gutterBottom>
