@@ -335,9 +335,6 @@ class MPCEngine(object):
     ) -> None:
         session_data = self.get_session(session_id)
 
-        print(f"session data: {session_data}")
-        print(f"trying to insert: {data}")
-
         if session_data["state"] == "closed":
             raise ValueError("Session is closed")
 
@@ -553,8 +550,9 @@ class MPCEngine(object):
     """
 
     def reduce_unencrypted(self, session_id: str, reduce: Callable) -> None:
+        self.logger.info('reduce_unencrypted')
         session_data = self.get_session(session_id)
-
+        self.logger.info('got session data')
         if session_data["state"] != "closed":
             raise ValueError("Session is not closed")
 
@@ -567,14 +565,19 @@ class MPCEngine(object):
             return data
 
         submissions = list(self.get_all_participant_data(session_id))
+        self.logger.info('got submissions')
         company_size_tables = defaultdict(list)
+        self.logger.info('created company_size_tables')
         industry_tables = defaultdict(list)
+        self.logger.info('created industry_tables')
 
         # extract tables by categories
         for data in submissions:
+            self.logger.info('processing submission', data['participant_code'])
             company_size_tables[data["companySize"]].append(data)
             industry_tables[data["industry"]].append(data)
 
+        self.logger.info('reducing tables')
         # reduce tables by categories
         for key, value in company_size_tables.items():
             company_size_tables[key] = reduce_tables(value, "table")
@@ -582,16 +585,22 @@ class MPCEngine(object):
         for key, value in industry_tables.items():
             industry_tables[key] = reduce_tables(value, "table")
 
+        self.logger.info('merging tables')
         merged_tables = reduce_tables(submissions, "table")
+        self.logger.info('merged tables')
         metadata = self.compute_metadata(submissions)
+        self.logger.info('computed metadata')
         metadata["companySize"] = company_size_tables
         metadata["industry"] = industry_tables
 
+        self.logger.info('saving files')
         self.fs.put(json.dumps(merged_tables).encode("utf-8"), filename=f"{session_id}_merged.json")
         self.fs.put(json.dumps(metadata).encode("utf-8"), filename=f"{session_id}_metadata.json")
+        self.logger.info('saved files')
         session_data["num_cells"] = self.count_cells(merged_tables)
-
+        self.logger.info('counted cells')
         self.save_session(session_id, session_data)
+        return None
 
     """
     Compute summary of metadata
