@@ -573,7 +573,7 @@ class MPCEngine(object):
 
         # extract tables by categories
         for data in submissions:
-            self.logger.info('processing submission', data['participant_code'])
+            self.logger.info(f"processing submission: {data['participant_code']}")
             company_size_tables[data["companySize"]].append(data)
             industry_tables[data["industry"]].append(data)
 
