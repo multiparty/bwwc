@@ -97,6 +97,9 @@ export const SessionManage: FC = () => {
                   Stop Session
                 </LoadingButton>
               )}
+              <LoadingButton fullWidth variant="outlined" color="info" onClick={revealResult} id="reveal">
+                Skip to Decrypt
+              </LoadingButton>
             </Stack>
 
             <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={() => {}}>
