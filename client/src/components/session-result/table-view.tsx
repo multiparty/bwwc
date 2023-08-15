@@ -2,7 +2,7 @@ import { FC, useState, useEffect, useRef } from 'react';
 import { Box, Stack, Grid } from '@mui/material';
 import * as Yup from 'yup';
 import { Autocomplete, FormControl, TextField, TextFieldProps } from '@mui/material';
-import { AutoCompleteInputProps } from '@components/forms/auto-complete-input';
+import { AutoCompleteInputProps, TableAutoCompleteInput } from '@components/forms/auto-complete-input';
 import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { ResultTable } from './result-table';
@@ -22,45 +22,6 @@ interface valueProps {
 const validationSchema = Yup.object().shape({
   ddSelection: Yup.string().required('Required')
 });
-
-interface AutoCompleteInputPropsExt extends AutoCompleteInputProps {
-  tabSelection: number;
-}
-
-export const AutoCompleteInput: FC<AutoCompleteInputPropsExt & TextFieldProps> = (props) => {
-  const { handleChange, handleBlur, values, touched, errors, isSubmitting, setFieldValue } = useFormikContext<any>();
-  const { tabSelection } = props;
-  const prevTabSelection = useRef(tabSelection);
-
-  useEffect(() => {
-    if (prevTabSelection.current !== tabSelection) {
-      const newValue = tabSelection === 1 ? 'small' : 'it';
-      setFieldValue(props.name, newValue);
-      prevTabSelection.current = tabSelection;
-    }
-  }, [tabSelection]);
-
-  const selectedValue = values[props.name];
-  const autoCompleteValue = props.options.find((option) => option.value === selectedValue);
-
-  return (
-    <FormControl variant={props.variant} fullWidth={props.fullWidth}>
-      <Autocomplete
-        options={props.options}
-        renderInput={(params: any) => (
-          <TextField {...props} {...params} error={!!errors[props.name]} helperText={(touched[props.name] && errors[props.name]) as string} InputLabelProps={{ shrink: true }} />
-        )}
-        onChange={(event, value) => {
-          handleChange({ target: { name: props.name, value: value?.value } });
-        }}
-        onBlur={handleBlur}
-        value={autoCompleteValue}
-        getOptionLabel={(option) => option.label}
-        disabled={props.disabled || isSubmitting}
-      />
-    </FormControl>
-  );
-};
 
 export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
   const [initialValue, setInitialValue] = useState({ input: tabSelection == 1 ? 'small' : 'it' });
@@ -94,9 +55,9 @@ export const TableView: FC<ViewResultProps> = ({ tabSelection, data }) => {
               <Form>
                 <FormObserver />
                 {tabSelection == 1 ? (
-                  <AutoCompleteInput key={tabSelection} fullWidth name="size" options={selectedSizes} label="Company Size selection" tabSelection={tabSelection} />
+                  <TableAutoCompleteInput key={tabSelection} fullWidth name="size" options={selectedSizes} label="Company Size selection" tabSelection={tabSelection} />
                 ) : (
-                  <AutoCompleteInput key={tabSelection} fullWidth name="industry" options={selectedIndustriess} label="Industry selection" tabSelection={tabSelection} />
+                  <TableAutoCompleteInput key={tabSelection} fullWidth name="industry" options={selectedIndustriess} label="Industry selection" tabSelection={tabSelection} />
                 )}
               </Form>
             </Formik>
