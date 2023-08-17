@@ -18,7 +18,7 @@ interface AutoCompleteInputPropsExt extends AutoCompleteInputProps {
 
 export const CompanyAutoCompleteInput: FC<AutoCompleteInputProps & TextFieldProps> = (props) => {
   const { handleChange, handleBlur, values, touched, errors, isSubmitting } = useFormikContext<any>();
-  const selectedOption = props.options.find(opt => opt.value === values[props.name]);
+  const selectedOption = props.options.find((opt) => opt.value === values[props.name]);
   return (
     <FormControl variant={props.variant} fullWidth={props.fullWidth}>
       <Autocomplete
@@ -26,16 +26,16 @@ export const CompanyAutoCompleteInput: FC<AutoCompleteInputProps & TextFieldProp
         renderInput={(params: any) => (
           <TextField {...props} {...params} error={!!errors[props.name]} helperText={(touched[props.name] && errors[props.name]) as string} InputLabelProps={{ shrink: true }} />
         )}
-        onChange={(event, option) => 
+        onChange={(event, option) =>
           handleChange({
             target: {
               name: props.name,
               value: option ? option.value : ''
             }
           })
-        } 
+        }
         value={selectedOption}
-        getOptionLabel={(option) => option ? option.label : ''}
+        getOptionLabel={(option) => (option ? option.label : '')}
         onBlur={handleBlur}
         disabled={props.disabled || isSubmitting}
       />
