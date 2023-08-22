@@ -3,7 +3,7 @@ import { Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/materi
 import { Form, Formik, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 import { TextInput } from '@components/forms/text-input';
-import { AutoCompleteInput } from '@components/forms/auto-complete-input';
+import { CompanyAutoCompleteInput } from '@components/forms/auto-complete-input';
 import { Industries } from '@constants/industries';
 import { Sizes } from '@constants/sizes';
 import { PasswordInput } from '@components/forms/password-input';
@@ -40,8 +40,8 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
   const [initialValues, setInitialValues] = useState({
     submissionId: sessionId,
     participationCode: participantToken,
-    industry: undefined,
-    size: undefined
+    industry: '',
+    size: ''
   });
 
   const FormObserver: React.FC = () => {
@@ -75,8 +75,8 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
                   <Stack spacing={2}>
                     <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" data-cy="submissionID" />
                     <PasswordInput fullWidth name="participationCode" label="Participation code" data-cy="sessionCode" />
-                    <AutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" data-cy="industry" />
-                    <AutoCompleteInput fullWidth name="size" options={Sizes} label="Size" data-cy="size" />
+                    <CompanyAutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" data-cy="industry" />
+                    <CompanyAutoCompleteInput fullWidth name="size" options={Sizes} label="Size" data-cy="size" />
                   </Stack>
                 </Form>
               </Formik>

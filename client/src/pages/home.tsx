@@ -52,7 +52,7 @@ export const HomePage: FC = () => {
         const publicCryptoKey = await importPemPublicKey(publicKeyString);
         const secretTable = await tableToSecretShares(csvData, numShares, threshold, numEncryptWithKey, publicCryptoKey, new BigNumber(prime), true, scale);
         setTable(secretTable);
-        setDataIsEncrypted(Object.keys(secretTable).length !== 0);
+        setDataIsEncrypted(Object.keys(data).length !== 0);
       }
     };
     loadData();
