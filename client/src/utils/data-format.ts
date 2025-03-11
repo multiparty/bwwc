@@ -92,6 +92,9 @@ export interface TableRow {
   unreportedM: number;
   unreportedF: number;
   unreportedNB: number;
+  MENAM: number;
+  MENAF: number;
+  MENANB: number;
 }
 
 export function convertToRows(data?: TableData): TableRow[] {
