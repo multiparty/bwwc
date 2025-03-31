@@ -45,7 +45,11 @@ resource "aws_ecs_task_definition" "backend" {
   cpu                      = "512"
   memory                   = "1024"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  
+
+  runtime_platform {
+    cpu_architecture = "X86_64"
+  }
+
   container_definitions = jsonencode([
     {
       name      = "bwwc-backend",
@@ -53,9 +57,9 @@ resource "aws_ecs_task_definition" "backend" {
       memory    = 512,
       cpu       = 256,
       essential = true,
-      portMappings = [{ containerPort = 80, hostPort = 80 }],
+      portMappings = [{ containerPort = 8000, hostPort = 8000 }],
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+        command     = ["CMD-SHELL", "wget -q -O - http://localhost:8000/health || exit 1"]
         interval    = 30
         timeout     = 5
         retries     = 3
@@ -73,7 +77,8 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "MONGO_HOST", value = var.mongo_host },
         { name = "MONGO_PORT", value = "27017" },
         { name = "MONGO_USERNAME", value = "bwwc" },
-        { name = "MONGO_DATABASE", value = "bwwc" }
+        { name = "MONGO_DATABASE", value = "bwwc" },
+        { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" }
       ],
       secrets = [
         { name = "POSTGRES_PASSWORD", valueFrom = var.postgres_password }
@@ -88,10 +93,6 @@ resource "aws_ecs_task_definition" "backend" {
       }      
     }
   ])
-
-  runtime_platform {
-    cpu_architecture = "X86_64"  
-  }
 }
 
 resource "aws_ecs_service" "backend" {
@@ -110,7 +111,7 @@ resource "aws_ecs_service" "backend" {
   load_balancer {
     target_group_arn = aws_lb_target_group.backend.arn
     container_name   = "bwwc-backend"
-    container_port   = 80
+    container_port   = 8000
   }
 
   health_check_grace_period_seconds = 60
@@ -152,8 +153,8 @@ resource "aws_security_group" "fargate_sg" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8000
+    to_port     = 8000
     protocol    = "tcp"
     security_groups = [aws_security_group.lb_sg.id]
   }
@@ -176,7 +177,7 @@ resource "aws_lb" "bwwc_lb" {
 
 resource "aws_lb_target_group" "backend" {
   name        = "bwwc-backend-tg"
-  port        = 80
+  port        = 8000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -188,6 +189,10 @@ resource "aws_lb_target_group" "backend" {
     healthy_threshold   = 2        
     unhealthy_threshold = 2        
     matcher             = "200"     
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -219,7 +224,7 @@ resource "aws_iam_policy" "secrets_access" {
       {
         Effect   = "Allow",
         Action   = ["secretsmanager:GetSecretValue"],
-        Resource = aws_secretsmanager_secret.bwwc_db_password_secret.arn
+        Resource = "arn:aws:secretsmanager:us-east-1:135854645631:secret:*"
       }
     ]
   })
