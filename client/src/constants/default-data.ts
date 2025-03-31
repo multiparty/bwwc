@@ -12,6 +12,7 @@ const raceData = {
   black: genderData,
   hawaiian: genderData,
   asian: genderData,
+  middleEasternNorthAfrican: genderData,
   nativeAmerican: genderData,
   twoOrMore: genderData,
   unreported: genderData

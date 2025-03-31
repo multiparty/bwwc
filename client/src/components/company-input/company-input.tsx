@@ -63,7 +63,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
             Input your data
           </Typography>
           <Typography>
-            Please make sure your BWWC 2023 Submission ID and participation code match the ones provided in the email sent to you by the Boston Women's Workforce Council. Drag and
+            Please make sure your BWWC 2025 Submission ID and participation code match the ones provided in the email sent to you by the Boston Women's Workforce Council. Drag and
             drop your completed template file to encrypt and include your submission in the aggregate data.
           </Typography>
           <Divider />
@@ -73,7 +73,7 @@ export const CompanyInputForm: FC<CompanyInputFormProps> = (props) => {
                 <Form>
                   <FormObserver />
                   <Stack spacing={2}>
-                    <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" data-cy="submissionID" />
+                    <TextInput fullWidth name="submissionId" label="BWWC 2025 Submission ID" data-cy="submissionID" />
                     <PasswordInput fullWidth name="participationCode" label="Participation code" data-cy="sessionCode" />
                     <CompanyAutoCompleteInput fullWidth name="industry" options={Industries} label="Industry selection" data-cy="industry" />
                     <CompanyAutoCompleteInput fullWidth name="size" options={Sizes} label="Size" data-cy="size" />
