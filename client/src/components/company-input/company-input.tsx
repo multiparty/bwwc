@@ -13,7 +13,7 @@ import { setSessionId, setParticipantCode, setIndustry, setCompanySize } from '.
 import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
-  submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
+  submissionId: Yup.string().required('Please input the 26-character BWWC 2025 Submission ID.').length(26, 'Submission ID must be 26 characters long.'),
   participationCode: Yup.string().required('Please input the participation code.').length(26, 'Participation code must be 26 characters long.'),
   industry: Yup.string().required('Required'),
   size: Yup.string().required('Required')

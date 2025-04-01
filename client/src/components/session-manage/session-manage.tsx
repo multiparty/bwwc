@@ -14,7 +14,7 @@ import { useSession } from '@context/session.context';
 import { LoadingButton } from '@mui/lab';
 
 const validationSchema = Yup.object().shape({
-  submissionId: Yup.string().required('Please input the 26-character BWWC 2023 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
+  submissionId: Yup.string().required('Please input the 26-character BWWC 2025 Submission ID.').length(26, 'Submission ID must be 26 characters long.')
 });
 
 interface valueProps {
@@ -106,7 +106,7 @@ export const SessionManage: FC = () => {
               <Form>
                 <FormObserver />
                 <Stack spacing={2}>
-                  <TextInput fullWidth name="submissionId" label="BWWC 2023 Submission ID" sx={{ width: '49%' }} />
+                  <TextInput fullWidth name="submissionId" label="BWWC 2025 Submission ID" sx={{ width: '49%' }} />
                 </Stack>
               </Form>
             </Formik>

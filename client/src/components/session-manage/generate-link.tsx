@@ -40,7 +40,7 @@ export const LinkGenerator: FC = () => {
   const { sessionId, authToken } = useSelector((state: AppState) => state.session);
 
   const validationSchema = Yup.object().shape({
-    count: Yup.number().positive().integer().required('Please input the number of submitters for the BWWC 2023 Submission.')
+    count: Yup.number().positive().integer().required('Please input the number of submitters for the BWWC 2025 Submission.')
   });
 
   useEffect(() => {

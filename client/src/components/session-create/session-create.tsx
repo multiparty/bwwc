@@ -57,10 +57,10 @@ export const SessionCreateForm: FC = (props) => {
               <Divider sx={{ p: 1 }} />
               <Stack spacing={2} direction="row" alignItems="center">
                 <LockOpenTwoTone />
-                <Typography variant="h5">BWWC 2023 Submission ID</Typography>
+                <Typography variant="h5">BWWC 2025 Submission ID</Typography>
               </Stack>
               <Typography variant="subtitle1">
-                The BWWC 2023 Submission ID is a unique identifier for this session. It will be provided to participants as well. Please record this in order to manage the session
+                The BWWC 2025 Submission ID is a unique identifier for this session. It will be provided to participants as well. Please record this in order to manage the session
                 and verify that participants are in the correct session.
               </Typography>
               <TextInput disabled fullWidth name="sessionId" label="Submission ID" />
@@ -88,7 +88,7 @@ export const SessionCreateForm: FC = (props) => {
               <FormGroup>
                 <FormControlLabel
                   control={<Checkbox value={checked} onChange={(event) => setChecked(event.target.checked)} />}
-                  label="I have saved the BWWC 2023 Submission ID, and private key in a secure location."
+                  label="I have saved the BWWC 2025 Submission ID, and private key in a secure location."
                 />
               </FormGroup>
               <Button disabled={!checked || !privateKey || !sessionId} variant="contained" onClick={() => navigate('/manage')} id="manage-session">

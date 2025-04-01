@@ -122,7 +122,7 @@ export const DecryptInputForm = () => {
             Decrypt Data
           </Typography>
           <Typography>
-            Please make sure your BWWC 2023 Submission ID and session key match the ones you configured when you started the session. Drag and drop your session key file.
+            Please make sure your BWWC 2025 Submission ID and session key match the ones you configured when you started the session. Drag and drop your session key file.
           </Typography>
           <Divider />
           <Grid container spacing={2}>
