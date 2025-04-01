@@ -19,7 +19,6 @@ DJANGO_ENV = os.environ.get("DJANGO_ENV", "dev")
 
 current_directory_path = os.path.dirname(os.path.abspath(__file__))
 
-
 if DJANGO_ENV == "prod":
     load_dotenv(os.path.join(current_directory_path, "../env/.env.prod"))
 else:
@@ -37,6 +36,8 @@ if not os.path.exists(os.path.join(BASE_DIR, "logs")):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+DJANGO_ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_ENV == "dev"
 
@@ -51,6 +52,9 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
 ]
+
+if DJANGO_ALLOWED_HOSTS:
+    ALLOWED_HOSTS.extend(DJANGO_ALLOWED_HOSTS.split(","))
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
