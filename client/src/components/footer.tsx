@@ -17,10 +17,10 @@ export const Footer = () => {
                   Need Help?
                 </Typography>
                 <Typography variant="subtitle1" color="gray" style={{ marginBottom: '1rem' }}>
-                  For immediate questions, Renee Lucas (508-498-7341) will be available during the following times, Monday-Friday, from 2-4 PM ET, during the submission period.
+                  For immediate questions, please call Mima Ofo (781) 571-6241 or Jenn Seabolt (808) 372 9065.
                 </Typography>
                 <Typography variant="subtitle1" color="gray">
-                  For any other times, please email us at <Link>team@thebwwc.org</Link> and we will get back to you within 24 hours.
+                  If email is more convenient, please email us at <Link>data@thebwwc.org</Link> and we will get back to you within 24 hours.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>
