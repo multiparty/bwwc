@@ -53,7 +53,7 @@ resource "aws_ecs_task_definition" "backend" {
   container_definitions = jsonencode([
     {
       name      = "bwwc-backend",
-      image     = "multiparty/bwwc-backend:latest",
+      image     = "multiparty/bwwc-backend:main",
       memory    = 512,
       cpu       = 256,
       essential = true,
