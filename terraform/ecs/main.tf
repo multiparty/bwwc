@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "backend" {
       essential = true,
       portMappings = [{ containerPort = 8000, hostPort = 8000 }],
       healthCheck = {
-        command     = ["CMD-SHELL", "wget -q -O - http://localhost:8000/health || exit 1"]
+        command     = ["CMD-SHELL", "wget -q -O - http://localhost:8000/api/bwwc/health || exit 1"]
         interval    = 30
         timeout     = 5
         retries     = 3
