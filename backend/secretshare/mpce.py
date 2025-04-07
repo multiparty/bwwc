@@ -37,7 +37,7 @@ class MPCEngine(object):
         self.mongo_host = os.environ.get("MONGO_HOST")
         self.mongo_port = os.environ.get("MONGO_PORT")
         self.mongo_user = urllib.parse.quote_plus(os.environ.get("MONGO_USER", "bwwc"))
-        self.mongo_password = urllib.parse.quote_plus(os.environ.get("MONGO_PASSWORD")
+        self.mongo_password = urllib.parse.quote_plus(os.environ.get("MONGO_PASSWORD"))
         self.mongo_db = os.environ.get("MONGO_DB", "bwwc") 
         self.mongo_params = os.environ.get("MONGO_PARAMS", "") 
         mongo_uri = f"mongodb://{self.mongo_user}:{self.mongo_password}@{self.mongo_host}:{self.mongo_port}/?{self.mongo_params}"
