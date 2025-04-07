@@ -67,7 +67,7 @@ resource "aws_ecs_task_definition" "backend" {
       },
       environment = [
         { name = "SECRET_KEY", value = "django-insecure-x$ee)y$zn8!egy6(9olf6maf2tt0%wtn&qd_qzlo_v9f_-!5)@" },
-        { name = "BASE_URL", value = "http://${aws_lb.bwwc_lb.dns_name}:80" },
+        { name = "BASE_URL", value = "http://${aws_lb.bwwc_lb.dns_name}" },
         { name = "PRIME", value = "180252380737439" },
         { name = "THRESHOLD", value = "3" },
         { name = "POSTGRES_HOST", value = var.postgres_host },
@@ -78,10 +78,12 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "MONGO_PORT", value = "27017" },
         { name = "MONGO_USERNAME", value = "bwwc" },
         { name = "MONGO_DATABASE", value = "bwwc" },
+        { name = "MONGO_PARAMS", value = "authSource=admin" },
         { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" }
       ],
       secrets = [
-        { name = "POSTGRES_PASSWORD", valueFrom = var.postgres_password }
+        { name = "POSTGRES_PASSWORD", valueFrom = var.postgres_password },
+        { name = "MONGO_PASSWORD", valueFrom = var.mongo_password }
       ],
       logConfiguration = {
         logDriver = "awslogs"
@@ -183,7 +185,7 @@ resource "aws_lb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
-    path                = "/health" 
+    path                = "/api/bwwc/health" 
     interval            = 30        
     timeout             = 5         
     healthy_threshold   = 2        
@@ -204,15 +206,6 @@ resource "aws_lb_listener" "backend" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.backend.arn
   }
-}
-
-resource "aws_secretsmanager_secret" "bwwc_db_password_secret" {
-  name = "bwwc-db-password"
-}
-
-resource "aws_secretsmanager_secret_version" "bwwc_db_password_secret_version" {
-  secret_id     = aws_secretsmanager_secret.bwwc_db_password_secret.id
-  secret_string = var.postgres_password
 }
 
 resource "aws_iam_policy" "secrets_access" {
