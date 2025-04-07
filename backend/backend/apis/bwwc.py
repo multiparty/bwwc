@@ -305,14 +305,16 @@ def backup(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def mongo_health(req: HttpRequest) -> HttpResponse:
-    if req.method == "GET":
-        if not engine.is_mongodb_running():
-            return HttpResponseBadRequest("MongoDB is down")
+def mongo_health(req: HttpRequest) -> JsonResponse:
+    if req.method != "GET":
+        return JsonResponse({"status": "Method Not Allowed"}, status=405)
+    try:
+        if engine.is_mongodb_running():
+            return JsonResponse({"status": "ok"}, status=200)
         else:
-            return HttpResponse("MongoDB is up")
-    else:
-        return HttpResponseBadRequest("Invalid request method")
+            return JsonResponse({"status": "error", "message": "MongoDB is down"}, status=503)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=503)
 
 
 def get_urlpatterns():
