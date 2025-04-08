@@ -305,7 +305,7 @@ def backup(req: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def mongo_health(req: HttpRequest) -> JsonResponse:
+def mongo_health(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         if not engine.is_mongodb_running():
             return HttpResponseBadRequest("MongoDB is down")
