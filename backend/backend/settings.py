@@ -37,6 +37,7 @@ if not os.path.exists(os.path.join(BASE_DIR, "logs")):
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 DJANGO_ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "")
+ALLOW_ALL_HOSTS = os.getenv("ALLOW_ALL_HOSTS", "false")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_ENV == "dev"
@@ -55,6 +56,9 @@ ALLOWED_HOSTS = [
 
 if DJANGO_ALLOWED_HOSTS:
     ALLOWED_HOSTS.extend(DJANGO_ALLOWED_HOSTS.split(","))
+
+if ALLOW_ALL_HOSTS.lower() == "true":
+    ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
