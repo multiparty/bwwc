@@ -3,6 +3,7 @@ import sys
 import uuid
 import numbers
 import logging
+import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 from itertools import groupby
 from operator import itemgetter
@@ -35,11 +36,14 @@ class MPCEngine(object):
 
         self.mongo_host = os.environ.get("MONGO_HOST")
         self.mongo_port = os.environ.get("MONGO_PORT")
-        self.mongo_client = MongoClient(
-            os.environ.get(
-                "MONGO_HOST", f"mongodb://{self.mongo_host}:{self.mongo_port}/"
-            )
-        )
+        self.mongo_user = urllib.parse.quote_plus(os.environ.get("MONGO_USER", "bwwc"))
+        self.mongo_password = urllib.parse.quote_plus(os.environ.get("MONGO_PASSWORD"))
+        self.mongo_db = os.environ.get("MONGO_DB", "bwwc") 
+        self.mongo_params = os.environ.get("MONGO_PARAMS", "") 
+        mongo_uri = f"mongodb://{self.mongo_user}:{self.mongo_password}@{self.mongo_host}:{self.mongo_port}/?{self.mongo_params}"
+
+        self.mongo_client = MongoClient(mongo_uri)
+        
         self.mongo_db = self.mongo_client["bwwc"]
         self.session_collection = self.mongo_db["wage_gap"]
         self.participant_collection = self.mongo_db["participant"]
@@ -645,3 +649,4 @@ class MPCEngine(object):
         if file is None:
             return None
         return json.loads(file.read())
+
