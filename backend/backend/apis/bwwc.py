@@ -306,15 +306,17 @@ def backup(req: HttpRequest) -> HttpResponse:
 
 @csrf_exempt
 def mongo_health(req: HttpRequest) -> JsonResponse:
-    if req.method != "GET":
-        return JsonResponse({"status": "Method Not Allowed"}, status=405)
-    try:
-        if engine.is_mongodb_running():
-            return JsonResponse({"status": "ok"}, status=200)
+    if req.method == "GET":
+        if not engine.is_mongodb_running():
+            return HttpResponseBadRequest("MongoDB is down")
         else:
-            return JsonResponse({"status": "error", "message": "MongoDB is down"}, status=503)
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=503)
+            return HttpResponse("MongoDB is up")
+    else:
+        return HttpResponseBadRequest("Invalid request method")
+
+@csrf_exempt
+def app_health_check(req: HttpRequest) -> HttpResponse:
+    return HttpResponse("OK")
 
 
 def get_urlpatterns():
@@ -331,4 +333,5 @@ def get_urlpatterns():
         path("api/bwwc/get_submission_history/", get_submission_history),
         path("api/bwwc/backup/", backup),
         path("api/bwwc/health/", mongo_health),
+        path("/api/bwwc/healthz/", app_health_check),
     ]
