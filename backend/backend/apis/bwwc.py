@@ -308,7 +308,7 @@ def backup(req: HttpRequest) -> HttpResponse:
 def mongo_health(req: HttpRequest) -> HttpResponse:
     if req.method == "GET":
         if not engine.is_mongodb_running():
-            return HttpResponseBadRequest("MongoDB is down")
+            return HttpResponseBadRequest(f"MongoDB is down at: {engine.mongo_uri}")
         else:
             return HttpResponse("MongoDB is up")
     else:
