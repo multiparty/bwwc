@@ -83,8 +83,8 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "ALLOW_ALL_HOSTS", value = "true" }
       ],
       secrets = [
-        { name = "POSTGRES_PASSWORD", valueFrom = var.postgres_password },
-        { name = "MONGO_PASSWORD", valueFrom = var.mongo_password }
+        { name = "POSTGRES_PASSWORD", valueFrom = "${var.postgres_password}:password::" },
+        { name = "MONGO_PASSWORD", valueFrom = "${var.mongo_password}:password::" }
       ],
       logConfiguration = {
         logDriver = "awslogs"
