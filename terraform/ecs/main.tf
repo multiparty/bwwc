@@ -79,7 +79,8 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "MONGO_USERNAME", value = "bwwc" },
         { name = "MONGO_DATABASE", value = "bwwc" },
         { name = "MONGO_PARAMS", value = "authSource=admin" },
-        { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" }
+        { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" },
+        { name = "ALLOW_ALL_HOSTS", value = "true" }
       ],
       secrets = [
         { name = "POSTGRES_PASSWORD", valueFrom = var.postgres_password },
