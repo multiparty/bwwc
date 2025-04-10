@@ -46,3 +46,8 @@ variable "mongo_password" {
   type        = string
   sensitive   = true  
 }
+
+variable "mongo_uri" {
+  description = "mongo database uri"
+  type = string
+}

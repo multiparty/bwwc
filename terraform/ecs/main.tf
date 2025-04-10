@@ -74,6 +74,7 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "POSTGRES_USERNAME", value = var.postgres_username },
         { name = "POSTGRES_DATABASE", value = var.postgres_database },
         { name = "POSTGRES_PORT", value = "5432" },
+        { name = "MONGO_URI", value = var.mongo_uri },
         { name = "MONGO_HOST", value = var.mongo_host },
         { name = "MONGO_PORT", value = "27017" },
         { name = "MONGO_USERNAME", value = "bwwc" },
