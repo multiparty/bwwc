@@ -38,8 +38,6 @@ module "ecs" {
   postgres_password = module.rds.rds_password
   postgres_host = module.rds.rds_host
   postgres_database = module.rds.rds_database
-  mongo_host = module.documentdb.mongo_host
-  mongo_password = module.documentdb.mongo_password
   mongo_uri =  module.documentdb.mongo_uri
 }
 

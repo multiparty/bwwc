@@ -36,17 +36,6 @@ variable "postgres_host" {
   type        = string
 }
 
-variable "mongo_host" {
-  description = "The host (endpoint) of the MongoDB DocumentDB Cluster"
-  type        = string
-}
-
-variable "mongo_password" {
-  description = "The password for the mongo database"
-  type        = string
-  sensitive   = true  
-}
-
 variable "mongo_uri" {
   description = "mongo database uri"
   type = string

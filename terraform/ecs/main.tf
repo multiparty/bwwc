@@ -75,17 +75,11 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "POSTGRES_DATABASE", value = var.postgres_database },
         { name = "POSTGRES_PORT", value = "5432" },
         { name = "MONGO_URI", value = var.mongo_uri },
-        { name = "MONGO_HOST", value = var.mongo_host },
-        { name = "MONGO_PORT", value = "27017" },
-        { name = "MONGO_USERNAME", value = "bwwc" },
-        { name = "MONGO_DATABASE", value = "bwwc" },
-        { name = "MONGO_PARAMS", value = "ssl=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false&authSource=admin" },
         { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" },
         { name = "ALLOW_ALL_HOSTS", value = "true" }
       ],
       secrets = [
-        { name = "POSTGRES_PASSWORD", valueFrom = "${var.postgres_password}:password::" },
-        { name = "MONGO_PASSWORD", valueFrom = "${var.mongo_password}:password::" }
+        { name = "POSTGRES_PASSWORD", valueFrom = "${var.postgres_password}:password::" }  
       ],
       logConfiguration = {
         logDriver = "awslogs"
