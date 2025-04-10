@@ -34,14 +34,15 @@ class MPCEngine(object):
     def __init__(self, protocol: str = "shamirs", prime: int = 180252380737439):
         self.logger = logging.getLogger("django")
 
-        self.mongo_host = os.environ.get("MONGO_HOST")
+        '''self.mongo_host = os.environ.get("MONGO_HOST")
         self.mongo_port = os.environ.get("MONGO_PORT")
         self.mongo_user = urllib.parse.quote_plus(os.environ.get("MONGO_USER", "bwwc"))
         self.mongo_password = urllib.parse.quote_plus(os.environ.get("MONGO_PASSWORD"))
         self.mongo_db = os.environ.get("MONGO_DB", "bwwc") 
         self.mongo_params = os.environ.get("MONGO_PARAMS", "") 
-        mongo_uri = f"mongodb://{self.mongo_user}:{self.mongo_password}@{self.mongo_host}:{self.mongo_port}/{self.mongo_db}?{self.mongo_params}"
-        self.logger.info(f"Connection URI is: {mongo_uri}")
+        mongo_uri = f"mongodb://{self.mongo_user}:{self.mongo_password}@{self.mongo_host}:{self.mongo_port}/{self.mongo_db}?{self.mongo_params}"'''
+        self.mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+        self.logger.info(f"Connection URI is: {self.mongo_uri}")
 
         self.mongo_client = MongoClient(mongo_uri)
         
