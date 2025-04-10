@@ -44,7 +44,7 @@ class MPCEngine(object):
         self.mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
         self.logger.info(f"Connection URI is: {self.mongo_uri}")
 
-        self.mongo_client = MongoClient(mongo_uri)
+        self.mongo_client = MongoClient(self.mongo_uri)
         
         self.mongo_db = self.mongo_client["bwwc"]
         self.session_collection = self.mongo_db["wage_gap"]
