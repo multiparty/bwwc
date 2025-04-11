@@ -76,7 +76,8 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "POSTGRES_PORT", value = "5432" },
         { name = "MONGO_URI", value = var.mongo_uri },
         { name = "DJANGO_ALLOWED_HOSTS", value = "${aws_lb.bwwc_lb.dns_name},localhost,127.0.0.1" },
-        { name = "ALLOW_ALL_HOSTS", value = "true" }
+        { name = "ALLOW_ALL_HOSTS", value = "true" },
+        { name = "DUMMY_TRIGGER", value = timestamp() }
       ],
       secrets = [
         { name = "POSTGRES_PASSWORD", valueFrom = "${var.postgres_password}:password::" }  
