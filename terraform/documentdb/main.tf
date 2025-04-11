@@ -5,10 +5,13 @@ resource "random_password" "bwwc_documentdb_password" {
   min_special = 0
 }
 
+
+# Store the generated password in AWS Secrets Manager
 resource "aws_secretsmanager_secret" "bwwc_documentdb_password_secret" {
   name = "bwwc-documentdb-password"
 }
 
+# Save the secret value as a new version in Secrets Manager
 resource "aws_secretsmanager_secret_version" "documentdb_password_secret_value" {
   secret_id = aws_secretsmanager_secret.bwwc_documentdb_password_secret.id
   secret_string = jsonencode({
@@ -54,7 +57,10 @@ resource "aws_docdb_cluster" "bwwc_documentdb" {
   skip_final_snapshot             = true
   engine_version                  = "5.0.0"
   master_username                 = "bwwc"
+
+  # Use password stored in Secrets Manager
   master_password                 = jsondecode(aws_secretsmanager_secret_version.documentdb_password_secret_value.secret_string).password
+  
   db_subnet_group_name            = aws_docdb_subnet_group.bwwc_documentdb_subnet_group.name
   vpc_security_group_ids          = [aws_security_group.bwwc_documentdb_sg.id]
   allow_major_version_upgrade     = true

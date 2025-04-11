@@ -6,11 +6,13 @@ resource "aws_ecs_cluster" "bwwc_cluster" {
   name = "bwwc-cluster"
 }
 
+# Create a CloudWatch Log Group for the backend service logs
 resource "aws_cloudwatch_log_group" "ecs_log_group_backend" {
   name              = "/ecs/bwwc-backend"
   retention_in_days = 14
 }
 
+# Define a custom IAM policy allowing ECS tasks to write logs to CloudWatch
 resource "aws_iam_policy" "cloudwatch_logs_policy" {
   name        = "ecs-cloudwatch-logs-policy"
   description = "Policy to allow ECS tasks to write logs to CloudWatch"
@@ -32,12 +34,13 @@ resource "aws_iam_policy" "cloudwatch_logs_policy" {
   })
 }
 
+# Attach the CloudWatch logs policy to the ECS task execution role
 resource "aws_iam_role_policy_attachment" "cloudwatch_logs_policy_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.cloudwatch_logs_policy.arn
 }
 
-
+# Define the ECS Fargate task for the backend service
 resource "aws_ecs_task_definition" "backend" {
   family                   = "bwwc-backend"
   network_mode             = "awsvpc"
@@ -57,7 +60,7 @@ resource "aws_ecs_task_definition" "backend" {
       memory    = 512,
       cpu       = 256,
       essential = true,
-      portMappings = [{ containerPort = 8000, hostPort = 8000 }],
+      portMappings = [{ containerPort = 8000, hostPort = 8000 }], #application is listening on port 8000
       healthCheck = {
         command     = ["CMD-SHELL", "wget -q -O - http://localhost:8000/api/bwwc/healthz || exit 1"]
         interval    = 30
@@ -94,6 +97,7 @@ resource "aws_ecs_task_definition" "backend" {
   ])
 }
 
+# Create the ECS service to run the backend task
 resource "aws_ecs_service" "backend" {
   name            = "bwwc-backend-service"
   cluster         = aws_ecs_cluster.bwwc_cluster.id
@@ -110,9 +114,10 @@ resource "aws_ecs_service" "backend" {
   load_balancer {
     target_group_arn = aws_lb_target_group.backend.arn
     container_name   = "bwwc-backend"
-    container_port   = 8000
+    container_port   = 8000 # Must match container definition's port above
   }
 
+  # Grace period to allow the container to pass health checks before being marked unhealthy
   health_check_grace_period_seconds = 60
 }
 
@@ -146,6 +151,7 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
+# Security group for the ALB to allow HTTP and HTTPS from the internet
 resource "aws_security_group" "fargate_sg" {
   name        = "fargate-sg"
   description = "Allow inbound traffic to backend only from ALB"
@@ -166,6 +172,7 @@ resource "aws_security_group" "fargate_sg" {
   }
 }
 
+# Security group for the ECS tasks to allow traffic only from the ALB
 resource "aws_lb" "bwwc_lb" {
   name               = "bwwc-lb"
   internal           = false
@@ -174,9 +181,10 @@ resource "aws_lb" "bwwc_lb" {
   subnets            = var.public_subnet_ids
 }
 
+# Application Load Balancer for routing traffic to the ECS service
 resource "aws_lb_target_group" "backend" {
   name        = "bwwc-backend-tg"
-  port        = 8000
+  port        = 8000 # must match container definition port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -195,6 +203,7 @@ resource "aws_lb_target_group" "backend" {
   }
 }
 
+# Listener to forward HTTP traffic from the ALB to the target group
 resource "aws_lb_listener" "backend" {
   load_balancer_arn = aws_lb.bwwc_lb.arn
   port             = 80
@@ -205,6 +214,7 @@ resource "aws_lb_listener" "backend" {
   }
 }
 
+# IAM policy allowing ECS tasks to retrieve secrets from Secrets Manager
 resource "aws_iam_policy" "secrets_access" {
   name        = "ECSSecretsAccess"
   description = "Allow ECS tasks to retrieve secrets from AWS Secrets Manager"
@@ -220,6 +230,7 @@ resource "aws_iam_policy" "secrets_access" {
   })
 }
 
+# IAM role that ECS tasks assume to interact with AWS services
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
 
@@ -237,11 +248,13 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
+# Attach AWS-managed ECS task execution policy to the execution role
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Attach custom secrets access policy to the execution role
 resource "aws_iam_role_policy_attachment" "ecs_task_secrets" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = aws_iam_policy.secrets_access.arn
