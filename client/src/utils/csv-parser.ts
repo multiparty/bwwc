@@ -72,25 +72,20 @@ const columnRowMap: Record<Ethnicity, Record<Gender, string>> = {
     [Gender.Male]: 'O',
     [Gender.NonBinary]: 'P'
   },
-  [Ethnicity.MENA]: {
+  [Ethnicity.NativeAmerican]: {
     [Gender.Female]: 'Q',
     [Gender.Male]: 'R',
     [Gender.NonBinary]: 'S'
   },
-  [Ethnicity.NativeAmerican]: {
+  [Ethnicity.TwoOrMore]: {
     [Gender.Female]: 'T',
     [Gender.Male]: 'U',
     [Gender.NonBinary]: 'V'
   },
-  [Ethnicity.TwoOrMore]: {
+  [Ethnicity.Unreported]: {
     [Gender.Female]: 'W',
     [Gender.Male]: 'X',
     [Gender.NonBinary]: 'Y'
-  },
-  [Ethnicity.Unreported]: {
-    [Gender.Female]: 'Z',
-    [Gender.Male]: 'AA',
-    [Gender.NonBinary]: 'AB'
   }
 };
 const extractData = (sheet: WorkSheet): TableData => {

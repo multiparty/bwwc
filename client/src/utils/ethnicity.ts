@@ -6,8 +6,7 @@ export enum Ethnicity {
   Asian = 'asian',
   NativeAmerican = 'nativeAmerican',
   TwoOrMore = 'twoOrMore',
-  Unreported = 'unreported',
-  MENA = 'mena'
+  Unreported = 'unreported'
 }
 
 export const EthnicityDisplayNames: Record<Ethnicity, string> = {
@@ -18,6 +17,5 @@ export const EthnicityDisplayNames: Record<Ethnicity, string> = {
   [Ethnicity.Asian]: 'Asian',
   [Ethnicity.NativeAmerican]: 'American Indian / Alaska Native',
   [Ethnicity.TwoOrMore]: 'Two or More Races (Not Hispanic or Latinx)',
-  [Ethnicity.Unreported]: 'Unreported',
-  [Ethnicity.MENA]: 'Middle Eastern / North African',
+  [Ethnicity.Unreported]: 'Unreported'
 };
