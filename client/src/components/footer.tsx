@@ -35,8 +35,8 @@ export const Footer = () => {
                     The Boston Women’s Workforce Council (BWWC) leads a unique public-private partnership between the Boston Mayor and Greater Boston employers dedicated to
                     eliminating gender and racial wage gaps.
                   </Typography>
-                  <Link href="https://thebwwc.org/data-submission-resources-2023" target="_blank">
-                    https://thebwwc.org/data-submission-resources-2023
+                  <Link href="https://thebwwc.org/2025-data-collection-resources" target="_blank">
+                    https://thebwwc.org/2025-data-collection-resources
                   </Link>
                 </Stack>
               </Grid>
