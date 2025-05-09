@@ -17,7 +17,7 @@ export const AuthCallback = () => {
 
   useEffect(() => {
     if (token) {
-      navigate(Paths.CREATE, { replace: true });
+      navigate(Paths.MANAGE, { replace: true });
     }
   }, [token]);
 
